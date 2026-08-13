@@ -231,3 +231,31 @@
 
 ### Next
 - v0.10: verify 全量 plan/genes/ asset_id + ROADMAP 最终更新
+
+## v0.9-final (2026-08-14 03:55) — Solidify 完成，10 genes 落地
+
+### plan/genes/ 最终清单（10 个 Gene，全部 unique asset_id）
+| Gene | asset_id 前 8 位 | 来源 |
+|------|-----|------|
+| gene_devagent_exec_hotpath_49_calls_24h | eb4b7ece | 历史 |
+| gene_hotpath_exec | c145ebd1 | v0.9 Evolver |
+| gene_hotpath_edit | 408a8865 | v0.9 Evolver |
+| gene_hotpath_write_file | 2c753965 | v0.9 Evolver |
+| gene_hotpath_read | deebc4c7 | v0.9 Evolver |
+| gene_hotpath_write | 2f0217e1 | v0.9 Evolver |
+| gene_hotpath_process | fba570a6 | v0.9 Evolver |
+| gene_hotpath_message | d29186be | v0.9 Evolver |
+| gene_harness_a2a_protocol | ae62e912 | v0.5 |
+| gene_harness_append_only_event_stream | 8fdafd9a | v0.4 |
+| gene_harness_evolver_semiauto | daf3c50e | v0.4 |
+| gene_harness_evolver_semiauto_v0_2 | b1cb5793 | v0.6 |
+| gene_harness_tool_call_pipeline | 5ac84341 | v0.6 |
+
+### Evolver 工作流全链路验证
+- Scan: 3198 events (24h), 9 tools
+- Extract: 7 candidates (exec/edit/write_file/read/write/process/message)
+- Validate: 7/7 GEP strict pass
+- Fill: asset_id 本地 canonicalize（402 quota 跳过 LLM）
+- Solidify: 7 genes → plan/genes/（人工审批完成）
+
+### Next: v0.10 verify 全量 asset_id + ROADMAP 最终版
