@@ -63,3 +63,28 @@ clean:
 	@echo "Run: cp /data/disk/gep-harness/openclaw-harness/events/events.jsonl /tmp/events.bak"
 	@echo "Then: make clean-confirm"
 	@echo "(intentionally not deleting in one step)"
+
+
+	@echo "=== Evolver 完整工作流 (v0.7) ==="
+	@echo "--- Scan (24h) ---"
+	@python3 /data/disk/gep-harness/scripts/scan_events.py --since=24h > /tmp/v07_scan.json
+	@echo "--- Extract Candidates ---"
+	@rm -rf /tmp/v07_staging && mkdir -p /tmp/v07_staging
+	@python3 /data/disk/gep-harness/scripts/extract_candidate_genes.py --scan-output=/tmp/v07_scan.json --output=/tmp/v07_staging/ --threshold=3
+	@echo "--- Validate (GEP strict) ---"
+	@python3 /data/disk/gep-harness/scripts/validate_gep.py --mode=strict --input="/tmp/v07_staging/*.json"
+	@echo "--- LLM Fill (dry-run) ---"
+	@python3 /data/disk/gep-harness/scripts/llm_fill_gene.py --staging=/tmp/v07_staging/ --dry-run
+	@echo "=== evolve done (Solidify requires manual review) ==="
+evolve:
+	@echo "=== Evolver full workflow (v0.7) ==="
+	@echo "--- Scan (24h) ---"
+	@python3 /data/disk/gep-harness/scripts/scan_events.py --since=24h > /tmp/v07_scan.json
+	@echo "--- Extract Candidates ---"
+	@rm -rf /tmp/v07_staging && mkdir -p /tmp/v07_staging
+	@python3 /data/disk/gep-harness/scripts/extract_candidate_genes.py --scan-output=/tmp/v07_scan.json --output=/tmp/v07_staging/ --threshold=3
+	@echo "--- Validate (GEP strict) ---"
+	@python3 /data/disk/gep-harness/scripts/validate_gep.py --mode=strict --input="/tmp/v07_staging/*.json"
+	@echo "--- LLM Fill (dry-run) ---"
+	@python3 /data/disk/gep-harness/scripts/llm_fill_gene.py --staging=/tmp/v07_staging/ --dry-run
+	@echo "=== evolve done (Solidify requires manual review) ==="

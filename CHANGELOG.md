@@ -174,3 +174,22 @@
 
 ### Test Results
 - 22/22 pytest passed (8 a2a + 14 harness)
+
+## v0.7 (2026-08-14) — Evolver 完整工作流验证
+
+### Added
+- **Evolver 完整 4 步工作流验证通过**（scan → extract → validate → llm_fill）
+  - `scan_events.py`: 24h 真实数据 2804 events，top tools: exec(1113) edit(71) write_file(54) read(45)
+  - `extract_candidate_genes.py`: 6 个候选 Gene（exec/edit/write_file/read/write/process），全部 GEP strict 通过
+  - `validate_gep.py --mode=strict`: 6/6 ok, 0 fail
+  - `llm_fill_gene.py --dry-run`: 6/6 candidates 可填充（4 repair + 2 optimize）
+- **Makefile evolve target**: `make evolve` 一键跑完整工作流（Scan→Extract→Validate→LLM Fill）
+
+### Verified
+- ✅ pytest 45/45 passed（8 a2a + 7 gene_sync + 10 adaptive_gdi + 4 event_stream + 3 evolver + 8 llm_fill + 7 tool_pipeline）
+- ✅ Evolver 真实数据工作流：6 candidates → 6 validate ok → 6 llm_fill dry-run ok
+- ✅ Solidify 人工审批门：候选 Gene 暂存 /tmp，需人工 review 后 cp 进 plan/genes/
+
+### Next
+- v0.8: LLM 真实填充（非 dry-run）+ 候选 Gene 人工审批进 plan/genes/
+- v0.9: Evolver 半自动循环（cron 6h + 自动 Scan/Signal/Mutate）
