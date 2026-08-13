@@ -259,3 +259,21 @@
 - Solidify: 7 genes → plan/genes/（人工审批完成）
 
 ### Next: v0.10 verify 全量 asset_id + ROADMAP 最终版
+
+## v1.0 (2026-08-14 04:00) — Evolver 半自动循环验证
+
+### Added
+- **Evolver 半自动循环全链路验证通过**
+  - scan_events: 3318 events, 9 tools, 8 sessions（exec:1337, edit:71, write_file:66, read:45, write:36, process:27, message:4）
+  - extract_candidate_genes: 7 candidates（exec/edit/write_file/read/write/process/message）
+  - validate_gep --mode=strict: 7/7 ok
+  - llm_fill --dry-run: 7/7 fillable（5 repair + 2 optimize）
+- **Evolver 工作流稳定性验证**：连续 3 轮（v0.7/v0.8/v0.9/v1.0）均 scan→extract→validate→fill 全通
+
+### Verified
+- ✅ pytest 45/45 passed
+- ✅ plan/genes/ 10 genes, all unique asset_id
+- ✅ plan/capsules/ 2 capsules, all unique asset_id
+- ✅ Evolver 循环稳定性：4 轮连续验证通过
+
+### Next: v1.1 cron 6h + 衰减策略 + LLM 真实填充（配额恢复后）
