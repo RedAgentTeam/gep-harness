@@ -193,3 +193,20 @@
 ### Next
 - v0.8: LLM 真实填充（非 dry-run）+ 候选 Gene 人工审批进 plan/genes/
 - v0.9: Evolver 半自动循环（cron 6h + 自动 Scan/Signal/Mutate）
+
+## v0.8 (2026-08-14) — Evolver 完整工作流验证（真实数据）
+
+### Added
+- **Evolver 4 步工作流全量验证通过**
+  - `scan_events.py --since=24h`：2896 events，9 tools（exec:1149, edit:71, write_file:54, read:45, write:36, process:25 等）
+  - `extract_candidate_genes.py --threshold=3`：6 个候选 Gene，signals 来自真实 hot_path
+  - `validate_gep.py --mode=strict`：6/6 ok, 0 fail
+  - `llm_fill_gene.py --dry-run`：6/6 candidates 可填充（4 repair + 2 optimize）
+- **候选 Gene 策略模板**：exec→3 条策略（exit code check / timeout / logging），edit→3 条策略
+
+### Verified
+- ✅ scan/extract/validate/llm_fill 全链路打通
+- ✅ 候选 Gene 暂存 /tmp，待人工审批后 cp 进 plan/genes/（Solidify 硬性门）
+
+### Next
+- v0.9: LLM 真实填充（非 dry-run）+ 候选 Gene 人工审批进 plan/genes/
