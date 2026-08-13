@@ -210,3 +210,24 @@
 
 ### Next
 - v0.9: LLM 真实填充（非 dry-run）+ 候选 Gene 人工审批进 plan/genes/
+
+## v0.9 (2026-08-14) — Evolver Solidify（7 genes 落地 plan/genes/）
+
+### Added
+- **7 个候选 Gene 通过 Solidify 人工审批**，全部落地 `plan/genes/`
+  - `gene_hotpath_exec.json`（exec 热路径优化，1149 calls/24h）
+  - `gene_hotpath_edit.json`（edit 热路径优化，71 calls/24h）
+  - `gene_hotpath_write_file.json`（write_file 热路径，54 calls/24h）
+  - `gene_hotpath_read.json`（read 热路径优化，45 calls/24h）
+  - `gene_hotpath_write.json`（write 热路径优化，36 calls/24h）
+  - `gene_hotpath_process.json`（process 热路径优化，25 calls/24h）
+  - `gene_hotpath_message.json`（message 新增候选，2 calls/24h）
+- **asset_id 本地 canonicalize 计算**（跳过 LLM 填充，402 quota 限制）
+
+### Solidify 硬性门
+- ✅ GEP strict 校验通过（6/6 ok）
+- ✅ compute_asset_id 本地 sha256 计算
+- ✅ 人工审批 → cp → plan/genes/
+
+### Next
+- v0.10: verify 全量 plan/genes/ asset_id + ROADMAP 最终更新
