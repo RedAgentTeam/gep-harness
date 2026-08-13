@@ -46,5 +46,6 @@
     "OpenStaxBiology Ch11 进化: 群体遗传学 = Gene Pool 的数学基础",
     "evomap GEP §A2A: 本 Gene 直接对应 A2A Hub 协议"
   ],
-  "asset_id": "sha256:ae62e912da8c9fdbb38ed4621f82b05a16ff4e2f964fc8a9f879300bc55fb9e4"
+  "asset_id": "sha256:b6995ca919c32fb1ff81d4ced888550308d3b05e7f4943b2676cca4d10596a79",
+  "type": "Gene"
 }
