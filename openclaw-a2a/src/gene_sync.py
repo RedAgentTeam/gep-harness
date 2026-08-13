@@ -136,10 +136,79 @@ def sync_to_peer(
     }
 
 
+def discover_peers(bootstrap_urls: list[str], timeout: float = 5.0) -> list[str]:
+    """Node discovery: query bootstrap peers for their known_peers list.
+
+    v0.5 broadcast: replaces static --peer list with dynamic discovery.
+    Returns deduplicated list of peer URLs (including bootstrap URLs themselves).
+    """
+    discovered: set[str] = set(bootstrap_urls)
+    for url in bootstrap_urls:
+        try:
+            req = urllib.request.Request(
+                f"{url.rstrip('/')}/api/v1/a2a/nodes"
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                body = json.loads(resp.read().decode("utf-8"))
+                for p in body.get("peers", []):
+                    discovered.add(p)
+        except (urllib.error.URLError, OSError, json.JSONDecodeError) as e:
+            print(f"[discover] warning: {url}: {e}")
+    return sorted(discovered)
+
+
+def broadcast_to_peers(
+    pool: GenePool,
+    peer_urls: list[str],
+    secret: str,
+    node_id: str,
+    min_gdi: float = 0.7,
+    timeout: float = 10.0,
+) -> dict:
+    """Broadcast local Genes to multiple peers (batch + fan-out).
+
+    Optimisation: build one envelope per high-GDI asset, fan out to all peers.
+    Returns summary aggregated across all peers.
+    """
+    summary = {"peers": [], "total_sent": 0, "total_accepted": 0, "total_rejected": 0, "total_errors": 0}
+
+    for peer in peer_urls:
+        result = sync_to_peer(pool, peer, secret, node_id, min_gdi, timeout)
+        summary["peers"].append(result)
+        summary["total_sent"] += result["sent"]
+        summary["total_accepted"] += result["accepted"]
+        summary["total_rejected"] += result["rejected"]
+        summary["total_errors"] += len(result["errors"])
+
+    return summary
+
+
+def announce_peer(pool: GenePool, self_url: str, peer_url: str, timeout: float = 5.0) -> dict:
+    """Announce this node to a peer (persist both sides' known_peers)."""
+    try:
+        req = urllib.request.Request(
+            f"{peer_url.rstrip('/')}/api/v1/a2a/announce",
+            data=json.dumps({"peer_url": self_url, "node_id": get_node_id()},
+                            ensure_ascii=False).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+            return {"peer": peer_url, "ack": True, "known_peers": body.get("known_peers", [])}
+    except (urllib.error.URLError, OSError, json.JSONDecodeError) as e:
+        return {"peer": peer_url, "ack": False, "error": str(e)}
+
+
 def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--peer", action="append", required=True,
-                   help="peer URL e.g. http://127.0.0.1:9877 (repeatable)")
+    p = argparse.ArgumentParser(description="Gene Sync — broadcast or pairwise")
+    p.add_argument("--peer", action="append", help="peer URL (repeatable, optional if --broadcast)")
+    p.add_argument("--broadcast", action="store_true",
+                   help="auto-discover peers from bootstrap list, then fan-out to all")
+    p.add_argument("--bootstrap", action="append", default=[],
+                   help="bootstrap node URL for discovery (repeatable)")
+    p.add_argument("--announce", metavar="SELF_URL",
+                   help="announce this node to peers (requires --peer)")
     p.add_argument("--pool-dir", type=Path, default=None)
     p.add_argument("--min-gdi", type=float, default=0.7)
     p.add_argument("--timeout", type=float, default=10.0)
@@ -149,6 +218,43 @@ def main():
     node_id = get_node_id()
     pool = GenePool(root=args.pool_dir)
 
+    # --announce mode
+    if args.announce:
+        if not args.peer:
+            print("[gene_sync] --announce requires --peer", file=sys.stderr)
+            sys.exit(1)
+        print(f"[gene_sync] announcing {node_id} to {args.peer}")
+        for peer in args.peer:
+            result = announce_peer(pool, args.announce, peer, timeout=args.timeout)
+            status = "ok" if result.get("ack") else f"error: {result.get('error')}"
+            print(f"  → {peer}: {status}")
+        sys.exit(0)
+
+    # --broadcast mode: discover peers first
+    if args.broadcast:
+        bootstrap = args.bootstrap if args.bootstrap else (args.peer or [])
+        if not bootstrap:
+            print("[gene_sync] --broadcast requires --bootstrap or --peer", file=sys.stderr)
+            sys.exit(1)
+        print(f"[gene_sync] node={node_id} pool={pool.root} "
+              f"discovering from bootstrap={bootstrap}")
+        peers = discover_peers(bootstrap, timeout=3.0)
+        print(f"[gene_sync] discovered {len(peers)} peers: {peers}")
+        if not peers:
+            print("[gene_sync] no peers discovered, exiting")
+            sys.exit(0)
+        summary = broadcast_to_peers(pool, peers, secret, node_id,
+                                      min_gdi=args.min_gdi, timeout=args.timeout)
+        print(f"[gene_sync] broadcast done: sent={summary['total_sent']} "
+              f"accepted={summary['total_accepted']} "
+              f"rejected={summary['total_rejected']} "
+              f"errors={summary['total_errors']}")
+        sys.exit(1 if summary["total_errors"] > 0 else 0)
+
+    # default: pairwise --peer
+    if not args.peer:
+        p.print_help()
+        sys.exit(1)
     print(f"[gene_sync] node={node_id} pool={pool.root} peers={args.peer}")
     summary = []
     for peer in args.peer:
@@ -158,7 +264,6 @@ def main():
         print(f"[gene_sync] → {peer}: sent={result['sent']} "
               f"accepted={result['accepted']} rejected={result['rejected']}")
 
-    # Exit code: 0 if all sent, 1 if errors
     total_errors = sum(len(r["errors"]) for r in summary)
     if total_errors > 0:
         print(f"[gene_sync] {total_errors} errors:")

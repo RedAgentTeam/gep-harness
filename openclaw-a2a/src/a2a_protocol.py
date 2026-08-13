@@ -370,6 +370,66 @@ class A2AHandler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         pass  # silence default logging
 
+    # ---- node discovery (v0.5 broadcast) ----
+    def _handle_node_discovery(self):
+        """Respond with this node's identity + known peers.
+
+        GET /api/v1/a2a/nodes
+        Returns:
+          {
+            "node_id": ...,
+            "protocol_version": "1.0",
+            "peers": ["http://127.0.0.1:9878", ...],
+            "gene_pool": "...",
+            "stats": {"local": N, "imported": M, "quarantined": K}
+          }
+        """
+        pool: GenePool = self.server.gene_pool
+        peer_file = pool.root / "known_peers.json"
+        peers = []
+        if peer_file.exists():
+            try:
+                peers = json.load(open(peer_file))
+            except (json.JSONDecodeError, OSError):
+                peers = []
+        stats = {
+            "local": len(list((pool.root / "local").glob("*.json"))),
+            "imported": len(list((pool.root / "imported").glob("*.json"))),
+            "quarantined": len(list((pool.root / "quarantined").glob("*.json"))),
+        }
+        self._send_json(200, {
+            "node_id": get_node_id(),
+            "protocol_version": PROTOCOL_VERSION,
+            "peers": peers,
+            "gene_pool": str(pool.root),
+            "stats": stats,
+        })
+
+    def _handle_announce(self):
+        """Accept a peer announce and persist to known_peers.json.
+
+        POST /api/v1/a2a/announce
+        Body: {"peer_url": "http://...", "node_id": "..."}
+        """
+        env = self._read_body()
+        peer_url = env.get("peer_url", "")
+        if not peer_url:
+            self._send_json(400, {"error": "missing peer_url"})
+            return
+        pool: GenePool = self.server.gene_pool
+        peer_file = pool.root / "known_peers.json"
+        peers = []
+        if peer_file.exists():
+            try:
+                peers = json.load(open(peer_file))
+            except (json.JSONDecodeError, OSError):
+                peers = []
+        if peer_url not in peers:
+            peers.append(peer_url)
+            json.dump(peers, open(peer_file, "w"), ensure_ascii=False, indent=2)
+        self._send_json(200, {"ack": True, "known_peers": peers})
+
+    # ---- original handlers ----
     def _send_json(self, code: int, body: dict):
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
@@ -385,6 +445,8 @@ class A2AHandler(BaseHTTPRequestHandler):
                 "protocol_version": PROTOCOL_VERSION,
                 "gene_pool": str(self.server.gene_pool.root),
             })
+        elif self.path == "/api/v1/a2a/nodes":
+            self._handle_node_discovery()
         else:
             self._send_json(404, {"error": "not_found"})
 
@@ -393,6 +455,8 @@ class A2AHandler(BaseHTTPRequestHandler):
             self._handle_publish()
         elif self.path == "/api/v1/a2a/request":
             self._handle_request()
+        elif self.path == "/api/v1/a2a/announce":
+            self._handle_announce()
         else:
             self._send_json(404, {"error": "not_found"})
 
