@@ -277,3 +277,22 @@
 - ✅ Evolver 循环稳定性：4 轮连续验证通过
 
 ### Next: v1.1 cron 6h + 衰减策略 + LLM 真实填充（配额恢复后）
+
+## v1.1 (2026-08-14 04:05) — Evolver 半自动循环落地（衰减策略 + 人工审批门）
+
+### Added
+- **Evolver 半自动循环全链路验证通过**（第 5 轮）
+  - scan_events: 3368 events, 9 tools, 9 sessions（exec:1363, edit:71, write_file:66, read:45, write:36, process:27, message:4）
+  - extract_candidate_genes: 7 candidates（exec/edit/write_file/read/write/process/message）
+  - validate_gep --mode=strict: 7/7 ok
+  - llm_fill --dry-run: 7/7 fillable（5 repair + 2 optimize）
+- **衰减策略设计**：同一 tool 连续 N 轮出现 → 提升 signals 权重 → 优先 solidify
+- **人工审批门强化**：candidate → staging → GEP strict → asset_id 计算 → **人工 review → plan/genes/**
+
+### Verified
+- ✅ pytest 45/45 passed
+- ✅ plan/genes/ 10 genes, all unique asset_id
+- ✅ plan/capsules/ 2 capsules, all unique asset_id
+- ✅ Evolver 循环稳定性：5 轮连续验证通过（v0.7→v1.1）
+
+### Next: v1.2 衰减策略实现 + cron 6h 自动循环脚本
