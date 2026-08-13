@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.12.1",
+  "id": "gene_harness_a2a_protocol",
+  "category": "innovate",
+  "signals_match": [
+    "gene_extraction_isolated",
+    "no_cross_node_sharing",
+    "single_node_gene_pool",
+    "/A2A|gene.*pool|跨节点/i",
+    "Evolver Layer 3",
+    "群体层"
+  ],
+  "preconditions": [
+    "阶段 1-3 已完成（事件流 + 工具流水线 + Evolver 单节点）",
+    "本节点已 Solidify 至少 1 个 Gene（让本地 GDI >= 0.7）",
+    "有至少 1 个可信 peer 节点（同网络）"
+  ],
+  "strategy": [
+    "启动 A2A HTTP server: `python3 openclaw-a2a/src/a2a_protocol.py --port 9877`（默认 localhost）",
+    "本节点 Solidify 一个 Gene 后，build A2A envelope：`make_envelope(sender, recipient, asset_id, 'Gene', 'publish', payload, secret)`",
+    "签名 payload：`sign_message(payload, A2A_NODE_SECRET)`（HMAC-SHA256 stand-in for ed25519）",
+    "POST 到 peer: `POST /api/v1/a2a/publish` 带 envelope",
+    "Peer 验证：signature + asset_id + GDI v2 score",
+    "Peer 决策：score >= 0.7 → imported/；score < 0.7 → quarantined/",
+    "audit.jsonl 写一条 event（append-only）",
+    "6h background sync via cron job（待实现）"
+  ],
+  "constraints": {
+    "max_files": 50,
+    "forbidden_paths": [
+      "/opt/goapi/goapi",
+      "/etc/goapi/credentials.env",
+      "公网 0.0.0.0:9877（仅 localhost）"
+    ]
+  },
+  "validation": [
+    "python3 -m pytest /data/disk/gep-harness/openclaw-a2a/tests/test_a2a_protocol.py -v",
+    "curl -s http://127.0.0.1:9877/api/v1/a2a/health",
+    "python3 -c \"import sys; sys.path.insert(0, '/data/disk/gep-harness/openclaw-a2a/src'); from a2a_protocol import gdi_score; print(gdi_score({'signals_match':['x','y'],'strategy':['s1'],'summary':'long enough summary text', 'asset_id':'sha256:0'*64}))\""
+  ],
+  "summary": "OpenClaw A2A Protocol v0.1: Gene 跨节点共享（HMAC-SHA256 签名 + GDI v2 评分 + Gene Pool 三目录管理）。",
+  "cross_library_evidence": [
+    "BeautifulMathematics Ch12 算法: 消息队列 + HMAC 签名 = 算法流水线",
+    "cell-biology Ch15 信号传导: cell-cell signaling 同构于 A2A 跨节点 publish",
+    "CognitivePsychology Ch11 推理决策: 多 agent 协作需要 GDI v2 评估信任",
+    "OpenStaxBiology Ch11 进化: 群体遗传学 = Gene Pool 的数学基础",
+    "evomap GEP §A2A: 本 Gene 直接对应 A2A Hub 协议"
+  ],
+  "asset_id": "sha256:ae62e912da8c9fdbb38ed4621f82b05a16ff4e2f964fc8a9f879300bc55fb9e4"
+}

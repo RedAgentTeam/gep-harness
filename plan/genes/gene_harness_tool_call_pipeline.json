@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.12.1",
+  "id": "gene_harness_tool_call_pipeline",
+  "category": "repair",
+  "signals_match": [
+    "tool_misuse_risk",
+    "long_running_tool_no_timeout",
+    "敏感信息泄露",
+    "工具误删文件",
+    "/tool.*pipeline|hook.*审批/i",
+    "美机生产风险",
+    "no_sandbox_for_tool"
+  ],
+  "preconditions": [
+    "append-only event_stream 已落地（依赖 gene_harness_append_only_event_stream）",
+    "Tool Registry 已能枚举所有可用工具",
+    "Gene 库支持 tool_policy 字段（已在 gene schema 中启用）"
+  ],
+  "strategy": [
+    "在 agent-core 加 ToolPipeline 中间件层：Hook(before) → PermissionCheck → TimeoutControl → Execute → ResultRewrite → Hook(after) → EventEmit → UI",
+    "Gene.tool_policy.allow_only / deny 直接挂到 PermissionCheck 步骤：Gene 决定\"用什么 Hook\"而非\"调什么工具\"——这是 EvoMap 张昊阳\"策略基因控制 test-time 行为\"的精确落地",
+    "TimeoutControl 默认 30s，可被 Gene.constraints.timeout 覆盖；超时事件写入 EvolutionEvent.outcome.status=failed",
+    "ResultRewrite Hook：检测工具返回是否含密钥/token/美机 IP，立即 redact 并在 ExecutionTrace 中记一条 epigenetic_mark",
+    "PTC 模式（PTC = Programmatic Tool Calling，DeepSeek 的创造）作为高级选项：模型生成代码串起多轮工具调用，整体过一次流水线，共享同一套审批/沙箱"
+  ],
+  "constraints": {
+    "max_files": 50,
+    "forbidden_paths": [
+      "/opt/goapi/goapi",
+      "/etc/goapi/credentials.env",
+      "/data/disk/openclaw/.secrets",
+      "47.89.153.254:/opt/redapi",
+      "/usr/bin/systemctl"
+    ]
+  },
+  "validation": [
+    "python3 -m pytest tests/test_tool_pipeline.py::test_permission_check -v",
+    "python3 -m pytest tests/test_tool_pipeline.py::test_timeout -v",
+    "python3 -m pytest tests/test_tool_pipeline.py::test_result_redact -v",
+    "openclaw tool run --dry-run --tool=write_file --target=/opt/goapi/goapi  # 必须被拒绝"
+  ],
+  "summary": "OpenClaw 工具调用流水线：Hook→权限→超时→执行→改写→事件，让 Gene.tool_policy 真正生效，解决\"工具误删文件\"\"长跑卡死\"\"美机未授权变更\"三类历史事故。",
+  "epigenetic_marks": [
+    "channel=feishu:不绕过 PermissionCheck",
+    "美机生产路径 = forbidden_paths 硬编码"
+  ],
+  "learning_history": [],
+  "anti_patterns": [
+    {
+      "pattern": "把 PermissionCheck 做成可关闭开关",
+      "consequence": "历史上\"美机生产改完未部署\"事故直接复现",
+      "fix": "PermissionCheck 不可关闭，只能 fail-open 升级"
+    },
+    {
+      "pattern": "超时未写入 EvolutionEvent.outcome",
+      "consequence": "超时事件无法被 GDI 评分和 GEP Capsule 捕获",
+      "fix": "TimeoutControl 必 emit outcome.status=failed + score=0"
+    }
+  ],
+  "routing_hint": {
+    "tier": "cheap",
+    "reasoning_level": "medium"
+  },
+  "tool_policy": {
+    "allow_only": [
+      "read",
+      "exec",
+      "write",
+      "edit"
+    ],
+    "severity": "block"
+  },
+  "cross_library_evidence": [
+    "BeautifulMathematics Ch12 算法: Hook/Approval/Sandbox/Timeout = 算法流水线（pipeline）的 4 个 stage",
+    "cell-biology Ch11 膜结构: 膜的\"选择性通透\" = PermissionCheck 的物理隐喻；脂筏 = tool_policy.allow_only 的功能分区",
+    "CognitivePsychology Ch5 工作记忆: 中枢执行（central executive）= Hook 调度器；语音回路 = event_stream 临时缓冲",
+    "OpenStaxBiology Ch11 进化: 选择压力作用于变异 → PermissionCheck 作用于工具调用",
+    "evomap GEP §1.4 Blast radius awareness: 本 Gene 直接对应 constraint.max_files 和 blast_radius"
+  ],
+  "type": "Gene",
+  "asset_id": "sha256:5ac84341e3d6bfdbeaf033babc11e3d754df6059a18bbf4f46c3bcf10dcaf017"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "openclaw-harness-tool-pipeline",
+  "version": "0.1.0",
+  "description": "OpenClaw harness: Tool Pipeline (Hook → Permission → Timeout → Execute → Rewrite → Emit). Implements gene_harness_tool_call_pipeline (GEP v1.12.1, medium risk).",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'see /data/disk/gep-harness/openclaw-harness/tests/test_tool_pipeline.py'"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.7.1-2"
+  },
+  "openclaw": {
+    "extensions": ["./index.js"],
+    "compat": {
+      "pluginApi": ">=2026.7.1",
+      "minGatewayVersion": "2026.7.1"
+    }
+  }
+}

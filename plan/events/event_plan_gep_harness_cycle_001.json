@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.12.1",
+  "id": "evt_plan_gep_harness_cycle_001",
+  "parent": null,
+  "intent": "innovate",
+  "signals": [
+    "DeepSeek_Harness_open_source",
+    "GEP v1.12.1 strict 校验",
+    "5 库跨学科映射",
+    "不引入 Skill 抽象",
+    "保留人工 Solidify 门"
+  ],
+  "genes_used": [
+    "gene_harness_append_only_event_stream",
+    "gene_harness_tool_call_pipeline",
+    "gene_harness_evolver_semiauto"
+  ],
+  "mutation_id": "mut_plan_gep_harness_2026_08_14_001",
+  "personality_state": {
+    "rigor": 0.85,
+    "risk_tolerance": 0.3,
+    "creativity": 0.7
+  },
+  "blast_radius": {
+    "files": 4,
+    "lines": 850
+  },
+  "outcome": {
+    "status": "success",
+    "score": 0.86
+  },
+  "capsule_id": "capsule_plan_gep_harness_2026_08_14",
+  "source_type": "user_authored",
+  "reused_asset_id": null,
+  "env_fingerprint": {
+    "host": "VM-0-11-ubuntu (124.222.159.224, 上海腾讯云)",
+    "openclaw_version": "2026.7.1",
+    "model": "minimax/MiniMax-M3",
+    "channel": "feishu",
+    "gep_sdk_version": "1.12.1"
+  },
+  "validation_report_id": "vr_plan_gep_harness_001",
+  "meta": {
+    "ts": "2026-08-14T00:50:00+08:00",
+    "signal_key": "deepseek_harness_open_source",
+    "library_count": 5,
+    "asset_count": 4
+  },
+  "trigger_context": {
+    "prompt": "使用 5 个跨学科知识库作为分析视角，开 Plan。严格执行 GEP 协议标准",
+    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988",
+    "agent_model": "minimax/MiniMax-M3",
+    "context_signals": [
+      "5 库路径",
+      "GEP 协议 URL",
+      "不装 Skill 立场",
+      "zhanghaoyang 项目存在"
+    ]
+  },
+  "type": "EvolutionEvent",
+  "asset_id": "sha256:548a25634d5467ba29d10d1ace57bb5779994529879cd717078a21e4aad571c4"
+}

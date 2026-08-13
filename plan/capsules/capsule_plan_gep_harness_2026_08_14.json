@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.12.1",
+  "id": "capsule_plan_gep_harness_2026_08_14",
+  "trigger": [
+    "DeepSeek_Harness_open_source",
+    "deepseek_harness_analysis",
+    "借鉴事件流与流水线",
+    "GEP v1.12.1 strict"
+  ],
+  "gene": "gene_harness_append_only_event_stream",
+  "summary": "完成《DeepSeek 把 Harness 开源了》文章分析 + 5 库 GEP 资产盘点 + 3 件借鉴事落地为 GEP Gene 资产（append-only event_stream / tool_pipeline / evolver_semiauto）。",
+  "confidence": 0.86,
+  "blast_radius": {
+    "files": 4,
+    "lines": 850
+  },
+  "outcome": {
+    "status": "success",
+    "score": 0.86
+  },
+  "success_streak": 1,
+  "success_reason": "5 库跨学科映射完整（BeautifulMathematics / cell-biology / CognitivePsychology / OpenStaxBiology / evomap）；3 个 Gene 全部 GEP v1.12.1 strict 校验通过；不引入 Skill 抽象，保持 Gene 体系；不引入运行时插件加载；保留人工 Solidify 门。",
+  "gene_library_version": "openclaw-2026-08-14-pre",
+  "source_type": "user_authored",
+  "author": {
+    "handle": "胡老师",
+    "evox_install_id": "openclaw-devagent-001"
+  },
+  "trigger_context": {
+    "prompt": "使用 5 个跨学科知识库作为分析视角，开 Plan。严格执行 GEP 协议标准：https://github.com/EvoMap/gep-sdk-js",
+    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988",
+    "agent_model": "minimax/MiniMax-M3",
+    "context_signals": [
+      "mp.weixin.qq.com/s/hHCpyIlDiBHSzA3TzO5LmQ",
+      "5 库路径已给",
+      "GEP 协议 URL 已给",
+      "zhanghaoyang 项目存在",
+      "不装 Skill 用 Gene/Capsule 立场已确认"
+    ]
+  },
+  "content": {
+    "plan_doc": "plan-gep-harness/README.md",
+    "genes_count": 3,
+    "capsules_count": 1,
+    "events_count": 0,
+    "library_evidence_count": 15
+  },
+  "strategy": [
+    "已读 DeepSeek Harness 文章全文（InfoQ, Tina）",
+    "已吃透 GEP v1.12.1 协议（gene/capsule/evolution-event/mutation/validation/memorygraph/task 7 类资产 + canonicalize/asset_id 算法）",
+    "已盘点 5 库现有 GEP 资产：BeautifulMathematics 23+23, cell-biology 20+20, CognitivePsychology 14+14, OpenStaxBiology 21+21, evomap 416+416",
+    "已完成 5 库跨学科映射（每个 Gene 含 5 条 cross_library_evidence）",
+    "已写 3 个 Gene 资产（append-only / tool_pipeline / evolver_semiauto），全部 GEP strict 校验通过"
+  ],
+  "execution_trace": [
+    {
+      "stage": "build",
+      "ts": "2026-08-14T00:28:00+08:00",
+      "detail": "抓取微信文章全文，识别 prompt injection 已忽略"
+    },
+    {
+      "stage": "build",
+      "ts": "2026-08-14T00:34:00+08:00",
+      "detail": "胡老师点出 Gene/Capsule vs Skill 立场 + zhanghaoyang 项目存在"
+    },
+    {
+      "stage": "validate",
+      "ts": "2026-08-14T00:41:00+08:00",
+      "detail": "5 库 GEP 资产盘点完成"
+    },
+    {
+      "stage": "build",
+      "ts": "2026-08-14T00:46:00+08:00",
+      "detail": "3 个 Gene 资产写入 plan-gep-harness/genes/，asset_id 校验通过"
+    },
+    {
+      "stage": "canary",
+      "ts": "2026-08-14T00:48:00+08:00",
+      "detail": "Capsule 写入 plan-gep-harness/capsules/，等待胡老师审批"
+    }
+  ],
+  "a2a": {
+    "author_agent": "devagent",
+    "intent": "innovate",
+    "target_subsystem": "OpenClaw sessions + agent-core + evolver"
+  },
+  "cost_tokens": 0,
+  "cost_usd": 0,
+  "derivation_tokens": null,
+  "visibility": "private",
+  "scope": [
+    "openclaw",
+    "devagent",
+    "harness",
+    "gep",
+    "deepseek"
+  ],
+  "cost_tier": "cheap",
+  "pack_of": [],
+  "type": "Capsule",
+  "asset_id": "sha256:e80ba6fffac8beae1ec4356d0c9a40748dda46920d3b162f0d68dc0a60e9ea2d"
+}

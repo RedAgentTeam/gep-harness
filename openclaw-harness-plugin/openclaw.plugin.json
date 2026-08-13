@@ -1,0 +1,29 @@
+{
+  "id": "harness-event-stream",
+  "name": "Harness Event Stream",
+  "description": "Append-only GEP-compatible event stream for OpenClaw tool calls. Each tool_call_before / tool_call_after is content-addressable (SHA-256) and emitted to events.jsonl. Implements Gene gene_harness_append_only_event_stream.",
+  "contracts": {
+    "hooks": ["before_tool_call", "after_tool_call"]
+  },
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "binPath": {
+        "type": "string",
+        "description": "Directory containing event_emitter.py. Default: ~/.openclaw/workspace/devagent/openclaw-harness/bin"
+      },
+      "pythonBin": {
+        "type": "string",
+        "description": "Python interpreter. Default: python3"
+      },
+      "timeoutMs": {
+        "type": "number",
+        "description": "Per-emit timeout. Default: 5000"
+      }
+    }
+  }
+}

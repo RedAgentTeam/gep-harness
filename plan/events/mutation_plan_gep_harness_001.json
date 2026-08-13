@@ -1,0 +1,17 @@
+{
+  "type": "Mutation",
+  "id": "mut_plan_gep_harness_2026_08_14_001",
+  "category": "innovate",
+  "trigger_signals": [
+    "DeepSeek_Harness_open_source",
+    "missing_append_only_event_stream",
+    "missing_tool_call_pipeline",
+    "evolver_mutate_step_manual",
+    "GEP v1.12.1 协议对齐"
+  ],
+  "target": "behavior:openclaw_harness_layer",
+  "expected_effect": "OpenClaw 借鉴 DeepSeek Harness 的 3 个核心设计（事件流 / 工具流水线 / 创造模式），但不引入 Skill 抽象，保留 Gene/Capsule 体系 + 人工 Solidify 门。",
+  "risk_level": "medium",
+  "schema_version": "1.12.1",
+  "asset_id": "sha256:52cbaffd39567e79fb511c6e8352fb0019020154bc693c218f13d3be0ffdb4ce"
+}

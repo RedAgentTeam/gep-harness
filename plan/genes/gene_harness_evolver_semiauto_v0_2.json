@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.12.1",
+  "type": "Gene",
+  "id": "gene_harness_evolver_semiauto_v0_2",
+  "category": "innovate",
+  "signals_match": [
+    "gene_extraction_manual",
+    "mutate_step_human_bottleneck",
+    "solidify_needs_review",
+    "/evolver.*半自动|创造模式/i",
+    "Agent 自己改造 Harness",
+    "Skill 半自动转 Gene"
+  ],
+  "preconditions": [
+    "append-only event_stream 已落地 (gene_harness_append_only_event_stream)",
+    "events.jsonl 累积 ≥ 24h 数据",
+    "ToolPipeline 已落地（gene_harness_tool_call_pipeline）或修复 false positive",
+    "已有 Gene 库 ≥ 200 条，可作为 few-shot 模板",
+    "Python 3.10+ 已可用"
+  ],
+  "strategy": [
+    "Scan：跑 `python3 scripts/scan_events.py --since=24h` 聚合高频 tool_call pattern",
+    "Signal：用 LLM 把 pattern 翻译为 GEP Gene 信号字段（signals_match + summary），输出 1-3 个候选 Gene（占位符 asset_id=sha256:PLACEHOLDER_LLM_TO_FILL）",
+    "Mutate：对每个候选 Gene 生成 2 个变体（保守 + 激进），diff 输出 patch",
+    "Validate：候选 Gene 必须通过 `python3 scripts/validate_gep.py --mode=strict`（assset_id 必须真实计算；placeholder 直接跳过）",
+    "Solidify（人机协作）：候选 Gene 写入 staging/ 目录，**不直接进 plan/genes/**；每日 09:00 由 devagent 生成 PR-style diff 给胡老师审批，approved 后才固化进 plan/genes/ 并 emit EvolutionEvent.outcome=success",
+    "参照 EvoMap evolver-claude-code-plugin 的 distill → evolve → solidify → review 四阶段，但 Solidify 阶段保留人工 gating"
+  ],
+  "constraints": {
+    "max_files": 100,
+    "forbidden_paths": [
+      "/data/disk/gep-harness/plan/genes/*.json（生产 Gene 库，需人工审批才可覆盖）",
+      "/opt/goapi/goapi",
+      "/etc/goapi/credentials.env"
+    ]
+  },
+  "validation": [
+    "python3 /data/disk/gep-harness/scripts/scan_events.py --since=24h",
+    "python3 /data/disk/gep-harness/scripts/extract_candidate_genes.py --output=staging/",
+    "python3 /data/disk/gep-harness/scripts/validate_gep.py --mode=strict --input=staging/*.json",
+    "git diff --stat staging/  # 验证有变更可 review"
+  ],
+  "summary": "OpenClaw 半自动 Evolver v0.2: Scan/Signal/Mutate 由 Python + LLM 自动跑，Validate 必走 strict 校验（含 placeholder 跳过），Solidify 保留人工审批门。",
+  "epigenetic_marks": [
+    "channel=feishu:staging Gene 不进生产库",
+    "Solidify 必走胡老师审批"
+  ],
+  "learning_history": [
+    {
+      "ts": "2026-08-14T01:43:00+08:00",
+      "selection": "staging→plan/genes/",
+      "outcome": "in_progress",
+      "drift": "none",
+      "note": "阶段 3 启动；scan_events + extract_candidate_genes + validate_gep 实现完成；3/3 pytest 通过"
+    }
+  ],
+  "anti_patterns": [
+    {
+      "pattern": "Solidify 全自动",
+      "consequence": "绕过 GDI 评分 → 低质量 Gene 进生产库，信号匹配精度被稀释",
+      "fix": "Solidify 必 emit PR-style diff 给胡老师 review"
+    },
+    {
+      "pattern": "Mutate 不做保守+激进双变体",
+      "consequence": "只有 1 个候选，无法 A/B 评测",
+      "fix": "默认生成 2 个变体"
+    },
+    {
+      "pattern": "Validate 把 placeholder asset_id 当失败",
+      "consequence": "LLM 还没填的候选会被误判失败",
+      "fix": "placeholder 值（sha256:PLACEHOLDER*）直接跳过 asset_id 校验"
+    }
+  ],
+  "routing_hint": {
+    "tier": "mid",
+    "reasoning_level": "high"
+  },
+  "tool_policy": {
+    "allow_only": [
+      "read",
+      "exec",
+      "write",
+      "edit"
+    ],
+    "severity": "warn"
+  },
+  "cross_library_evidence": [
+    "BeautifulMathematics Ch22 Arrow 定理: 不存在完美聚合方法 → Mutate 双变体+人工 Solidify 是诚实选择",
+    "cell-biology Ch9 基因演化: Scan→Mutate→Select 同构于 突变-选择 分子演化",
+    "CognitivePsychology Ch11 推理决策: 9 大认知错觉 → 人工 Solidify 防止 LLM 落入错觉",
+    "OpenStaxBiology Ch11 进化: 自然选择 vs 人工选择 = 全自动 vs 半自动 Evolver",
+    "evomap evolver-claude-code-plugin: 本 Gene 的 strategy 直接对照 distill→evolve→solidify→review 四阶段"
+  ],
+  "asset_id": "sha256:b1cb579340975e5f0d41053aab2abe3f41ecfaac1fd34599ab85ff60c740966b"
+}

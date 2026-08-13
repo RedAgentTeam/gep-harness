@@ -1,0 +1,42 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_devagent_exec_hotpath_49_calls_24h",
+  "category": "optimize",
+  "signals_match": [
+    "exec_tool_frequent",
+    "hot_path:exec",
+    "/devagent.*exec|exec.*frequent/i",
+    "高频率 exec 调用"
+  ],
+  "preconditions": [
+    "exec tool 在 24h 内被调用 30+ 次",
+    "主要 session 是 agent:devagent:feishu (44%) 或 agent:main:dashboard (22%)"
+  ],
+  "strategy": [
+    "聚合高频 exec pattern（按 command 前缀分组）",
+    "识别反复执行的 read-only 命令（ls/cat/grep/find），考虑合并 batch",
+    "识别反复执行的写命令（echo/tee/...），考虑用 write_file 替代",
+    "识别长跑命令（timeout > 30s），加 preflight 警告"
+  ],
+  "constraints": {
+    "max_files": 20,
+    "forbidden_paths": [
+      "/opt/goapi",
+      "/etc/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"import json; [json.loads(l) for l in open('/data/disk/gep-harness/openclaw-harness/events/events.jsonl')]\"",
+    "python3 /data/disk/gep-harness/scripts/validate_gep.py --mode=strict --input /data/disk/gep-harness/plan/genes/gene_devagent_exec_hotpath_49_calls_24h.json"
+  ],
+  "summary": "Optimize exec hot-path: 49 calls/24h, 30% of all tool_calls. Generated from real events.jsonl pattern.",
+  "cross_library_evidence": [
+    "BeautifulMathematics Ch17 分形: 自相似命令 pattern → 合并 batch",
+    "cell-biology Ch15 信号传导: 高频信号 → 强化传导效率",
+    "CognitivePsychology Ch5 工作记忆: 中央执行瓶颈 → 减负",
+    "OpenStaxBiology Ch11 进化: 选择压力作用于高频变异 → 优化 hot-path",
+    "evomap evolver-claude-code-plugin: distill→evolve→solidify→review 四阶段"
+  ],
+  "asset_id": "sha256:eb4b7ece6a9268d0e268cf9306a2940e42d5e5237af26baf6421b1a7ff9b2d4d"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "harness-tool-pipeline",
+  "name": "Harness Tool Pipeline",
+  "description": "Tool call pipeline: Hook → Permission (Gene.tool_policy) → Timeout → Execute → ResultRewrite (redact secrets/US IPs) → Emit. Implements Gene gene_harness_tool_call_pipeline.",
+  "contracts": {
+    "hooks": ["before_tool_call", "after_tool_call"]
+  },
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "defaultTimeoutMs": {
+        "type": "number",
+        "description": "Default tool-call timeout. Default: 30000"
+      },
+      "forbiddenPaths": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Hard-coded forbidden paths (美机 /opt/goapi, etc). Default: builtin list."
+      },
+      "redactPatterns": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Regex patterns to redact from tool output. Default: ['Red\\d{6,}', '47\\.89\\.\\d+\\.\\d+', 'sk-[A-Za-z0-9]{20,}', 'ghp_[A-Za-z0-9]{20,}']"
+      },
+      "emitterBin": {
+        "type": "string",
+        "description": "Path to event_emitter.py (from harness-event-stream plugin). Default: ~/.openclaw/workspace/devagent/openclaw-harness/bin"
+      }
+    }
+  }
+}

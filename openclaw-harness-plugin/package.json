@@ -1,0 +1,20 @@
+{
+  "name": "openclaw-harness-event-stream",
+  "version": "0.1.0",
+  "description": "OpenClaw harness: append-only GEP-compatible event stream. Implements gene_harness_append_only_event_stream (GEP v1.12.1, low risk).",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'no tests yet; see openclaw-harness/tests/test_event_stream.py'"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.7.1-2"
+  },
+  "openclaw": {
+    "extensions": ["./index.js"],
+    "compat": {
+      "pluginApi": ">=2026.7.1",
+      "minGatewayVersion": "2026.7.1"
+    }
+  }
+}

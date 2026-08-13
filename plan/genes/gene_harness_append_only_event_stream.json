@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.12.1",
+  "id": "gene_harness_append_only_event_stream",
+  "category": "repair",
+  "signals_match": [
+    "missing_execution_trace",
+    "session_state_scattered",
+    "no_trajectory_replay",
+    "跨会话调试",
+    "轨迹回放",
+    "append-only 日志",
+    "/DeepSeek.Harness/i",
+    "/append.only|trajectory/i"
+  ],
+  "preconditions": [
+    "agent_loop 已存在（OpenClaw sessions 模块）",
+    "工具调用入口已可拦截（agent-core）",
+    "持久化路径可写（默认 /data/disk/openclaw/sessions/events.jsonl）"
+  ],
+  "strategy": [
+    "在 sessions 模块新增 event_stream 接口，每次工具调用前后各 emit 一条 EvolutionEvent 兼容的 JSON 行（type=session_event, kind=tool_call_before/after, fields 含 session_id/tool_name/args/result/duration_ms/ts）",
+    "用 sha256 content-addressable id 替代 uuid，让跨 session 引用可去重",
+    "在 Trajectory View 提供 CLI：`openclaw session trail <session_id>` 输出与 GEP EvolutionEvent.schema 兼容的事件流",
+    "回放：把 events.jsonl 作为只读源，session fork 时复制事件流前缀，再追加新事件（append-only）",
+    "GDI 校验：每周统计事件覆盖度 = 有 tool_call 前后事件对的会话比例，阈值 ≥ 0.95"
+  ],
+  "constraints": {
+    "max_files": 30,
+    "forbidden_paths": [
+      "/data/disk/openclaw/sessions/events.jsonl.archived",
+      "/etc/goapi/credentials.env",
+      "/opt/goapi/goapi",
+      "美机生产路径"
+    ]
+  },
+  "validation": [
+    "python3 -c \"import json; [json.loads(l) for l in open('/data/disk/openclaw/sessions/events.jsonl')]\"",
+    "python3 -m pytest tests/test_event_stream.py -v",
+    "openclaw session trail $(cat /tmp/test_session_id) | jq -e '.events | length > 0'"
+  ],
+  "summary": "OpenClaw 借鉴 DeepSeek Harness 的 append-only 事件流：为 session 增加 content-addressable 事件底座，解决 trajectory 回放、session fork、跨会话调试难题。",
+  "epigenetic_marks": [
+    "channel=feishu:行动前先写 schema",
+    "禁止覆盖 events.jsonl 历史"
+  ],
+  "learning_history": [],
+  "anti_patterns": [
+    {
+      "pattern": "用 uuid 而非 sha256 当事件 id",
+      "consequence": "跨 session 引用断链，去重失败",
+      "fix": "强制 computeAssetId(SCHEMA_VERSION+session_id+tool_name+ts)"
+    }
+  ],
+  "routing_hint": {
+    "tier": "cheap",
+    "reasoning_level": "medium"
+  },
+  "tool_policy": {
+    "allow_only": [
+      "read",
+      "exec",
+      "write",
+      "edit"
+    ],
+    "severity": "warn"
+  },
+  "cross_library_evidence": [
+    "BeautifulMathematics Ch17 分形: 自相似性 → 事件流按会话前缀复制即可 fork",
+    "cell-biology Ch15 信号传导: 信号→响应→记忆 同构于 tool_call_before→tool_call_after→event_stream",
+    "CognitivePsychology Ch6 长时记忆: append-only 是再建构（reconstruction）的基础底稿",
+    "OpenStaxBiology Ch11 进化: 自然选择作用于变异群体 → 作用于事件流上的 Capsule 群体",
+    "evomap GEP v1.12.1 §2.3 EvolutionEvent: 本 Gene 直接沿用其 schema 字段"
+  ],
+  "type": "Gene",
+  "asset_id": "sha256:8fdafd9a8c54e539037b861262a407a05c5bf910ed5dd69062260da2022be487"
+}
