@@ -1,0 +1,44 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_exec_cd_v80",
+  "category": "optimize",
+  "summary": "exec args prefix cd hotpath optimization (4493 calls in 24h, 90.6% of all exec)",
+  "signals_match": [
+    "tool_frequent:exec",
+    "high_freq:4493_calls",
+    "exec_args_prefix:cd",
+    "exec"
+  ],
+  "preconditions": [
+    "tool 'exec' first arg starts with 'cd '",
+    "cd accounts for >90% of exec calls"
+  ],
+  "constraints": {
+    "max_files": 5,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"import json; events=[json.loads(l) for l in open('openclaw-harness/events/events.jsonl')]; cd=sum(1 for e in events if e.get('tool_name')=='exec' and e.get('args',{}).get('command','').lstrip().startswith('cd')); print(f'cd_calls={cd}')\""
+  ],
+  "strategy": [
+    "识别 cd 模式：单次 cd vs cd && cmd 复合调用",
+    "合并连续 cd 调用（chdir 一次足够）",
+    "绝对路径缓存：常用目录记录 PWD 缓存表",
+    "cd 失败检测：cd 后是否需要 && cmd 短路"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性（cd 命令幂等性保证）",
+    "cell-biology 反馈回路（cache hit/miss）",
+    "CognitivePsychology attention bottleneck（高频工具优先）",
+    "OpenStaxBiology 膜流动性（路径缓存失效机制）",
+    "evomap GEP 协议（canonicalize + asset_id）"
+  ],
+  "risk_level": "low",
+  "blast_radius": "execution_path_optimization",
+  "asset_id": "sha256:9b34eb8a114a4dfdf15c908e053e785fd8fa0e41937746fa8e74bb619c51634b"
+}

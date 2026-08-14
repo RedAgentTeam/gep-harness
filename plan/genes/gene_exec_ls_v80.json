@@ -1,0 +1,41 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_exec_ls_v80",
+  "category": "optimize",
+  "summary": "exec args prefix ls hotpath (56 calls in 24h, 1.1% of exec)",
+  "signals_match": [
+    "tool_frequent:exec",
+    "exec_args_prefix:ls",
+    "ls"
+  ],
+  "preconditions": [
+    "tool 'exec' first arg is 'ls'",
+    "ls invocations follow read-only pattern"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git"
+    ]
+  },
+  "validation": [
+    "python3 -c \"import json; events=[json.loads(l) for l in open('openclaw-harness/events/events.jsonl')]; ls=sum(1 for e in events if e.get('tool_name')=='exec' and e.get('args',{}).get('command','').lstrip().startswith('ls')); print(f'ls_calls={ls}')\""
+  ],
+  "strategy": [
+    "ls 路径缓存（directory mtime hash）",
+    "ls -la 大量参数识别（避免重复）",
+    "ls 错误处理：路径不存在快速失败",
+    "批量 ls 合并（多次 ls 同一目录合并为 1 次）"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性（cd 命令幂等性保证）",
+    "cell-biology 反馈回路（cache hit/miss）",
+    "CognitivePsychology attention bottleneck（高频工具优先）",
+    "OpenStaxBiology 膜流动性（路径缓存失效机制）",
+    "evomap GEP 协议（canonicalize + asset_id）"
+  ],
+  "risk_level": "low",
+  "blast_radius": "execution_path_optimization",
+  "asset_id": "sha256:07ffb671d6dc3512a283795b95ace18e3803ef01f724407cc3232503aa9e4492"
+}

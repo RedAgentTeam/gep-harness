@@ -1,0 +1,38 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_exec_bracket_test_v80",
+  "category": "optimize",
+  "summary": "exec args prefix [ (test builtin) hotpath (184 calls in 24h, 3.7% of exec)",
+  "signals_match": [
+    "tool_frequent:exec",
+    "exec_args_prefix:[",
+    "test_builtin"
+  ],
+  "preconditions": [
+    "tool 'exec' first arg is '[' (test builtin)"
+  ],
+  "constraints": {
+    "max_files": 5,
+    "forbidden_paths": []
+  },
+  "validation": [
+    "python3 -c \"import json; events=[json.loads(l) for l in open('openclaw-harness/events/events.jsonl')]; bkt=sum(1 for e in events if e.get('tool_name')=='exec' and e.get('args',{}).get('command','').lstrip().startswith('[')); print(f'bracket_calls={bkt}')\""
+  ],
+  "strategy": [
+    "[ -f / -d / -e ] 文件测试缓存（mtime hash）",
+    "复合测试 [ -f A ] && [ -d B ] 合并为 python 内置 os.path",
+    "[ -z / -n ] 字符串测试改用 python len()",
+    "高频测试文件记录到白名单"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性（cd 命令幂等性保证）",
+    "cell-biology 反馈回路（cache hit/miss）",
+    "CognitivePsychology attention bottleneck（高频工具优先）",
+    "OpenStaxBiology 膜流动性（路径缓存失效机制）",
+    "evomap GEP 协议（canonicalize + asset_id）"
+  ],
+  "risk_level": "low",
+  "blast_radius": "execution_path_optimization",
+  "asset_id": "sha256:1da9e07dc33362cf21bf99d8d8fdfedd31f9dead7308d29ed9d284a9abb6b64b"
+}

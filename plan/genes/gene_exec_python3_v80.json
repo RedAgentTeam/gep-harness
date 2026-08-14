@@ -1,0 +1,42 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_exec_python3_v80",
+  "category": "optimize",
+  "summary": "exec args prefix python3 hotpath (70 calls in 24h, 1.4% of exec)",
+  "signals_match": [
+    "tool_frequent:exec",
+    "exec_args_prefix:python3",
+    "python3"
+  ],
+  "preconditions": [
+    "tool 'exec' first arg is 'python3'",
+    "python3 invocations follow modular pattern"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules"
+    ]
+  },
+  "validation": [
+    "python3 -c \"import json; events=[json.loads(l) for l in open('openclaw-harness/events/events.jsonl')]; py=sum(1 for e in events if e.get('tool_name')=='exec' and e.get('args',{}).get('command','').lstrip().startswith('python3')); print(f'python3_calls={py}')\""
+  ],
+  "strategy": [
+    "识别 python3 模式：-c inline vs script file",
+    "缓存 python3 -c 短脚本（hash + result 缓存）",
+    "长跑 python3 加 timeout 默认 30s",
+    "python3 script file 路径预解析"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性（cd 命令幂等性保证）",
+    "cell-biology 反馈回路（cache hit/miss）",
+    "CognitivePsychology attention bottleneck（高频工具优先）",
+    "OpenStaxBiology 膜流动性（路径缓存失效机制）",
+    "evomap GEP 协议（canonicalize + asset_id）"
+  ],
+  "risk_level": "low",
+  "blast_radius": "execution_path_optimization",
+  "asset_id": "sha256:88bc151b91b4f8fc98e2f68b9c37f654956505ce7a8d7c8b87ac1211d420aec3"
+}

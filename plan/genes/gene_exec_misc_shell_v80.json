@@ -1,0 +1,43 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_exec_misc_shell_v80",
+  "category": "optimize",
+  "summary": "exec args prefix misc shell (echo/tail/find/bash/ss/mkdir) (76 calls in 24h, 1.5% of exec)",
+  "signals_match": [
+    "tool_frequent:exec",
+    "exec_args_prefix:echo",
+    "exec_args_prefix:tail",
+    "exec_args_prefix:find",
+    "shell"
+  ],
+  "preconditions": [
+    "tool 'exec' first arg matches misc shell patterns (echo/tail/find/bash/ss/mkdir/set/whoami)"
+  ],
+  "constraints": {
+    "max_files": 15,
+    "forbidden_paths": [
+      ".git",
+      "node_modules"
+    ]
+  },
+  "validation": [
+    "python3 -c \"import json; events=[json.loads(l) for l in open('openclaw-harness/events/events.jsonl')]; misc=sum(1 for e in events if e.get('tool_name')=='exec' and e.get('args',{}).get('command','').lstrip().split() and e.get('args',{}).get('command','').lstrip().split()[0] in ['echo','tail','find','bash','ss','mkdir','set','whoami','head']); print(f'misc_calls={misc}')\""
+  ],
+  "strategy": [
+    "echo / tail 文件监控合并（同一文件多 tail 合并）",
+    "find 参数标准化（-name vs -path 区分）",
+    "bash -c 子命令安全审计",
+    "ss / netstat 网络状态缓存"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性（cd 命令幂等性保证）",
+    "cell-biology 反馈回路（cache hit/miss）",
+    "CognitivePsychology attention bottleneck（高频工具优先）",
+    "OpenStaxBiology 膜流动性（路径缓存失效机制）",
+    "evomap GEP 协议（canonicalize + asset_id）"
+  ],
+  "risk_level": "low",
+  "blast_radius": "execution_path_optimization",
+  "asset_id": "sha256:8e4e1797a515953b1f1aafe43f4fc83f5930f930bd43455763c158f33855dd4a"
+}

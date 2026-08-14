@@ -1,0 +1,44 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_exec_cat_curl_v80",
+  "category": "optimize",
+  "summary": "exec args prefix cat+curl hotpath (18+18=36 calls in 24h, 0.7% of exec)",
+  "signals_match": [
+    "tool_frequent:exec",
+    "exec_args_prefix:cat",
+    "exec_args_prefix:curl",
+    "cat",
+    "curl"
+  ],
+  "preconditions": [
+    "tool 'exec' first arg is 'cat' or 'curl'",
+    "cat/curl are network/disk read patterns"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules"
+    ]
+  },
+  "validation": [
+    "python3 -c \"import json; events=[json.loads(l) for l in open('openclaw-harness/events/events.jsonl')]; cat=sum(1 for e in events if e.get('tool_name')=='exec' and e.get('args',{}).get('command','').lstrip().startswith('cat')); print(f'cat_calls={cat}')\""
+  ],
+  "strategy": [
+    "cat 路径缓存 + size 检查（大文件拒绝 cat）",
+    "curl HTTP 缓存（URL + ETag 缓存）",
+    "curl 超时默认 30s（长跑风险）",
+    "cat /dev/null / curl localhost 健康检查专项"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性（cd 命令幂等性保证）",
+    "cell-biology 反馈回路（cache hit/miss）",
+    "CognitivePsychology attention bottleneck（高频工具优先）",
+    "OpenStaxBiology 膜流动性（路径缓存失效机制）",
+    "evomap GEP 协议（canonicalize + asset_id）"
+  ],
+  "risk_level": "low",
+  "blast_radius": "execution_path_optimization",
+  "asset_id": "sha256:308d140563604466754b3d18f6e4b209129d21c48928adb76d686c9af1653cc5"
+}
