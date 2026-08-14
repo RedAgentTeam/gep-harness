@@ -1,0 +1,40 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_candidate_message",
+  "category": "repair",
+  "signals_match": [
+    "high_freq:42_calls",
+    "tool_frequent:message",
+    "hot_path:message",
+    "message"
+  ],
+  "preconditions": [
+    "tool 'message' has been called 42+ times in 24h"
+  ],
+  "strategy": [
+    "Profile message usage patterns",
+    "Add caching for message with TTL",
+    "Log all calls to events.jsonl"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "summary": "Hot-path optimization for message (42 calls in 24h, 3 strategies)",
+  "cross_library_evidence": [
+    "CognitivePsychology 一般化",
+    "evomap GEP",
+    "OpenStaxBiology 方法论",
+    "cell-biology 适应",
+    "BeautifulMathematics"
+  ],
+  "asset_id": "sha256:8c5c4766704345290ac680677281f8f7cfbe703c598e2c8d2cf2b9b2ee66a972"
+}
