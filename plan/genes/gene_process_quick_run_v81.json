@@ -1,0 +1,42 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_process_quick_run_v81",
+  "category": "optimize",
+  "summary": "process quick run optimization (358 calls <=30s in 24h, 96% of process, median 98ms)",
+  "signals_match": [
+    "tool_frequent:process",
+    "process_duration:<=30s",
+    "quick_run"
+  ],
+  "preconditions": [
+    "tool 'process' duration_ms <= 30000",
+    "process accounts for >96% of quick calls"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules"
+    ]
+  },
+  "validation": [
+    "python3 -c \"import json; events=[json.loads(l) for l in open('openclaw-harness/events/events.jsonl')]; quick=sum(1 for e in events if e.get('tool_name')=='process' and e.get('duration_ms',0)<=30000); print(f'quick_calls={quick}')\""
+  ],
+  "strategy": [
+    "快速 process 默认 timeout 30s (避免资源占用)",
+    "识别同一命令多次 spawn: 合并为 1 个长跑 + 多次 sleep",
+    "quick run 结果缓存 (hash + exit_code 缓存)",
+    "失败 process 重试上限 3 次 (指数退避)"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性 (process 重试幂等)",
+    "cell-biology 反馈回路 (failure detection loop)",
+    "CognitivePsychology attention bottleneck (failure alert 阈值)",
+    "OpenStaxBiology 膜流动性 (process 上下文边界)",
+    "evomap GEP 协议 (canonicalize + asset_id)"
+  ],
+  "risk_level": "medium",
+  "blast_radius": "process_spawn_optimization",
+  "asset_id": "sha256:ac35bcabb88005648e0cb6eb822e333a6eea3144dd75fc9283a8c7d5087f68fb"
+}

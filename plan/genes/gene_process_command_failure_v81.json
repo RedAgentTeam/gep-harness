@@ -1,0 +1,41 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_process_command_failure_v81",
+  "category": "repair",
+  "summary": "process command failure handling (estimated 5-10% of process calls fail, needs robust recovery)",
+  "signals_match": [
+    "tool_frequent:process",
+    "process_failure",
+    "exit_code_nonzero"
+  ],
+  "preconditions": [
+    "tool 'process' exit_code != 0",
+    "process call failed"
+  ],
+  "constraints": {
+    "max_files": 5,
+    "forbidden_paths": [
+      ".git"
+    ]
+  },
+  "validation": [
+    "python3 -c \"import json; events=[json.loads(l) for l in open('openclaw-harness/events/events.jsonl')]; fail=sum(1 for e in events if e.get('tool_name')=='process' and e.get('exit_code',0)!=0); print(f'failed={fail}')\""
+  ],
+  "strategy": [
+    "识别失败原因 (exit_code / stderr pattern)",
+    "自动重试: transient 错误 (timeout, connection)",
+    "failure 上下文记录: cwd, env, args 快照",
+    "alert 阈值: 5 分钟内同一命令失败 >3 次触发"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性 (process 重试幂等)",
+    "cell-biology 反馈回路 (failure detection loop)",
+    "CognitivePsychology attention bottleneck (failure alert 阈值)",
+    "OpenStaxBiology 膜流动性 (process 上下文边界)",
+    "evomap GEP 协议 (canonicalize + asset_id)"
+  ],
+  "risk_level": "medium",
+  "blast_radius": "process_spawn_optimization",
+  "asset_id": "sha256:ca075e9a85504474049f7f0fd71d7f6428126173a5d27d9b509568fbddc41795"
+}
