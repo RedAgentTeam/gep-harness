@@ -1,0 +1,42 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_read_paginated_v83",
+  "category": "optimize",
+  "summary": "read paginated chunk optimization (139 calls offset>0 in 24h, 34% of read, various offsets/limits)",
+  "signals_match": [
+    "tool_frequent:read",
+    "read_paginated",
+    "read_offset:>0",
+    "read_limit:>0"
+  ],
+  "preconditions": [
+    "tool 'read' offset > 0 or limit > 0 (paginated/chunk read)"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules"
+    ]
+  },
+  "validation": [
+    "python3 -c 'import json; evts=[json.loads(l) for l in open(\"openclaw-harness/events/events.jsonl\")]; pag=sum(1 for e in evts if e.get(\"tool_name\")==\"read\" and (e.get(\"args\",{}).get(\"offset\",0)>0 or e.get(\"args\",{}).get(\"limit\",0)>0)); print(f\"read_paginated={pag}\")'"
+  ],
+  "strategy": [
+    "offset/limit 参数验证：offset 必须 >=0，limit 必须在 1-1000 范围",
+    "连续分页读预取：offset=N/limit=50 后预取 offset=N+50",
+    "分页边界检测：offset+limit > file_size 自动截断",
+    "同一文件多次分页读合并为 1 次全量读 + 本地切片"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性 (分页读幂等)",
+    "cell-biology 反馈回路 (cache hit/miss 反馈)",
+    "CognitivePsychology attention bottleneck (大文件分页减少认知负荷)",
+    "OpenStaxBiology 膜流动性 (读缓存失效机制)",
+    "evomap GEP 协议 (canonicalize + asset_id)"
+  ],
+  "risk_level": "low",
+  "blast_radius": "read_optimization",
+  "asset_id": "sha256:07f22da875ac8612f219f63f236dafaef294e2011f2fe098f09402de1afdc2f1"
+}

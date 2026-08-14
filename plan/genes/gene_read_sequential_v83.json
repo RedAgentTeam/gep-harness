@@ -1,0 +1,43 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_read_sequential_v83",
+  "category": "optimize",
+  "summary": "read sequential full-file optimization (267 calls offset=0/limit=0 in 24h, 66% of read, median path size medium)",
+  "signals_match": [
+    "tool_frequent:read",
+    "read_sequential",
+    "read_offset:0",
+    "read_limit:0"
+  ],
+  "preconditions": [
+    "tool 'read' offset=0 and limit=0 (full-file sequential read)",
+    "read accounts for >60% of sequential calls"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules"
+    ]
+  },
+  "validation": [
+    "python3 -c 'import json; evts=[json.loads(l) for l in open(\"openclaw-harness/events/events.jsonl\")]; seq=sum(1 for e in evts if e.get(\"tool_name\")==\"read\" and e.get(\"args\",{}).get(\"offset\",0)==0 and e.get(\"args\",{}).get(\"limit\",0)==0); print(f\"read_sequential={seq}\")'"
+  ],
+  "strategy": [
+    "offset=0/limit=0 全量读缓存（path mtime hash + 内容 hash）",
+    "小文件 <10KB 全量读直接返回缓存，无需 read 工具",
+    "中等文件 10-100KB 全量读缓存 TTL=300s",
+    "大文件 >100KB 自动降级为分页读 (offset/limit)"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性 (分页读幂等)",
+    "cell-biology 反馈回路 (cache hit/miss 反馈)",
+    "CognitivePsychology attention bottleneck (大文件分页减少认知负荷)",
+    "OpenStaxBiology 膜流动性 (读缓存失效机制)",
+    "evomap GEP 协议 (canonicalize + asset_id)"
+  ],
+  "risk_level": "low",
+  "blast_radius": "read_optimization",
+  "asset_id": "sha256:76e2709dfd1477b69f67acfc08425b477365df85492545cc293c0cfef09bb6fe"
+}
