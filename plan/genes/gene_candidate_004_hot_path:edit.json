@@ -1,0 +1,40 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_candidate_edit",
+  "category": "repair",
+  "signals_match": [
+    "high_freq:89_calls",
+    "tool_frequent:edit",
+    "hot_path:edit",
+    "edit"
+  ],
+  "preconditions": [
+    "tool 'edit' has been called 89+ times in 24h"
+  ],
+  "strategy": [
+    "Verify oldText uniqueness before replace",
+    "Log oldText + newText diff for audit",
+    "Keep edit atomic (one edit = one concern)"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "summary": "Hot-path optimization for edit (89 calls in 24h, 3 strategies)",
+  "cross_library_evidence": [
+    "cell-biology 基因突变",
+    "CognitivePsychology 确认偏误",
+    "BeautifulMathematics 精确性",
+    "evomap 演化变异",
+    "OpenStaxBiology DNA 修复"
+  ],
+  "asset_id": "sha256:PLACEHOLDER_LLM_TO_FILL"
+}
