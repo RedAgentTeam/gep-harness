@@ -1,0 +1,40 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_candidate_process",
+  "category": "repair",
+  "signals_match": [
+    "high_freq:161_calls",
+    "tool_frequent:process",
+    "hot_path:process",
+    "process"
+  ],
+  "preconditions": [
+    "tool 'process' has been called 161+ times in 24h"
+  ],
+  "strategy": [
+    "Profile process usage patterns",
+    "Add caching for process with TTL",
+    "Log all calls to events.jsonl"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "summary": "Hot-path optimization for process (161 calls in 24h, 3 strategies)",
+  "cross_library_evidence": [
+    "CognitivePsychology 一般化",
+    "evomap GEP",
+    "OpenStaxBiology 方法论",
+    "cell-biology 适应",
+    "BeautifulMathematics"
+  ],
+  "asset_id": "sha256:8adba8ed7a395dcc3e906877ea7bcd9536d8a29401cc8d2a77e7edfeda0f27fc"
+}
