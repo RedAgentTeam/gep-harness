@@ -1,0 +1,37 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_message_single_send_v82",
+  "category": "optimize",
+  "summary": "message single send pattern (gap >=5s isolated messages, no batching needed)",
+  "signals_match": [
+    "tool_frequent:message",
+    "message_single",
+    "message_session_gap:>=5s"
+  ],
+  "preconditions": [
+    "tool 'message' session gap >=5s from previous message"
+  ],
+  "constraints": {
+    "max_files": 10
+  },
+  "validation": [
+    "python3 -c 'import json; from collections import defaultdict; evts=[json.loads(l) for l in open(\"openclaw-harness/events/events.jsonl\")]; s=defaultdict(list); [s[e.get(\"session_key\",\"x\")].append(e) for e in evts if e.get(\"tool_name\")==\"message\"]; print(f\"single_sessions={sum(1 for v in s.values() if len(v)==1)}\")'"
+  ],
+  "strategy": [
+    "单条 message gap >=5s 直接发送，无需合并",
+    "content >4000 chars 自动拆分 (飞书 4000 char 上限)",
+    "单条 message 失败重试 3 次 (指数退避)",
+    "会话结束 message (gap >60s) 标记为 sentinel"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性 (batch 发送幂等)",
+    "cell-biology 反馈回路 (发送速率控制)",
+    "CognitivePsychology attention bottleneck (batch 太长注意力流失)",
+    "OpenStaxBiology 膜流动性 (message 边界隔离)",
+    "evomap GEP 协议 (canonicalize + asset_id)"
+  ],
+  "risk_level": "low",
+  "blast_radius": "message_send_optimization",
+  "asset_id": "sha256:099e76dd6fd353be8891a4dffb52bdb2a60d23deb99b54a826dab7dc58d05492"
+}

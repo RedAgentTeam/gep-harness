@@ -1,0 +1,37 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_message_batch_send_v82",
+  "category": "optimize",
+  "summary": "message batch send optimization (124 msgs in 1 session, 99% gap <5s = batch pattern, needs merging)",
+  "signals_match": [
+    "tool_frequent:message",
+    "message_batch",
+    "message_session_size:124"
+  ],
+  "preconditions": [
+    "tool 'message' session contains >10 consecutive msgs with gap <5s"
+  ],
+  "constraints": {
+    "max_files": 10
+  },
+  "validation": [
+    "python3 -c 'import json; evts=[json.loads(l) for l in open(\"openclaw-harness/events/events.jsonl\")]; batch=sum(1 for e in evts if e.get(\"tool_name\")==\"message\"); print(f\"message_batch_total={batch}\")'"
+  ],
+  "strategy": [
+    "同一 session gap <5s 内连续 message 合并为 1 次批量发送",
+    "batch size >10 必须拆分中间确认 (避免消息过长)",
+    "message content >4000 chars 超则自动拆分 (飞书 4000 char 上限)",
+    "飞书 API rate limit 20 msg/s 上限，burst >20 排队"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性 (batch 发送幂等)",
+    "cell-biology 反馈回路 (发送速率控制)",
+    "CognitivePsychology attention bottleneck (batch 太长注意力流失)",
+    "OpenStaxBiology 膜流动性 (message 边界隔离)",
+    "evomap GEP 协议 (canonicalize + asset_id)"
+  ],
+  "risk_level": "low",
+  "blast_radius": "message_send_optimization",
+  "asset_id": "sha256:5793f63b75a7eee4c219ac1559ebb03e0519b22b7805924393f2a90f5cb73ae5"
+}
