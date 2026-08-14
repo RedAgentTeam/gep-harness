@@ -1,0 +1,40 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_write_medium_content_v84",
+  "category": "optimize",
+  "summary": "write medium content optimization (2 calls 10-100KB in 24h, 2% of write)",
+  "signals_match": [
+    "tool_frequent:write",
+    "write_medium_content",
+    "write_size:10-100KB"
+  ],
+  "preconditions": [
+    "tool 'write' content size between 10240 and 102400 bytes (10-100KB)"
+  ],
+  "constraints": {
+    "max_files": 5,
+    "forbidden_paths": [
+      ".git"
+    ]
+  },
+  "validation": [
+    "python3 -c 'import json; evts=[json.loads(l) for l in open(\"openclaw-harness/events/events.jsonl\")]; med=sum(1 for e in evts if e.get(\"tool_name\")==\"write\" and 10240 <= len((e.get(\"args\",{}).get(\"content\",\"\") or \"\").encode(\"utf-8\")) < 102400); print(f\"write_medium={med}\")'"
+  ],
+  "strategy": [
+    "中文件 write 流式写入 (避免全量内存加载)",
+    "write 前 path parent 自动创建 (mkdir -p)",
+    "中文件 write 原子替换：写 tmp + rename (避免 partial write)",
+    "write 完成自动 chmod 644 (可读权限)"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性 (write 幂等保证)",
+    "cell-biology 反馈回路 (write buffer flush 控制)",
+    "CognitivePsychology attention bottleneck (多 path 写顺序管理)",
+    "OpenStaxBiology 膜流动性 (write 原子替换保证)",
+    "evomap GEP 协议 (canonicalize + asset_id)"
+  ],
+  "risk_level": "low",
+  "blast_radius": "write_optimization",
+  "asset_id": "sha256:fffd074b6045909de289370ae245622cdd5f01c043bea18a425b968664221317"
+}

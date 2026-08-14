@@ -1,0 +1,40 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_write_small_content_v84",
+  "category": "optimize",
+  "summary": "write small content optimization (59+42=101 calls <10KB in 24h, 98% of write, tiny+small)",
+  "signals_match": [
+    "tool_frequent:write",
+    "write_small_content",
+    "write_size:<10KB"
+  ],
+  "preconditions": [
+    "tool 'write' content size < 10240 bytes (<10KB)"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git"
+    ]
+  },
+  "validation": [
+    "python3 -c 'import json; evts=[json.loads(l) for l in open(\"openclaw-harness/events/events.jsonl\")]; small=sum(1 for e in evts if e.get(\"tool_name\")==\"write\" and len((e.get(\"args\",{}).get(\"content\",\"\") or \"\").encode(\"utf-8\")) < 10240); print(f\"write_small={small}\")'"
+  ],
+  "strategy": [
+    "小文件 write 合并：同一 path 多次 <1KB write 合并为 1 次",
+    "write content 缓冲区：累积到 4KB 再 flush (减少 syscall)",
+    "write 前 read 检查：path 未变化则跳过 (幂等写)",
+    "write 失败 retry: 3 次指数退避 (disk full / permission)"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性 (write 幂等保证)",
+    "cell-biology 反馈回路 (write buffer flush 控制)",
+    "CognitivePsychology attention bottleneck (多 path 写顺序管理)",
+    "OpenStaxBiology 膜流动性 (write 原子替换保证)",
+    "evomap GEP 协议 (canonicalize + asset_id)"
+  ],
+  "risk_level": "low",
+  "blast_radius": "write_optimization",
+  "asset_id": "sha256:12319ee1ff20430c810f80f1fc91c0748329c9840207448f5a73cabd9d4e60e1"
+}

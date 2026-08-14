@@ -1,0 +1,40 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_write_multi_path_v84",
+  "category": "optimize",
+  "summary": "write multi-path dedup (18 paths have >1 writes in 24h, 72% of paths are multi-written)",
+  "signals_match": [
+    "tool_frequent:write",
+    "write_multi_path",
+    "write_dedup"
+  ],
+  "preconditions": [
+    "same write path appears >1 times in session"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git"
+    ]
+  },
+  "validation": [
+    "python3 -c 'import json; from collections import Counter; evts=[json.loads(l) for l in open(\"openclaw-harness/events/events.jsonl\")]; paths=Counter(e.get(\"args\",{}).get(\"path\",\"\") for e in evts if e.get(\"tool_name\")==\"write\"); multi=sum(1 for v in paths.values() if v>1); print(f\"multi_write_paths={multi}\")'"
+  ],
+  "strategy": [
+    "同一 path 多次 write 合并为 1 次全量写 (最后内容覆盖)",
+    "path hash 变更检测：内容 hash 不变则跳过 (幂等)",
+    "CHANGELOG.md 等多写路径记录追加模式 (append vs overwrite)",
+    "write 顺序依赖：前序 path 未写完则排队等待"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性 (write 幂等保证)",
+    "cell-biology 反馈回路 (write buffer flush 控制)",
+    "CognitivePsychology attention bottleneck (多 path 写顺序管理)",
+    "OpenStaxBiology 膜流动性 (write 原子替换保证)",
+    "evomap GEP 协议 (canonicalize + asset_id)"
+  ],
+  "risk_level": "low",
+  "blast_radius": "write_optimization",
+  "asset_id": "sha256:47d572d7f7051952e05f101f9f6ae5162c6659a657ab3398ecedaaf31327395f"
+}
