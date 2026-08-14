@@ -4,18 +4,18 @@
   "id": "gene_candidate_message",
   "category": "repair",
   "signals_match": [
-    "high_freq:64_calls",
+    "high_freq:66_calls",
     "tool_frequent:message",
     "hot_path:message",
     "message"
   ],
   "preconditions": [
-    "tool 'message' has been called 64+ times in 24h"
+    "tool 'message' has been called 66+ times in 24h"
   ],
   "strategy": [
-    "Profile message usage patterns",
-    "Add caching for message with TTL",
-    "Log all calls to events.jsonl"
+    "同 session <5s 连续 message 合并为批量发送",
+    "content >4000 chars 自动拆分（飞书 4000 上限）",
+    "API rate limit 20 msg/s 排队控制"
   ],
   "constraints": {
     "max_files": 10,
@@ -28,13 +28,14 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for message (64 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for message (66 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "CognitivePsychology 一般化",
-    "evomap GEP",
-    "OpenStaxBiology 方法论",
-    "cell-biology 适应",
-    "BeautifulMathematics"
+    "BeautifulMathematics 幂等性保证",
+    "cell-biology 反馈回路",
+    "CognitivePsychology attention bottleneck",
+    "OpenStaxBiology 膜流动性",
+    "evomap GEP 协议"
   ],
-  "asset_id": "sha256:PLACEHOLDER_LLM_TO_FILL"
+  "asset_id": "sha256:1c2fdd89c2a923af16c38d5bf382c79b6f29c8648e1c519f19f026da8039c12a",
+  "_local_filled": true
 }

@@ -1,21 +1,21 @@
 {
   "type": "Gene",
   "schema_version": "1.12.1",
-  "id": "gene_candidate_exec",
-  "category": "repair",
+  "id": "gene_candidate_read",
+  "category": "optimize",
   "signals_match": [
-    "high_freq:5663_calls",
-    "tool_frequent:exec",
-    "hot_path:exec",
-    "exec"
+    "high_freq:209_calls",
+    "tool_frequent:read",
+    "hot_path:read",
+    "read"
   ],
   "preconditions": [
-    "tool 'exec' has been called 5663+ times in 24h"
+    "tool 'read' has been called 209+ times in 24h"
   ],
   "strategy": [
-    "识别 args 前缀高频命令（cd/python3/ls），合并连续 cd 调用为一次",
-    "缓存常用绝对路径避免重复 readdir",
-    "long-running 命令自动加 timeout 默认 30s"
+    "offset=0 全量读启用 path mtime 缓存",
+    "分页读预取相邻 offset 减少 round-trip",
+    "大文件 >100KB 自动降级为分页读"
   ],
   "constraints": {
     "max_files": 10,
@@ -28,7 +28,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for exec (5663 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for read (209 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "BeautifulMathematics 幂等性保证",
     "cell-biology 反馈回路",
@@ -36,6 +36,6 @@
     "OpenStaxBiology 膜流动性",
     "evomap GEP 协议"
   ],
-  "asset_id": "sha256:dcd4580339e8cd5687def818d4a805915ac2659350d8d2712b0d873c424d1df3",
+  "asset_id": "sha256:d62f9d9d2b75b8849d4308cea0c9719e45a53f5be4254fc99923a3225446bf4c",
   "_local_filled": true
 }
