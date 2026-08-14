@@ -1,0 +1,40 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_candidate_exec",
+  "category": "repair",
+  "signals_match": [
+    "high_freq:4827_calls",
+    "tool_frequent:exec",
+    "hot_path:exec",
+    "exec"
+  ],
+  "preconditions": [
+    "tool 'exec' has been called 4827+ times in 24h"
+  ],
+  "strategy": [
+    "Check exit code before reading stdout",
+    "Add timeout for long-running commands",
+    "Log command + args + exit_code for replay"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "summary": "Hot-path optimization for exec (4827 calls in 24h, 3 strategies)",
+  "cross_library_evidence": [
+    "BeautifulMathematics 幂等性",
+    "cell-biology 反馈回路",
+    "CognitivePsychology 确认偏误",
+    "OpenStaxBiology Ch01",
+    "evomap GEP"
+  ],
+  "asset_id": "sha256:7d85c5f0180ab04b4e2bc55303c20d03442b7105612c278c20b7b40443e0e0a7"
+}
