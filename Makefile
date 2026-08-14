@@ -2,18 +2,20 @@
 # 标准管理命令（Project Standard SOP）
 # 所有 recipe 都是单行命令；复杂 python 逻辑在 scripts/ 目录下
 
-.PHONY: help verify test replay clean status install uninstall evolve
+.PHONY: help verify test replay clean status install uninstall evolve evolve-full evolve-cron solidify-pending
 
 help:
 	@echo "GEP Harness — available commands:"
-	@echo "  make verify     — Re-run GEP strict validation on all assets"
-	@echo "  make test       — Run pytest on event_stream"
-	@echo "  make replay     — Show recent events from events.jsonl"
-	@echo "  make status     — Show events count + verify result"
-	@echo "  make install    — Install plugin to OpenClaw"
-	@echo "  make uninstall  — Remove plugin from OpenClaw"
-	@echo "  make clean      — Truncate events.jsonl (back up first!)"
-	@echo "  make evolve     — Run Evolver (Scan → Extract → Validate → Fill dry-run)"
+	@echo "  make verify       — Re-run GEP strict validation on all assets"
+	@echo "  make test         — Run pytest on event_stream"
+	@echo "  make replay       — Show recent events from events.jsonl"
+	@echo "  make status       — Show events count + verify result"
+	@echo "  make install      — Install plugin to OpenClaw"
+	@echo "  make uninstall    — Remove plugin from OpenClaw"
+	@echo "  make clean        — Truncate events.jsonl (back up first!)"
+	@echo "  make evolve       — Run Evolver (Scan → Extract → Validate, dry-run)"
+	@echo "  make evolve-full  — Run full cycle + auto-fill + list pending Solidify"
+	@echo "  make solidify-pending — Show pending Solidify candidates (manual approval)"
 
 verify:
 	@echo "=== GEP strict validation ==="
@@ -22,6 +24,7 @@ verify:
 test:
 	@echo "=== pytest ==="
 	@cd /data/disk/gep-harness/openclaw-harness && python3 -m pytest tests/ -q
+	@cd /data/disk/gep-harness && python3 -m pytest scripts/tests/ openclaw-a2a/tests/ -q
 
 replay:
 	@echo "=== Last 10 events ==="
@@ -48,11 +51,26 @@ clean:
 	@echo "(intentionally not deleting in one step)"
 
 evolve:
-	@echo "=== Evolver full workflow ==="
+	@echo "=== Evolver full workflow (dry-run) ==="
 	@python3 /data/disk/gep-harness/scripts/scan_events.py --since=24h > /tmp/v_scan.json
 	@rm -rf /tmp/v_staging && mkdir -p /tmp/v_staging
 	@python3 /data/disk/gep-harness/scripts/extract_candidate_genes.py --scan-output=/tmp/v_scan.json --output=/tmp/v_staging/ --threshold=5
 	@python3 /data/disk/gep-harness/scripts/validate_gep.py --mode=strict --input="/tmp/v_staging/*.json"
 	@echo "=== Staging candidates ready (Solidify + LLM fill required) ==="
-	@echo "  Run: python3 scripts/solidify.py --staging=/tmp/v_staging/"
-	@echo "  Run: python3 scripts/llm_fill_gene.py --staging=/tmp/v_staging/"
+	@echo "  Run: python3 scripts/cross_library_auto.py /tmp/v_staging/"
+	@echo "  Run: python3 scripts/solidify.py --list --staging=/tmp/v_staging/"
+
+evolve-full:
+	@echo "=== Evolver full cycle (auto-fill + list pending Solidify) ==="
+	@python3 /data/disk/gep-harness/scripts/scan_events.py --since=24h > /tmp/v_scan.json
+	@rm -rf /tmp/v_staging && mkdir -p /tmp/v_staging
+	@python3 /data/disk/gep-harness/scripts/extract_candidate_genes.py --scan-output=/tmp/v_scan.json --output=/tmp/v_staging/ --threshold=5
+	@python3 /data/disk/gep-harness/scripts/cross_library_auto.py /tmp/v_staging/ > /tmp/v_fill.log 2>&1
+	@python3 /data/disk/gep-harness/scripts/validate_gep.py --mode=strict --input="/tmp/v_staging/*.json"
+	@echo "=== ✅ staging filled + validated ==="
+	@echo "=== ⏳ Pending: manual Solidify approval ==="
+	@python3 /data/disk/gep-harness/scripts/solidify.py --list --staging=/tmp/v_staging/
+
+solidify-pending:
+	@echo "=== Pending Solidify candidates ==="
+	@python3 /data/disk/gep-harness/scripts/solidify.py --list --staging=/tmp/v_staging/
