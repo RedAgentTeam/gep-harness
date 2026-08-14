@@ -33,5 +33,5 @@
     "from_staging": "gene_candidate_006_hot_path:write.json",
     "to_plan": "plan/genes/gene_candidate_006_hot_path:write.json"
   },
-  "asset_id": "sha256:d5731151396a094f2af8ebaf45c9f7ed49a6236ad8accd7eac74034ac846687f"
+  "asset_id": "sha256:c899f23f9be8a9cca8d5d86a3e8b09fbc8dd49da183ed7579f6c538eea5fc504"
 }
