@@ -53,5 +53,6 @@ evolve:
 	@rm -rf /tmp/v_staging && mkdir -p /tmp/v_staging
 	@python3 /data/disk/gep-harness/scripts/extract_candidate_genes.py --scan-output=/tmp/v_scan.json --output=/tmp/v_staging/ --threshold=5
 	@python3 /data/disk/gep-harness/scripts/validate_gep.py --mode=strict --input="/tmp/v_staging/*.json"
-	@python3 /data/disk/gep-harness/scripts/llm_fill_gene.py --staging=/tmp/v_staging/ --dry-run
-	@echo "=== evolve done (Solidify requires manual review) ==="
+	@echo "=== Staging candidates ready (Solidify + LLM fill required) ==="
+	@echo "  Run: python3 scripts/solidify.py --staging=/tmp/v_staging/"
+	@echo "  Run: python3 scripts/llm_fill_gene.py --staging=/tmp/v_staging/"
