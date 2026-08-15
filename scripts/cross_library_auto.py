@@ -108,6 +108,18 @@ LIBRARY_CHAPTER: Dict[str, str] = {
     "evomap": "GEP v1.12.1 §2.3 EvolutionEvent",  # GEP 协议 / 事件流
 }
 
+# 5 库关联图（v14.0 跨库神经元网络）
+# 每库指向 1-2 个相关库，形成 cross-reference ring:
+#   BeautifulMathematics → CognitivePsychology → OpenStaxBiology → evomap → cell-biology → BeautifulMathematics
+# （每次循环返回起点 = 闭环 / 神经元网络）
+LIBRARY_GRAPH: Dict[str, List[str]] = {
+    "BeautifulMathematics": ["CognitivePsychology", "evomap"],   # 算法 → 记忆 → 事件
+    "cell-biology": ["BeautifulMathematics", "OpenStaxBiology"],  # 信号 → 算法 → 进化
+    "CognitivePsychology": ["OpenStaxBiology", "cell-biology"],  # 记忆 → 进化 → 信号
+    "OpenStaxBiology": ["evomap", "BeautifulMathematics"],        # 进化 → 事件 → 算法
+    "evomap": ["cell-biology", "CognitivePsychology"],            # 事件 → 信号 → 记忆
+}
+
 
 def match_evidence(library: str, signals: List[str], summary: str) -> Tuple[str, float]:
     """匹配一个库的 evidence，返回 (evidence_text, confidence)。
@@ -140,24 +152,35 @@ def auto_cross_library_evidence(gene: dict, version: str = "v2.0") -> List[str]:
 
     每个字符串格式：
     - v1.0: "{library_name} {reason}"（≤ 80 chars）
-    - v2.0: "{library_name} {chapter} {reason}"（含章节号 + 字段关联）
+    - v2.0: "{library_name} {chapter}: {reason}"（含章节号 + 字段关联）
+    - v3.0: v2.0 + 跨库互引（→ [关联库] 关联字段）
     """
     signals = gene.get("signals_match", []) or gene.get("signals", []) or []
     summary = gene.get("summary", "") or ""
 
+    libs = ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]
     result = []
-    for library in ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]:
+    for library in libs:
         text, conf = match_evidence(library, signals, summary)
         chapter = LIBRARY_CHAPTER.get(library, "")
-        if version == "v2.0" and chapter:
+        if version == "v3.0" and chapter:
+            # v3.0: 章节号 + 字段关联 + 跨库互引
+            line = f"{library} {chapter}: {text}"
+            # 加跨库互引（最多 2 个）
+            refs = LIBRARY_GRAPH.get(library, [])
+            for ref_lib in refs[:2]:
+                ref_chapter = LIBRARY_CHAPTER.get(ref_lib, "")
+                if ref_chapter:
+                    line += f" → [{ref_lib} {ref_chapter}]"
+        elif version == "v2.0" and chapter:
             # v2.0: 章节号 + 字段关联
             line = f"{library} {chapter}: {text}"
         else:
             # v1.0: 简单格式
             line = f"{library} {text}"
-        # 截断到 120 chars（v2.0 放宽到章节号 + 完整说明）
-        if len(line) > 120:
-            line = line[:117] + "..."
+        # 截断到 200 chars（v3.0 放宽到跨库互引）
+        if len(line) > 200:
+            line = line[:197] + "..."
         result.append(line)
     return result
 

@@ -269,3 +269,38 @@ def test_library_chapter_dict():
     # 每个章节号非空
     for lib, ch in cla.LIBRARY_CHAPTER.items():
         assert ch, f"{lib} chapter empty"
+
+
+def test_v3_evidence_cross_library_refs():
+    """v3.0 evidence 含跨库互引（→ [关联库] 章节号）。"""
+    g = {"signals_match": ["exec"], "summary": "test"}
+    ev = cla.auto_cross_library_evidence(g, version="v3.0")
+    assert len(ev) == 5
+    # 每条 evidence 末尾至少含 1 个 → [关联库]
+    for e in ev:
+        assert "→ [" in e, f"evidence 缺跨库互引: {e}"
+
+
+def test_v3_evidence_cross_library_complete():
+    """v3.0 evidence 跨库互引闭环（5 库形成神经元网络）。"""
+    g = {"signals_match": ["exec"], "summary": "test"}
+    ev = cla.auto_cross_library_evidence(g, version="v3.0")
+    # 5 库每个库都被引用至少 1 次（闭环）
+    libs = ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]
+    for lib in libs:
+        refs_to_lib = sum(1 for e in ev if f"[{lib}" in e)
+        # 至少 1 条 evidence 引用该库（够形成环）
+        assert refs_to_lib >= 1, f"v3.0 跨库闭环缺引用 {lib}"
+
+
+def test_library_graph_no_self_loop():
+    """LIBRARY_GRAPH 不自引（无环起点=终点）。"""
+    for lib, refs in cla.LIBRARY_GRAPH.items():
+        assert lib not in refs, f"{lib} 自引"
+
+
+def test_library_graph_5_libs():
+    """LIBRARY_GRAPH 5 库齐全，每库至少 1 个引用。"""
+    assert set(cla.LIBRARY_GRAPH.keys()) == {"BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"}
+    for lib, refs in cla.LIBRARY_GRAPH.items():
+        assert len(refs) >= 1, f"{lib} 缺关联"
