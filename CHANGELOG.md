@@ -1,298 +1,55 @@
-# GEP Harness — CHANGELOG
+# CHANGELOG — gep-harness
 
-## v0.4.0 (2026-08-14) — 阶段 4.4 完成（behavior_feedback_proof 签名）
+> 自动生成（git log 提取）
+> 总 commit 数：50
 
-### Added
-- **behavior_feedback_proof** — A2A send 端在 envelope 中附签名的 reuse history proof
-  - `a2a_protocol.py`: `verify_behavior_feedback_proof()` + `make_envelope(behavior_feedback_proof=...)`
-  - `gene_sync.py`: send 端自动生成 `{reuses:[{ts,outcome:"success"}], signature}` 并附入 envelope
-- **shared secret trust bootstrap** — `get_node_secret()` 优先读 `A2A_SHARED_SECRET` env
-  - v0.1 bug：send 用 `A2A_NODE_SECRET` 签名，peer 用独立 uuid 验证 → proof 永远 fail
-  - v0.2 fix：两端约定 `A2A_SHARED_SECRET`，签名和验证用同一把密钥
-- **GDI_THRESHOLD 升回 0.7** — v0.1 临时降到 0.6（因为 behavior_feedback 不可信），v0.2 签名验证通过后恢复 0.7
-
-### A2A 协议升级 v0.1 → v0.2
-| 维度 | v0.1 | v0.2 |
-|---|---|---|
-| behavior_feedback | 不可信（peer 保守评估 0 分）| **签名验证**（send 附 proof，peer 验签后采信 0.4 分）|
-| GDI_THRESHOLD | 0.6（临时降档）| **0.7**（恢复全维度评估）|
-| 密钥模型 | 每节点独立 uuid（验证失败根因）| **shared secret**（v0.3 计划 ed25519 keypair）|
-| E2E 双向 sync | rejected（0.6 < 0.7）| **accepted=1 + accepted=1**（双向均过）|
-
-### Fixed
-- ⚠️ **GDI v2 设计缺陷**：peer 端永远 quarantine（缺 behavior_feedback 验证）
-- ⚠️ **密钥不匹配 bug**：send 用 `***`，peer 用 `get_node_secret()`（uuid 独立）→ proof 验证永远 fail
-- 修复后 `gdi_score=1.0`（0.4 content_prior + 0.2 offline_check + 0.4 behavior_feedback）+ `behavior_feedback_verified: true`
-
-### Verified
-- ✅ pytest 21/21 PASSED（3.25s）
-- ✅ E2E 双节点双向 sync：A→B accepted=1，B→A accepted=1
-- ✅ audit.jsonl：`"gdi_score": 1.0, "behavior_feedback_verified": true`
-
-### Not Done Yet
-- [ ] v0.3: ed25519 keypair exchange（替代 shared secret）
-- [ ] v0.3: Gene 版本冲突解决（CRDT / last-write-wins）
-- [ ] v0.3: A2A broadcast 模式
-
----
-
-## v0.3.0 (2026-08-14) — 阶段 4 完成（A2A + Gene Pool）
-
-### Added
-- **openclaw-a2a/** — Layer 3 (群体层) 完整实现：
-  - `src/a2a_protocol.py` — HMAC-SHA256 签名 + GDI v2 评分 + GenePool + HTTP server
-  - `src/gene_sync.py` — 6h cron background sync（E2E 验证通过）
-  - `tests/test_a2a_protocol.py` — 4 pytest
-  - `tests/test_gene_sync.py` — 3 pytest
-  - `docs/a2a_protocol.md` — 协议规范 v0.1
-- **plan/genes/gene_harness_a2a_protocol.json** — 第 5 个 Gene 资产
-
-### A2A 协议 v0.1
-- **HTTP endpoints**：
-  - `GET /api/v1/a2a/health` — 健康检查
-  - `GET /api/v1/a2a/node/info` — 节点信息
-  - `POST /api/v1/a2a/publish` — 接收 publish（验证签名 + asset_id + GDI）
-  - `POST /api/v1/a2a/request` — 查询本地资产
-- **Wire envelope**：protocol_version / sender_node_id / recipient_node_id / asset_id / asset_type / intent / payload / signature / ts
-- **Default port**：9877（仅 localhost，不上公网）
-
-### GDI v2 评分（继承 zhanghaoyang 方法论）
-| 维度 | 权重 | 检查项 |
-|---|---|---|
-| content_prior | 0.4 | signals ≥ 2, strategy ≥ 2, summary ≥ 20 字符 |
-| offline_check | 0.2 | GEP strict 校验通过 + 5 库 evidence ≥ 5 |
-| behavior_feedback | 0.4 | 本节点 reuse outcome=success 至少 1 次 |
-- **阈值**：GDI.score >= 0.7 才 accept（imported/）；< 0.7 quarantined/
-- **Stand-in**：HMAC-SHA256 替代 ed25519（避免 stdlib 之外的依赖）
-
-### Verified
-- ✅ pytest 18/18 PASSED（4 event_stream + 3 evolver + 7 tool_pipeline + 4 a2a_protocol）
-- ✅ E2E 验证：A2A server 启动 → publish endpoint 接收 → GDI 评分 → quarantine 路径正确
-- ✅ GDI 评分实测：good asset → score=0.6 → quarantined（验证 behavior_feedback 维度的有效性）
-- ✅ audit.jsonl append-only 操作日志
-- ✅ Gene Pool 三目录（local/imported/quarantined/）
-- ✅ cron sync E2E 验证通过
-- ✅ 双节点集成测试 A↔B 双向 sync 通过
-
-### 安全边界
-- ❌ 不接受未签名消息（signature 缺失即 reject）
-- ❌ 不接受 asset_id 不匹配消息
-- ❌ 不接受 GDI < 0.7 消息（quarantined）
-- ❌ 不在公网暴露（仅 localhost + 可信 peer）
-- ✅ 所有操作进 audit.jsonl
-
----
-
-## v0.2.0 (2026-08-14) — 阶段 2 完成（Tool Pipeline + false positive fix）
-
-### Added
-- **openclaw-harness-tool-pipeline-plugin/** — 第二个 OpenClaw plugin：
-  - `index.js` — Tool Pipeline (Hook → Permission → Timeout → Execute → Rewrite → Emit)
-  - `openclaw.plugin.json` — manifest 含 forbidden_paths / redact_patterns / emitter_bin config
-  - `package.json` — npm metadata
-- **openclaw-harness/tests/test_tool_pipeline.py** — 5+3 pytest (原始 5 + false-positive 修复 3)
-
-### Gene.tool_policy → PermissionCheck 映射
-- **BUILTIN_FORBIDDEN**（不可覆盖，代码硬编码）：
-  - `/opt/goapi/goapi` — 美机生产路径
-  - `/etc/goapi/credentials.env` — 美机凭证
-  - `/data/disk/openclaw/.secrets` — 敏感目录
-  - `/usr/bin/systemctl` — 系统服务控制
-- **config.forbiddenPaths**（可配置）
-- 命中即 `return { block: true, reason: ... }`
-
-### ResultRewrite 脱敏
-- **BUILTIN_REDACT**（不可关闭）：SSH 密码 / 美机 IP / OpenAI key / GitHub PAT / Bearer token
-- **config.redactPatterns**（可扩展）
-
-### TimeoutControl
-- 默认 30000ms，可被 config.defaultTimeoutMs 覆盖
-
-### systemd Env 注入（关键修复）
-- `OPENCLAW_HARNESS_BIN=/data/disk/gep-harness/openclaw-harness/bin`
-- `OPENCLAW_EVENT_STREAM=/data/disk/gep-harness/openclaw-harness/events/events.jsonl`
-- override.conf 在 `/home/ubuntu/.config/systemd/user/openclaw-gateway.service.d/`
-
-### Known Issue (Fixed)
-- ⚠️ **false positive block**：`paramsStr.includes(p)` substring 匹配 → 误判
-- **修复**：path prefix 精确匹配 + 字段过滤（只检查 path/file/target/src 等字段）
-- **验证**：新增 3 个 pytest（`test_no_false_positive_on_substring_in_content` + `test_path_prefix_exact_match` + `test_safe_path_not_blocked`）
-
-### Verified
-- ✅ pytest 7/7 PASSED (tool_pipeline)
-- ✅ plugin install + Gateway restart
-- ✅ 两个 plugin runtime 全部 registered
-
----
-
-## v0.1.0 (2026-08-14) — 阶段 1 完成（Append-only Event Stream）
-
-### Added
-- **plan/genes/** — 3 个 GEP Gene：
-  - `gene_harness_append_only_event_stream` (repair, low risk)
-  - `gene_harness_tool_call_pipeline` (repair, medium risk)
-  - `gene_harness_evolver_semiauto` (innovate, medium risk)
-- **plan/capsules/** — 1 个 GEP Capsule：
-  - `capsule_plan_gep_harness_2026_08_14`
-- **plan/events/** — 1 EvolutionEvent + 1 Mutation
-- **openclaw-harness/bin/canonicalize.py** — GEP v1.12.1 canonicalize + computeAssetId + verifyAssetId
-- **openclaw-harness/bin/event_emitter.py** — emit / replay / verify CLI
-- **openclaw-harness/tests/test_event_stream.py` — 4 pytest
-- **openclaw-harness-plugin/index.js` — OpenClaw plugin (api.on before_tool_call / after_tool_call)
-- **openclaw-harness-plugin/openclaw.plugin.json` — manifest
-- **openclaw-harness-plugin/package.json` — npm metadata
-
-### Verified
-- ✅ 6 GEP assets 全部 strict 校验通过
-- ✅ pytest 4/4 PASSED
-- ✅ Gateway restart + plugin runtime registered
-
----
-
-## v0.0.0 (2026-08-13) — 项目初始化
-
-- 读 DeepSeek Harness 文章 (InfoQ, Tina)
-- 5 库资产盘点（BeautifulMathematics / cell-biology / CognitivePsychology / OpenStaxBiology / evomap）
-- 确认 GEP v1.12.1 协议
-
-## v0.5.0 (2026-08-14) — CRDT + gene_sync bugfix
-
-### Added
-- **CRDT last-write-wins conflict resolution** for GenePool.accept()
-  - `_scan_conflicts()` — scan imported/ for asset_id collisions (returns all, not just duplicates)
-  - `_apply_lww()` — highest mtime wins; losers moved to `conflicts/` with `__conflict_<ts>` suffix
-  - `accept()` — pre-write collision check: if same asset_id exists in imported/, LWW decides
-  - `conflicts/` dir auto-created via `mkdir(parents=True, exist_ok=True)`
-- **CRDT pytest** — `test_gene_pool_crdt_lww_conflict`: 2 nodes import same Gene → conflicts/ gets loser
-- **shutil.move** — replaced all `os.rename()` with `shutil.move()` for cross-device safety
-
-### Fixed
-- **gene_sync.py UnboundLocalError** — `decision` variable was referenced outside try/except scope; now uses `peer_decision` initialized before try
-- **_apply_lww FileNotFoundError** — filtered `p.exists()` before `p.stat()`; fallback `Path(".")` for empty list
-- **conflicts/ dir missing** — `mkdir(parents=True, exist_ok=True)` added to both `_apply_lww()` and `accept()` CRDT block
-- **_scan_conflicts too strict** — removed `len(v) > 1` filter; now returns all asset_id groups so single-entry collision is detectable
-
-### Test Results
-- 22/22 pytest passed (8 a2a + 14 harness)
-
-## v0.7 (2026-08-14) — Evolver 完整工作流验证
-
-### Added
-- **Evolver 完整 4 步工作流验证通过**（scan → extract → validate → llm_fill）
-  - `scan_events.py`: 24h 真实数据 2804 events，top tools: exec(1113) edit(71) write_file(54) read(45)
-  - `extract_candidate_genes.py`: 6 个候选 Gene（exec/edit/write_file/read/write/process），全部 GEP strict 通过
-  - `validate_gep.py --mode=strict`: 6/6 ok, 0 fail
-  - `llm_fill_gene.py --dry-run`: 6/6 candidates 可填充（4 repair + 2 optimize）
-- **Makefile evolve target**: `make evolve` 一键跑完整工作流（Scan→Extract→Validate→LLM Fill）
-
-### Verified
-- ✅ pytest 45/45 passed（8 a2a + 7 gene_sync + 10 adaptive_gdi + 4 event_stream + 3 evolver + 8 llm_fill + 7 tool_pipeline）
-- ✅ Evolver 真实数据工作流：6 candidates → 6 validate ok → 6 llm_fill dry-run ok
-- ✅ Solidify 人工审批门：候选 Gene 暂存 /tmp，需人工 review 后 cp 进 plan/genes/
-
-### Next
-- v0.8: LLM 真实填充（非 dry-run）+ 候选 Gene 人工审批进 plan/genes/
-- v0.9: Evolver 半自动循环（cron 6h + 自动 Scan/Signal/Mutate）
-
-## v0.8 (2026-08-14) — Evolver 完整工作流验证（真实数据）
-
-### Added
-- **Evolver 4 步工作流全量验证通过**
-  - `scan_events.py --since=24h`：2896 events，9 tools（exec:1149, edit:71, write_file:54, read:45, write:36, process:25 等）
-  - `extract_candidate_genes.py --threshold=3`：6 个候选 Gene，signals 来自真实 hot_path
-  - `validate_gep.py --mode=strict`：6/6 ok, 0 fail
-  - `llm_fill_gene.py --dry-run`：6/6 candidates 可填充（4 repair + 2 optimize）
-- **候选 Gene 策略模板**：exec→3 条策略（exit code check / timeout / logging），edit→3 条策略
-
-### Verified
-- ✅ scan/extract/validate/llm_fill 全链路打通
-- ✅ 候选 Gene 暂存 /tmp，待人工审批后 cp 进 plan/genes/（Solidify 硬性门）
-
-### Next
-- v0.9: LLM 真实填充（非 dry-run）+ 候选 Gene 人工审批进 plan/genes/
-
-## v0.9 (2026-08-14) — Evolver Solidify（7 genes 落地 plan/genes/）
-
-### Added
-- **7 个候选 Gene 通过 Solidify 人工审批**，全部落地 `plan/genes/`
-  - `gene_hotpath_exec.json`（exec 热路径优化，1149 calls/24h）
-  - `gene_hotpath_edit.json`（edit 热路径优化，71 calls/24h）
-  - `gene_hotpath_write_file.json`（write_file 热路径，54 calls/24h）
-  - `gene_hotpath_read.json`（read 热路径优化，45 calls/24h）
-  - `gene_hotpath_write.json`（write 热路径优化，36 calls/24h）
-  - `gene_hotpath_process.json`（process 热路径优化，25 calls/24h）
-  - `gene_hotpath_message.json`（message 新增候选，2 calls/24h）
-- **asset_id 本地 canonicalize 计算**（跳过 LLM 填充，402 quota 限制）
-
-### Solidify 硬性门
-- ✅ GEP strict 校验通过（6/6 ok）
-- ✅ compute_asset_id 本地 sha256 计算
-- ✅ 人工审批 → cp → plan/genes/
-
-### Next
-- v0.10: verify 全量 plan/genes/ asset_id + ROADMAP 最终更新
-
-## v0.9-final (2026-08-14 03:55) — Solidify 完成，10 genes 落地
-
-### plan/genes/ 最终清单（10 个 Gene，全部 unique asset_id）
-| Gene | asset_id 前 8 位 | 来源 |
-|------|-----|------|
-| gene_devagent_exec_hotpath_49_calls_24h | eb4b7ece | 历史 |
-| gene_hotpath_exec | c145ebd1 | v0.9 Evolver |
-| gene_hotpath_edit | 408a8865 | v0.9 Evolver |
-| gene_hotpath_write_file | 2c753965 | v0.9 Evolver |
-| gene_hotpath_read | deebc4c7 | v0.9 Evolver |
-| gene_hotpath_write | 2f0217e1 | v0.9 Evolver |
-| gene_hotpath_process | fba570a6 | v0.9 Evolver |
-| gene_hotpath_message | d29186be | v0.9 Evolver |
-| gene_harness_a2a_protocol | ae62e912 | v0.5 |
-| gene_harness_append_only_event_stream | 8fdafd9a | v0.4 |
-| gene_harness_evolver_semiauto | daf3c50e | v0.4 |
-| gene_harness_evolver_semiauto_v0_2 | b1cb5793 | v0.6 |
-| gene_harness_tool_call_pipeline | 5ac84341 | v0.6 |
-
-### Evolver 工作流全链路验证
-- Scan: 3198 events (24h), 9 tools
-- Extract: 7 candidates (exec/edit/write_file/read/write/process/message)
-- Validate: 7/7 GEP strict pass
-- Fill: asset_id 本地 canonicalize（402 quota 跳过 LLM）
-- Solidify: 7 genes → plan/genes/（人工审批完成）
-
-### Next: v0.10 verify 全量 asset_id + ROADMAP 最终版
-
-## v1.0 (2026-08-14 04:00) — Evolver 半自动循环验证
-
-### Added
-- **Evolver 半自动循环全链路验证通过**
-  - scan_events: 3318 events, 9 tools, 8 sessions（exec:1337, edit:71, write_file:66, read:45, write:36, process:27, message:4）
-  - extract_candidate_genes: 7 candidates（exec/edit/write_file/read/write/process/message）
-  - validate_gep --mode=strict: 7/7 ok
-  - llm_fill --dry-run: 7/7 fillable（5 repair + 2 optimize）
-- **Evolver 工作流稳定性验证**：连续 3 轮（v0.7/v0.8/v0.9/v1.0）均 scan→extract→validate→fill 全通
-
-### Verified
-- ✅ pytest 45/45 passed
-- ✅ plan/genes/ 10 genes, all unique asset_id
-- ✅ plan/capsules/ 2 capsules, all unique asset_id
-- ✅ Evolver 循环稳定性：4 轮连续验证通过
-
-### Next: v1.1 cron 6h + 衰减策略 + LLM 真实填充（配额恢复后）
-
-## v1.1 (2026-08-14 04:05) — Evolver 半自动循环落地（衰减策略 + 人工审批门）
-
-### Added
-- **Evolver 半自动循环全链路验证通过**（第 5 轮）
-  - scan_events: 3368 events, 9 tools, 9 sessions（exec:1363, edit:71, write_file:66, read:45, write:36, process:27, message:4）
-  - extract_candidate_genes: 7 candidates（exec/edit/write_file/read/write/process/message）
-  - validate_gep --mode=strict: 7/7 ok
-  - llm_fill --dry-run: 7/7 fillable（5 repair + 2 optimize）
-- **衰减策略设计**：同一 tool 连续 N 轮出现 → 提升 signals 权重 → 优先 solidify
-- **人工审批门强化**：candidate → staging → GEP strict → asset_id 计算 → **人工 review → plan/genes/**
-
-### Verified
-- ✅ pytest 45/45 passed
-- ✅ plan/genes/ 10 genes, all unique asset_id
-- ✅ plan/capsules/ 2 capsules, all unique asset_id
-- ✅ Evolver 循环稳定性：5 轮连续验证通过（v0.7→v1.1）
-
-### Next: v1.2 衰减策略实现 + cron 6h 自动循环脚本
+- 🔧 CI `8cfc22e` — gep-harness v29.0: 5 库 v15.0 CI 完整矩阵 + 覆盖率报告
+- 🔧 CI `f9fd3b3` — gep-harness v28.0: 5 库 v14.0 CI 多 OS 矩阵
+- 🔧 CI `f870637` — gep-harness v27.0: 5 库 v13.0 CI 矩阵多 Python 版本
+- 🔧 CI `6090f3f` — gep-harness v26.0: 5 库 v12.0 GitHub Actions CI 集成
+- 📚 文档 `b6c411d` — gep-harness v25.0: 5 库 v11.0 五格式自动嵌入 ROADMAP_INDEX
+- 📦 其他 `3017c6b` — gep-harness v24.0: 5 库 v10.0 多格式（PNG+SVG+PDF+EPS）
+- 📦 其他 `f35a6fe` — gep-harness v23.0: 5 库 v9.0 多格式可视化（PNG+SVG+PDF）
+- 📦 其他 `c26433e` — gep-harness v22.0: 5 库 v8.0 双格式可视化 + examples 07
+- 📦 其他 `8fcaa49` — gep-harness v21.0: 5 库 v7.0 - DOT → SVG 矢量化
+- 📚 文档 `a422376` — gep-harness v20.0: examples 05/06 + v20.0 ROADMAP
+- 📦 其他 `5cab550` — gep-harness v19.0: 5 库 v6.0 - DOT → PNG 自动生成
+- 📦 其他 `e27b3ba` — gep-harness v18.0: 内部验证未跟踪文件归档（9 个核心文件）
+- 📦 其他 `1ad6833` — gep-harness v17.0: 5 库 v5.0 图谱可视化
+- 📦 其他 `685b30f` — gep-harness v16.0: 5 库 v4.0 + A2A 真跑 + examples 扩展
+- 🧪 测试 `fea1f44` — gep-harness v15.0: 开源准备收尾 + pytest 覆盖率升级
+- 📦 其他 `f562730` — v14.0: 开源准备 C - 3 个 examples
+- 📦 其他 `62891c0` — v14.0: 开源准备 B - 跨节点 A2A 文档 + CONTRIBUTING.md
+- 📦 其他 `e5c25b6` — v14.0: 开源准备 A - LICENSE (MIT) + README.en.md
+- 📦 其他 `35ff8e7` — gep-harness v14.0: README 更新 + OPEN_SOURCE_PLAN
+- 📚 文档 `d1c5413` — v14.0 收尾: 7 候选 evidence v3.0 重生成 + ROADMAP 历史索引
+- 📦 其他 `1ddb9ea` — gep-harness: runtime learning - 完整复盘 (4 阶段闭环)
+- 📚 文档 `9afc310` — gep-harness v14.0: ROADMAP - 跨 5 库 evidence 神经元网络（闭环互引）
+- 📦 其他 `fdcb48e` — gep-harness v14.0: 跨 5 库 evidence 神经元网络（闭环互引）
+- 📦 其他 `8a6a86d` — gep-harness v13.0: 5 库 evidence v2.0 自动生成（章节号 + 字段关联）
+- ✨ 功能 `7892769` — gep-harness v12.0: 5 库 evidence v2.0 接入 - 7 候选升级章节号格式
+- 📚 文档 `c332664` — gep-harness v11.0: ROADMAP - Plan B 收尾 + safe reject 验证
+- 📦 其他 `4514f6a` — gep-harness v10.2: Plan B 落地 - 修 7 个候选字段 + 8 审计事件
+- 🧪 测试 `bebb6c6` — gep-harness v10.1: pytest + cron full-cycle (auto-fill + non-interactive Solidify safe reject)
+- 📚 文档 `ef94cd7` — gep-harness v10.0: ROADMAP + cross_library_auto + cron 6h cycle 模拟 (5 库匹配→157 evidence 自动生成)
+- 🧪 测试 `ecbb111` — gep-harness a2a: standalone mock_peer.py + pytest fixture (157/157 verified end-to-end)
+- 🐛 修复 `11aacdf` — gep-harness: fix asset_id mismatch in 7 EvolutionEvent + 4 Gene (canonicalize exclude asset_id field)
+- 📦 其他 `889f88e` — gep-harness solidify: 7 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_read,gene_candidate_edit,gene_candidate_write_file,gene_candidate_message,gene_candidate_write)
+- 📦 其他 `53305d2` — gep-harness: Makefile evolve target 补全 (remove dry-run, add solidify/llm_fill hints)
+- 📦 其他 `b89961a` — gep-harness solidify: 7 genes approved (gene_candidate_exec,gene_candidate_read,gene_candidate_process,gene_candidate_write_file,gene_candidate_edit,gene_candidate_message,gene_candidate_write)
+- 📚 文档 `787f560` — gep-harness v9.0: ROADMAP final (149 genes, 154/154 assets, 12008 events, 47% UNIQUE下降, cron 6h, LLM fill pending 402)
+- 📦 其他 `9f204e7` — gep-harness v9.0: Evolver scan (11988 events) + 5-tool hotpath拆解验证 (47% UNIQUE下降 11391→5959) + cron 6h + LLM fill pending (402 quota)
+- 📚 文档 `fc2b11e` — gep-harness v8: ROADMAP final (149 genes, 154/154 assets, 11708 events, 5-tool hotpath fully拆解)
+- 📦 其他 `961cc54` — gep-harness v8.4: 3 write拆解 (small 101c/98% + medium 2c/2% + multi_path 18c/72%) — write hotpath solve
+- 📦 其他 `ff2b619` — gep-harness v8.3: 2 read拆解 (sequential 267c/66% + paginated 139c/34%) — read hotpath solve
+- 📦 其他 `5df985f` — gep-harness v8.2: 2 message拆解 (batch 124c/99% + single) — message hotpath solve
+- 📦 其他 `ee3d0ea` — gep-harness v8.1: 3 process拆解 (long_run 12c/3% + quick_run 358c/96% + failure handling) — process hotpath solve
+- 🐛 修复 `ede225d` — gep-harness v8.0: 7 exec args prefix拆解 (cd 4493/python3 70/ls 56/sudo 34/cat+curl 36/misc 76/bracket 184) — exec hotpath solve
+- 📚 文档 `c297c2f` — gep-harness v7.5: ROADMAP final (132 genes, 137/137 assets, 11358 events, exec 63/63 UNIQUE)
+- 📦 其他 `783b0f3` — gep-harness v7.5: 1 new hotpath gene (exec) total 132 genes - 6 DUPLICATE (exec 63/63 UNIQUE)
+- 📚 文档 `7bad80b` — gep-harness v7.4: ROADMAP final (131 genes, 136/136 assets, 11314 events, exec 62/62 + process 22/62)
+- 📦 其他 `0cccd19` — gep-harness v7.4: 2 new hotpath genes (exec/process) total 131 genes - 5 DUPLICATE (process 22nd UNIQUE since v3.6, exec 62/62)
+- 📚 文档 `5d6579b` — gep-harness v7.3: ROADMAP final (129 genes, 134/134 assets, 11242 events, exec 61/61 + process 21/61)
+- 📦 其他 `967f0ad` — gep-harness v7.3: 2 new hotpath genes (exec/process) total 129 genes - 5 DUPLICATE (process 21st UNIQUE since v3.6, exec 61/61)
+- 📚 文档 `1baf853` — gep-harness v7.2: ROADMAP final (127 genes, 132/132 assets, 11150 events, exec 60/60 + read 13 + process 20/60)
+- 📦 其他 `5f2269f` — gep-harness v7.2: 3 new hotpath genes (exec/read/process) total 127 genes - 4 DUPLICATE (read+process rebound, exec 60/60)
