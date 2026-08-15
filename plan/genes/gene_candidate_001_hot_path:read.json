@@ -30,11 +30,11 @@
   ],
   "summary": "Hot-path optimization for read (203 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "OpenStaxBiology 信息论",
-    "CognitivePsychology 记忆锚点",
-    "BeautifulMathematics 信息熵",
-    "evomap 事件流",
-    "cell-biology 信号转导"
+    "BeautifulMathematics Ch17 信息熵: read 减少信息熵（未知内容 → 已知内容），v10.2 trigger=gdi_threshold:0.95",
+    "cell-biology Ch15 信号转导: read = 选择性摄取（selective uptake），非读全部",
+    "CognitivePsychology Ch6 记忆锚点: read 高频路径 = 短时记忆锚点（多次扫同一 path）",
+    "OpenStaxBiology Ch01 信息论: read = 信息传递（mutation 双向：写→读→再写）",
+    "evomap GEP v1.12.1 §2.3 事件流: read 触发 EvolutionEvent 写入 events.jsonl"
   ],
   "asset_id": "sha256:3a205db1cbe160b1c30d34c0275ae08729d726a061aae30b28ca86843d99ac6d",
   "scope": [
@@ -49,5 +49,6 @@
     "hotpath_tool:read",
     "auto_reject_safe_v10.1",
     "gdi_threshold:0.95"
-  ]
+  ],
+  "evidence_version": "v2.0"
 }

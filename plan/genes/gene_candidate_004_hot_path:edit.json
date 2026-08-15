@@ -30,11 +30,11 @@
   ],
   "summary": "Hot-path optimization for edit (89 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "cell-biology 基因突变",
-    "CognitivePsychology 确认偏误",
-    "BeautifulMathematics 精确性",
-    "evomap 演化变异",
-    "OpenStaxBiology DNA 修复"
+    "BeautifulMathematics Ch12 算法: edit = CAS 原子性证明（read-check-write）",
+    "cell-biology Ch15 基因突变: edit 类比基因突变（局部修改）→ DNA 修复（confirmation）",
+    "CognitivePsychology Ch6 确认偏误: edit 容易触发确认偏误（局部看得见、远处遗漏）",
+    "OpenStaxBiology Ch01 DNA 修复: edit 失败 = 突变 → 修复机制（rollback）",
+    "evomap GEP v1.12.1 §2.3 演化变异: edit 留演化痕迹（erratum 审计）"
   ],
   "asset_id": "sha256:0f437fbdac53a185e3f21b7f2ce345e35498d7d4f7c6a742745879a5e7700e20",
   "scope": [
@@ -49,5 +49,6 @@
     "hotpath_tool:edit",
     "auto_reject_safe_v10.1",
     "gdi_threshold:0.95"
-  ]
+  ],
+  "evidence_version": "v2.0"
 }

@@ -30,11 +30,11 @@
   ],
   "summary": "Hot-path optimization for write (62 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "BeautifulMathematics 幂等性保证",
-    "cell-biology 反馈回路",
-    "CognitivePsychology attention bottleneck",
-    "OpenStaxBiology 膜流动性",
-    "evomap GEP 协议"
+    "BeautifulMathematics Ch12 算法: write = 单写者多读者 + 幂等性保证",
+    "cell-biology Ch15 反馈回路: write 失败 retry = 负反馈（多次 retry 触发衰减）",
+    "CognitivePsychology Ch6 长时记忆: write 记忆锚点 = 草稿合并（<10KB 合并）",
+    "OpenStaxBiology Ch01 进化: write 频次 = 适应度（62 calls/24h）",
+    "evomap GEP v1.12.1 §2.3 EvolutionEvent: write 关联 scope=[openclaw, gep-harness, history, tool:hotpath:write]"
   ],
   "asset_id": "sha256:a810dc28d326a046d86d7432d60d7268b9e9ae4138bf785d6e05232731a226d8",
   "_local_filled": true,
@@ -50,5 +50,6 @@
     "hotpath_tool:write",
     "auto_reject_safe_v10.1",
     "gdi_threshold:0.95"
-  ]
+  ],
+  "evidence_version": "v2.0"
 }

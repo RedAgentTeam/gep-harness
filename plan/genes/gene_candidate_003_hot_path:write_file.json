@@ -30,11 +30,11 @@
   ],
   "summary": "Hot-path optimization for write_file (92 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "CognitivePsychology 一般化",
-    "evomap GEP",
-    "OpenStaxBiology 方法论",
-    "cell-biology 适应",
-    "BeautifulMathematics"
+    "BeautifulMathematics Ch12 算法: write_file = 单写者多读者不变性（read-before-write 幂等）",
+    "cell-biology Ch15 反馈回路: write_file 失败 retry = 负反馈（homeostasis）",
+    "CognitivePsychology Ch6 一般化: write_file 一般化 = 草稿→定稿（commit 路径）",
+    "OpenStaxBiology Ch01 方法论: write_file 实验方法 = 复现验证（asset_id 校验）",
+    "evomap GEP v1.12.1 §2.3 EvolutionEvent: write_file 失败重试入审计链"
   ],
   "asset_id": "sha256:3750953aa32a24465b48fecd2f7a83748043c32c75eb9cbb4ba66a79f0433696",
   "scope": [
@@ -49,5 +49,6 @@
     "hotpath_tool:write_file",
     "auto_reject_safe_v10.1",
     "gdi_threshold:0.95"
-  ]
+  ],
+  "evidence_version": "v2.0"
 }
