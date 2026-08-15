@@ -1,3 +1,101 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# Testing / Coverage
+.coverage
+.coverage.*
+.coverage.bak
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+coverage.xml
+coverage.json
+.cache
+.pytest_cache
+
+# mypy / linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+.mypy_cache/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Staging (临时 staging 区)
 staging/
+/tmp/v_staging/
+
+# Local config (凭据禁止入库)
+.env
+.env.local
+*.env
+.venv/
+
+# Cron / tmp
+*.pid
+*.sock
+/tmp/
+
+# Coverage report
+htmlcov/
+.coverage_report/
+
+# OS
+Thumbs.db
+*.swp
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Project-specific
+Makefile.bak
+data/raw/
+data/processed/
+data/results/
+backup/
+
+# Cross-platform
+.mypy_cache/
+.pyre/
