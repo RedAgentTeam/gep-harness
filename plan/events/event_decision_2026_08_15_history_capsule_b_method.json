@@ -50,7 +50,7 @@
     "question_to_hu": "评估'直接删：按 mtime 保留最新'这个方法是否正确",
     "hu_decision": "选B",
     "ts": "2026-08-15T01:31:00+08:00",
-    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988",
+    "session_id": "agent:devagent:feishu:devagent:direct:<user-open-id>",
     "model": "minimax/MiniMax-M3"
   },
   "outcome": {

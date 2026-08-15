@@ -115,12 +115,75 @@ def verify_all(path: Path | None = None) -> tuple[int, int]:
     return ok, fail
 
 
+def _daemon_mode() -> int:
+    """P1-1: long-running stdin/stdout JSONL daemon.
+
+    Protocol:
+      input (stdin): one JSON object per line
+        {"action": "emit", "session_id": "...", "kind": "...",
+         "tool_name": "...", "args": {...}, "result": {...},
+         "duration_ms": 123}
+      output (stdout): one JSON object per line
+        {"ok": true, "asset_id": "sha256:..."}     on success
+        {"ok": false, "error": "..."}              on failure
+        {"ok": true, "action": "shutdown"}          on shutdown ack
+
+    Reads until EOF (parent closes stdin) or a {"action": "shutdown"} line.
+    """
+    out = sys.stdout
+    err = sys.stderr
+    try:
+        for raw in sys.stdin:
+            line = raw.strip()
+            if not line:
+                continue
+            try:
+                req = json.loads(line)
+            except json.JSONDecodeError as e:
+                err.write(f"[emitter-daemon] bad json: {e}\n")
+                # can't echo _reqId — bad line wasn't valid json to begin with
+                out.write(json.dumps({"ok": False, "error": f"bad_json:{e}"}) + "\n")
+                out.flush()
+                continue
+            action = req.get("action")
+            req_id = req.get("_reqId")  # pass-through for caller correlation
+            if action == "shutdown":
+                out.write(json.dumps({"ok": True, "action": "shutdown", "_reqId": req_id}) + "\n")
+                out.flush()
+                return 0
+            if action == "emit":
+                try:
+                    ev = emit(
+                        session_id=req["session_id"],
+                        kind=req["kind"],
+                        tool_name=req.get("tool_name"),
+                        args=req.get("args"),
+                        result=req.get("result"),
+                        duration_ms=req.get("duration_ms"),
+                    )
+                    out.write(json.dumps(
+                        {"ok": True, "asset_id": ev.get("asset_id"), "_reqId": req_id},
+                        ensure_ascii=False,
+                    ) + "\n")
+                    out.flush()
+                except Exception as e:
+                    out.write(json.dumps({"ok": False, "error": str(e), "_reqId": req_id}) + "\n")
+                    out.flush()
+                continue
+            # Unknown action
+            out.write(json.dumps({"ok": False, "error": f"unknown_action:{action}", "_reqId": req_id}) + "\n")
+            out.flush()
+    except BrokenPipeError:
+        # Parent died; exit cleanly.
+        return 0
+    return 0
+
+
 if __name__ == "__main__":
-    # CLI: openclaw event emit <session_id> <kind> [--tool TOOL] [--args JSON] [--result JSON] [--duration MS]
     import argparse
 
     p = argparse.ArgumentParser()
-    p.add_argument("action", choices=["emit", "replay", "verify"])
+    p.add_argument("action", choices=["emit", "replay", "verify", "daemon"])
     p.add_argument("session_id", nargs="?")
     p.add_argument("kind", nargs="?")
     p.add_argument("--tool")
@@ -128,6 +191,9 @@ if __name__ == "__main__":
     p.add_argument("--result")
     p.add_argument("--duration", type=int)
     args = p.parse_args()
+
+    if args.action == "daemon":
+        sys.exit(_daemon_mode())
 
     if args.action == "emit":
         ev = emit(

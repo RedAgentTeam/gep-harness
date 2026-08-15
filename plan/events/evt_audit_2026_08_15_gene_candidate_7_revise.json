@@ -7,7 +7,7 @@
   "actor": {
     "handle": "devagent",
     "evox_install_id": "openclaw-devagent-001",
-    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988"
+    "session_id": "agent:devagent:feishu:devagent:direct:<user-open-id>"
   },
   "details": {
     "summary": "Plan B 落地：清理 130 重复 + 修 7 个 Gene 候选字段 + 7/7 GEP strict + 9/9 pytest",

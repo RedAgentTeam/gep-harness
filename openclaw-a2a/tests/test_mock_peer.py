@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-REPO = Path("/data/disk/gep-harness")
+REPO = Path(__file__).resolve().parent.parent.parent
 MOCK_PEER = REPO / "openclaw-a2a" / "src" / "mock_peer.py"
 GENE_SYNC = REPO / "openclaw-a2a" / "src" / "gene_sync.py"
 POOL_DIR = "/root/.openclaw/gene-pool"
@@ -43,6 +43,7 @@ def mock_peer():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        env={**os.environ, "A2A_SHARED_SECRET": "mock-test-secret-for-pytest"},
     )
     assert _wait_for_port("127.0.0.1", port), "mock_peer failed to start"
     yield port
@@ -66,6 +67,7 @@ def test_gene_sync_accepted_with_mock_peer(mock_peer):
         capture_output=True,
         text=True,
         timeout=30,
+        env={**os.environ, "A2A_SHARED_SECRET": "mock-test-secret-for-pytest"},
     )
     assert "sent=" in result.stdout
     # Parse last line of stdout: "... sent=N accepted=A rejected=R"
@@ -117,6 +119,7 @@ def test_mock_peer_rejected_decision():
         [sys.executable, str(MOCK_PEER), "--port", str(port), "--decision", "rejected"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        env={**os.environ, "A2A_SHARED_SECRET": "mock-test-secret-for-pytest"},
     )
     try:
         assert _wait_for_port("127.0.0.1", port)
@@ -130,6 +133,7 @@ def test_mock_peer_rejected_decision():
             capture_output=True,
             text=True,
             timeout=30,
+            env={**os.environ, "A2A_SHARED_SECRET": "mock-test-secret-for-pytest"},
         )
         last_line = [l for l in result.stdout.splitlines() if "sent=" in l][-1]
         rejected = int(last_line.split("rejected=")[1].split()[0])

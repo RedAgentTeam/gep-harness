@@ -19,7 +19,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-REPO = Path("/data/disk/gep-harness")
+REPO = Path(__file__).resolve().parent.parent
 PLAN_GENES = REPO / "plan" / "genes"
 PLAN_CAPSULES = REPO / "plan" / "capsules"
 DRAFTS_DIR = Path("/tmp/capsule_drafts")
@@ -176,7 +176,7 @@ def main():
             },
             "trigger_context": {
                 "prompt": "胡老师 01:31 决议：选 B 把 gene 演化历史打包成 Capsule，保留 65 期演化",
-                "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988",
+                "session_id": "agent:devagent:feishu:devagent:direct:<user-open-id>",
                 "agent_model": "minimax/MiniMax-M3",
                 "context_signals": [
                     "gene_history_preservation",

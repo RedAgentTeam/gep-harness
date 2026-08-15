@@ -48,7 +48,7 @@
   },
   "trigger_context": {
     "prompt": "使用 5 个跨学科知识库作为分析视角，开 Plan。严格执行 GEP 协议标准",
-    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988",
+    "session_id": "agent:devagent:feishu:devagent:direct:<user-open-id>",
     "agent_model": "minimax/MiniMax-M3",
     "context_signals": [
       "5 库路径",

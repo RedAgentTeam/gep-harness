@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 # Add openclaw-harness/bin to path for canonicalize
-sys.path.insert(0, "/data/disk/gep-harness/openclaw-harness/bin")
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "openclaw-harness/bin"))
 from canonicalize import compute_asset_id, verify_asset_id, SCHEMA_VERSION  # noqa: E402
 
 REQUIRED_BY_TYPE = {

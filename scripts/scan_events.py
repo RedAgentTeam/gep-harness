@@ -13,7 +13,7 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-DEFAULT_EVENTS = "/data/disk/gep-harness/openclaw-harness/events/events.jsonl"
+DEFAULT_EVENTS = str(Path(__file__).resolve().parent.parent / "openclaw-harness/events/events.jsonl")
 
 
 def parse_iso(ts: str) -> datetime:

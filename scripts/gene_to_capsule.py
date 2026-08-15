@@ -19,7 +19,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-REPO = Path("/data/disk/gep-harness")
+REPO = Path(__file__).resolve().parent.parent
 PLAN_GENES = REPO / "plan" / "genes"
 PLAN_CAPSULES = REPO / "plan" / "capsules"
 SCHEMA_VERSION = "1.12.1"

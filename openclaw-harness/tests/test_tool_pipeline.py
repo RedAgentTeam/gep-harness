@@ -89,7 +89,11 @@ plugin.register({
   on(n, f, o) { handlers[n] = f; },
 });
 const secret = {
-  stdout: "User <REDACTED>@<REDACTED_HOST> used sk-<REDACTED> token",
+  // Use patterns that ACTUALLY match BUILTIN_REDACT:
+  //   "Red\\d{6,}" (SSH password prefix) and "sk-[A-Za-z0-9]{20,}" (OpenAI key).
+  // The test used <REDACTED> literals previously, which never matched any
+  // regex and made the assertion vacuously pass-or-fail depending on inputs.
+  stdout: "user Red753951 logged in with sk-abcdefghijklmnopqrstuvwxyz123456",
   ok: true,
 };
 // Spy on console.warn

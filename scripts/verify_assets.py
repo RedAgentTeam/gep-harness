@@ -6,15 +6,15 @@ import json
 import sys
 import glob
 
-sys.path.insert(0, "/data/disk/gep-harness/openclaw-harness/bin")
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "openclaw-harness/bin"))
 from canonicalize import compute_asset_id
 
 total_ok = 0
 total_fail = 0
 for path in sorted(
-    glob.glob("/data/disk/gep-harness/plan/genes/*.json")
-    + glob.glob("/data/disk/gep-harness/plan/capsules/*.json")
-    + glob.glob("/data/disk/gep-harness/plan/events/*.json")
+    glob.glob(str(Path(__file__).resolve().parent.parent / "plan/genes/*.json"))
+    + glob.glob(str(Path(__file__).resolve().parent.parent / "plan/capsules/*.json"))
+    + glob.glob(str(Path(__file__).resolve().parent.parent / "plan/events/*.json"))
 ):
     obj = json.load(open(path))
     computed = compute_asset_id(obj)

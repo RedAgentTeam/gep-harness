@@ -12,7 +12,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO = Path("/data/disk/gep-harness")
+REPO = Path(__file__).resolve().parent.parent
 
 
 def run_git_log(since: str | None = None, limit: int = 50) -> list[str]:

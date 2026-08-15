@@ -35,7 +35,7 @@
   },
   "trigger_context": {
     "prompt": "A：approved 进库",
-    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988",
+    "session_id": "agent:devagent:feishu:devagent:direct:<user-open-id>",
     "agent_model": "minimax/MiniMax-M3"
   },
   "meta": {

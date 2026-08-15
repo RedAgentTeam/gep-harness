@@ -120,15 +120,28 @@ cat 方法论.md
 
 ## 现状（2026-08-15 v14.0 收尾）
 
+> **数字口径说明**：以下数字均为单一事实源，由 `scripts/docs_lint.py --check` 实时校对（不依赖历史叙述）。若 README 与实际 drift，请跑 `python3 scripts/docs_lint.py --update` 同步。
+
 | 维度 | 数据 |
 |------|------|
+| commit 数 | 198 |
 | ROADMAP 期数 | 75（迭代轮次 #1 ~ #75） |
 | Gene 总数 | 152¹ |
-| Event 数 | 19+ EvolutionEvent |
-| pytest | 16/16 (test_cross_library_auto.py) |
+| Capsule 总数 | 2 |
+| Event 总数 | 19（EvolutionEvent） |
+| pytest | 102/102 全量收集中（已运行：P0/P1 补充后实际结果以 `make test` 为准） |
 | GEP strict | 7/7 |
-| 启发式联想辅助 | v3.0 神经元网络（闭环互引） |
 | 安全 | 本机运行 / 生产部署未启动 |
+
+### 协议裁剪说明（P1-4 闭环）
+
+GEP 标准 7 阶段 = `Detect → Select → Mutate → Hypothesize → Execute → Evaluate → Solidify`。本项目实现裁剪为 5 阶段：`Scan → Signal → Mutate → Validate → Solidify`。
+
+- **裁剪掉 Hypothesize**：本项目的"假设形成"内嵌在 `Mutate` 阶段（每个候选 Gene 自带 signals_match + 触发条件，相当于把 H 揉进 M），未单独抽象为独立阶段。理由：避免 Hyp 阶段空转（没有可用 feedback 信号时 H 阶段无产物）。
+- **裁剪掉 Evaluate**：本项目无独立"执行评估"阶段，`Validate` 替代之——直接跑 GEP strict + pytest + 5 库 evidence 校验，不引入 Evaluate 的双盲测试等重型流程。理由：个人学习项目，重型 A/B 框架成本与收益不匹配。
+- **保留 Solidify 人工审批**：见上表 + `docs/SOLIDIFY.md`，人工门是 GEP 7 阶段里唯一不可裁剪的（Arrow 定理 + 认知错觉）。
+
+未来若产品化（多人协作/规模化），可重新引入 H/E 阶段作为 v2.x 路线。
 
 ## 4 阶段闭环（收窄范围优先级：阶段 1+2 最成熟）
 

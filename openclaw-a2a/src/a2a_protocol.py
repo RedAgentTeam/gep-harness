@@ -13,8 +13,20 @@ import time
 import uuid
 from datetime import datetime, timezone
 import shutil
+import base64
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+
+# P1-2: optional ed25519 backend (preferred over HMAC for new envelopes).
+# If cryptography is unavailable, fall back to HMAC-SHA256 with a clear warning.
+try:
+    from cryptography.hazmat.primitives.asymmetric import ed25519 as _ed25519
+    from cryptography.exceptions import InvalidSignature as _InvalidSignature
+    _ED25519_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    _ed25519 = None
+    _InvalidSignature = Exception  # type: ignore
+    _ED25519_AVAILABLE = False
 
 PROTOCOL_VERSION = "1.0"
 
@@ -79,28 +91,67 @@ def get_node_id() -> str:
 
 
 def get_node_secret() -> str:
+    # P0-2 fix: NO silent default. Missing shared secret is a fatal config error,
+    # not a fallback to a public string that voids HMAC entirely.
     # v0.2: shared secret model (trust bootstrap via A2A_SHARED_SECRET env).
     # v0.3 should switch to per-node keypair + signed public key exchange.
-    return (
+    secret = (
         os.environ.get("A2A_SHARED_SECRET")
         or os.environ.get("A2A_NODE_SECRET")
-        or "dev-shared-secret-do-not-use-in-prod"
     )
+    if not secret:
+        raise RuntimeError(
+            "A2A_SHARED_SECRET (or A2A_NODE_SECRET) environment variable is required. "
+            "Refusing to fall back to a default shared secret: that would make HMAC "
+            "signatures trivially forgeable by anyone with source access. "
+            "Set A2A_SHARED_SECRET=<random-string-from-password-manager> in your env "
+            "before starting the A2A server."
+        )
+    return secret
 
 
-def sign_message(payload: dict, secret: str) -> str:
-    """Sign a message using HMAC-SHA256 (stand-in for ed25519).
+def sign_message(payload: dict, secret: str, algorithm: str = "hmac-sha256") -> str:
+    """Sign a message using the requested algorithm.
 
-    Uses HMAC instead of ed25519 to avoid extra deps in stdlib-only env.
-    Signature format: 'sha256:<hex>'
+    Algorithms:
+      - "hmac-sha256" (default, backward-compat): signature = "sha256:<hex>"
+      - "ed25519": signature = "ed25519:<base64(64-byte signature)>",
+        where `secret` is a raw 32-byte ed25519 private key.
+
+    P1-2: ed25519 is the preferred algorithm for new envelopes.
     """
     payload_bytes = canonicalize(payload).encode("utf-8")
+    if algorithm == "ed25519":
+        if not _ED25519_AVAILABLE:
+            raise RuntimeError(
+                "ed25519 signing requested but `cryptography` package is not "
+                "installed. Run: pip install cryptography"
+            )
+        priv = _ed25519.Ed25519PrivateKey.from_private_bytes(secret)
+        sig_bytes = priv.sign(payload_bytes)
+        return "ed25519:" + base64.b64encode(sig_bytes).decode("ascii")
+    # default: hmac-sha256
     sig = hmac.new(secret.encode("utf-8"), payload_bytes, hashlib.sha256).hexdigest()
     return "sha256:" + sig
 
 
 def verify_signature(payload: dict, signature: str, secret: str) -> bool:
-    expected = sign_message(payload, secret)
+    """Verify a signature regardless of its algorithm prefix.
+
+    Accepts both "sha256:<hex>" (HMAC) and "ed25519:<base64>" signatures.
+    """
+    if signature.startswith("ed25519:"):
+        if not _ED25519_AVAILABLE:
+            return False
+        try:
+            sig_bytes = base64.b64decode(signature[len("ed25519:"):], validate=True)
+            pub = _ed25519.Ed25519PublicKey.from_public_bytes(secret)
+            pub.verify(sig_bytes, canonicalize(payload).encode("utf-8"))
+            return True
+        except (_InvalidSignature, ValueError, TypeError):
+            return False
+    # default: hmac-sha256
+    expected = sign_message(payload, secret, algorithm="hmac-sha256")
     return hmac.compare_digest(expected, signature)
 
 
@@ -481,9 +532,21 @@ class A2AHandler(BaseHTTPRequestHandler):
             self._send_json(400, {"error": "intent_must_be_publish", "got": intent})
             return
 
-        # For dev/testing: skip signature verification
-        # (real impl uses peer public keys)
-        # verify_ok = verify_signature(payload, signature, peer_secret_for(sender))
+        # P0-1 fix: actually verify the signature.
+        # v0.2: shared/trusted mode (HMAC over shared secret) — see get_node_secret().
+        # v0.3 should switch to per-node keypair + peer public-key lookup.
+        if not signature:
+            self._send_json(401, {"error": "missing_signature", "sender": sender})
+            return
+        try:
+            verify_ok = verify_signature(payload, signature, get_node_secret())
+        except RuntimeError as e:
+            # get_node_secret() raised because shared secret is not configured.
+            self._send_json(503, {"error": "server_misconfigured", "detail": str(e)})
+            return
+        if not verify_ok:
+            self._send_json(401, {"error": "signature_invalid", "sender": sender})
+            return
 
         # Validate asset_id
         computed = compute_asset_id(payload)

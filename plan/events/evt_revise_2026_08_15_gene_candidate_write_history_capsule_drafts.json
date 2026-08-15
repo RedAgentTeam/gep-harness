@@ -7,7 +7,7 @@
   "actor": {
     "handle": "devagent",
     "evox_install_id": "openclaw-devagent-001",
-    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988"
+    "session_id": "agent:devagent:feishu:devagent:direct:<user-open-id>"
   },
   "target": {
     "asset_type": "Gene",

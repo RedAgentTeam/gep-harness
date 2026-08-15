@@ -15,6 +15,20 @@
 
 Solidify 是硬性人工审批门，不自动执行。
 """
+import sys
+import os
+from pathlib import Path
+
+# P0-3 fix: ensure canonicalize.py (in openclaw-harness/bin) is importable
+# both when this script is run directly AND when imported as a module.
+_here = Path(__file__).resolve().parent
+_bin = _here.parent / "openclaw-harness" / "bin"
+if str(_bin) not in sys.path:
+    sys.path.insert(0, str(_bin))
+
+import argparse
+import json
+import hashlib
 import argparse
 import json
 import hashlib
@@ -22,20 +36,27 @@ import subprocess
 import sys
 from pathlib import Path
 
-GEP_HARNESS = Path('/data/disk/gep-harness')
+# P0-4 fix: resolve repo root from this file's location, not a hard-coded absolute path.
+# scripts/solidify.py lives at <repo>/scripts/solidify.py → parent.parent = <repo>.
+GEP_HARNESS = Path(__file__).resolve().parent.parent
 PLAN_GENES = GEP_HARNESS / 'plan/genes'
 PLAN_EVENTS = GEP_HARNESS / 'plan/events'
 STAGING = Path('/tmp/v_staging')
 
+# P0-3 fix: import canonicalize from canonicalize.py (single source of truth)
+# Replaces the old inline json.dumps(sort_keys=True) implementation which only
+# sorted top-level keys and excluded fields differently from canonicalize.py.
+from canonicalize import canonicalize as _canonicalize, compute_asset_id as _compute_asset_id_canonical  # noqa: E402
+
 
 def compute_asset_id(g):
-    """GEP strict canonicalize (same as canonicalize.py)"""
+    """GEP strict canonicalize — delegates to canonicalize.py (single source of truth).
+    Excludes asset_id + protected fields, then recursive-canonicalizes the rest.
+    """
     protected = {'type', 'schema_version', 'id', 'signals_match', 'preconditions',
                  'constraints', 'validation', 'asset_id'}
     payload = {k: v for k, v in g.items() if k not in protected and not k.startswith('_')}
-    return 'sha256:' + hashlib.sha256(
-        json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(',',':')).encode()
-    ).hexdigest()
+    return _compute_asset_id_canonical(payload)
 
 
 def load_existing_genes():

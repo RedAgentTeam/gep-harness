@@ -29,7 +29,7 @@
   },
   "trigger_context": {
     "prompt": "A + B",
-    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988",
+    "session_id": "agent:devagent:feishu:devagent:direct:<user-open-id>",
     "agent_model": "minimax/MiniMax-M3",
     "context_signals": [
       "阶段 2 完成后胡老师 A+B 指令",

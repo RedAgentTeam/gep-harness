@@ -14,7 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO = Path("/data/disk/gep-harness")
+REPO = Path(__file__).resolve().parent.parent
 
 
 def git_has_changes() -> bool:

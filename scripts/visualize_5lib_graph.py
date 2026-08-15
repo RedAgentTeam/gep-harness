@@ -15,7 +15,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/data/disk/gep-harness/scripts")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from cross_library_auto import LIBRARY_GRAPH_EDGE, LIBRARY_CHAPTER
 
@@ -129,7 +129,7 @@ def main() -> None:
         Path(args.output).write_text(render_markdown_table())
         print(f"\n✅ Markdown 写入: {args.output}")
 
-    repo = Path("/data/disk/gep-harness")
+    repo = Path(__file__).resolve().parent.parent
     dot_content = render_dot_format()
     for fmt, flag in [("png", args.png), ("svg", args.svg), ("pdf", args.pdf)]:
         if flag:

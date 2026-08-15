@@ -8,7 +8,7 @@
 
 ## 前置确认（5 条铁律）
 
-1. ✅ 不编凭证（SOUL #1）— yesimagine@gmail.com 由你自己配
+1. ✅ 不编凭证（SOUL #1）— <user-email> 由你自己配
 2. ✅ 不凭印象诊断 — 所有路径都先查
 3. ✅ 不 write 覆盖 memory — MEMORY.md 全程 append
 4. ❌ 不在本机做生产相关改动 — 本机 <本机 dev IP> 仅 dev/test
@@ -39,7 +39,7 @@ Visibility: ✅ Public
 
 ```bash
 # 1. 生成 SSH key（专用 GitHub，不覆盖已有 key）
-ssh-keygen -t ed25519 -C "yesimagine@gmail.com" -f ~/.ssh/github_redagentteam_ed25519
+ssh-keygen -t ed25519 -C "<user-email>" -f ~/.ssh/github_redagentteam_ed25519
 
 # 2. 配 ~/.ssh/config
 cat >> ~/.ssh/config << 'EOF'
@@ -71,7 +71,7 @@ ssh -T git@github.com
 
 ```bash
 git config --global user.name "Red Ho"
-git config --global user.email "yesimagine@gmail.com"
+git config --global user.email "<user-email>"
 ```
 
 ---
@@ -206,7 +206,7 @@ MIT
 | 仓库 public（科研公开）| 仓库 private（你确定要？）|
 | 推送前 review .gitignore| 推送 .env 或 credentials|
 | SSH key 专用 GitHub| 复用其他 key|
-| git config user.email = yesimagine@gmail.com（你自己配）| 我代你配（违反 SOUL #1）|
+| git config user.email = <user-email>（你自己配）| 我代你配（违反 SOUL #1）|
 
 ---
 
