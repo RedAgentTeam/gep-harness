@@ -1,0 +1,50 @@
+name: gep-harness-ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install graphviz
+        run: sudo apt-get install -y graphviz
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install pytest pytest-cov
+
+      - name: Run GEP strict validation
+        run: make verify
+
+      - name: Run pytest
+        run: make test
+
+      - name: Generate 5-format graph (PNG+SVG+PDF+EPS)
+        run: |
+          python3 scripts/visualize_5lib_graph.py --png --svg --pdf --embed-index
+
+      - name: Upload 5-format graph artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: 5lib-graph
+          path: |
+            docs/5LIB_GRAPH.png
+            docs/5LIB_GRAPH.svg
+            docs/5LIB_GRAPH.pdf
+            docs/5LIB_GRAPH.eps
+
+      - name: Test coverage report
+        run: |
+          python3 -m pytest scripts/tests/ openclaw-a2a/tests/ --cov=scripts --cov-report=term-missing
