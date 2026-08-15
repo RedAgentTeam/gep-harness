@@ -158,7 +158,7 @@ cat 方法论.md
 | `examples/06_safe_reject_demo.py` | Solidify safe reject 守护演示 | `[SIMULATED: 本地]` |
 | `examples/07_png_svg_demo.py` | PNG + SVG 双格式可视化 | `[SIMULATED: 本地]` |
 
-> 所有脚本跑在本机 124.222.159.224（VM-0-11-ubuntu），**不依赖** 美机 47.89.153.254（生产节点未启动）。
+> 所有脚本跑在本机 <本机 dev IP>（VM-0-11-ubuntu），**不依赖** 美机 <美机生产 IP>（生产节点未启动）。
 
 ---
 
@@ -242,5 +242,6 @@ evomap.ai 创始人。给我提供了各方面的很多帮助，没有他的支�
 
 ### 张玉新老师（善用佳软）
 
-知名软件推荐博客作者、IT 效率工具深度用户（AutoHotkey / Total Commander）、现从事清华历史人物研究。**AI 应用示范**的理念（"博观而约取"）与本项目 Agent 自主开发模式同源。他代表的是 gep-harness 背后那套"用 AI 辅助个人认知的工程传统"的早期实践。
+知名软件推荐博客作者、IT 效率工具深度用户（AutoHotkey / Total Commander）
+
 

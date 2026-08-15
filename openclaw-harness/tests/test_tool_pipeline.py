@@ -89,7 +89,7 @@ plugin.register({
   on(n, f, o) { handlers[n] = f; },
 });
 const secret = {
-  stdout: "User Red753951@47.89.153.254 used sk-proj1234567890abcdefghij token",
+  stdout: "User <REDACTED>@<REDACTED_HOST> used sk-<REDACTED> token",
   ok: true,
 };
 // Spy on console.warn

@@ -148,7 +148,7 @@ Each evidence entry should carry a `reviewed: bool` field distinguishing manuall
 | `examples/06_safe_reject_demo.py` | Solidify safe-reject guard demo |
 | `examples/07_png_svg_demo.py` | PNG + SVG dual-format visualization |
 
-All scripts run on local 124.222.159.224 (VM-0-11-ubuntu), **not** on production node 47.89.153.254 (untouched).
+All scripts run on local <本机 dev IP> (VM-0-11-ubuntu), **not** on production node <美机生产 IP> (untouched).
 
 ## Current Roadmap (v14.0+ Pending)
 
