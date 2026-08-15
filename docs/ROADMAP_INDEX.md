@@ -98,3 +98,10 @@
 - 7 候选字段补全 → evidence v2.0 → 跨 5 库神经元网络
 
 ## 共 75 期 ROADMAP
+## 5 库关联图谱（v9.0 自动嵌入）
+
+| 格式 | 文件 | 大小 |
+|---|---|---|
+| PNG | `5LIB_GRAPH.png` | 135834 bytes |
+| SVG | `5LIB_GRAPH.svg` | 13621 bytes |
+| PDF | `5LIB_GRAPH.pdf` | 69478 bytes |
