@@ -1,10 +1,15 @@
 # GEP Harness — OpenClaw 自进化底座
 
-> **版本：** v0.5.0 (CRDT + gene_sync bugfix)  
+[![CI Status](https://github.com/RedAgentTeam/gep-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/RedAgentTeam/gep-harness/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/RedAgentTeam/gep-harness)](https://github.com/RedAgentTeam/gep-harness/releases)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org)
+
+> **版本：** v14.0（迭代轮次 #75）  
 > **日期：** 2026-08-14  
 > **作者：** devagent @ 胡老师指令  
-> **协议：** GEP v1.12.1 (strict)  
-> **许可：** AGPL-3.0-or-later（项目代码）/ CC-BY-4.0（方法论文档）
+> **协议：** GEP v1.12.1 (strict)  — 跨协议/项目不变字段  
+> **许可：** MIT（见 [LICENSE](./LICENSE)）
 
 ---
 
@@ -98,7 +103,7 @@ cat 方法论.md
 
 ## 下一阶段入口
 
-### v0.5 路线图（优先级 P1→P3）
+### 当前阶段路线图（v14.0+ 待办）
 
 | 优先级 | 任务 | 说明 |
 |---|---|---|
@@ -117,20 +122,22 @@ cat 方法论.md
 
 | 维度 | 数据 |
 |------|------|
-| ROADMAP 期数 | 75（v0.5 ~ v14.0） |
-| Gene 数 | 152（清理后 7 候选） |
+| ROADMAP 期数 | 75（迭代轮次 #1 ~ #75） |
+| Gene 总数 | 152¹ |
 | Event 数 | 19+ EvolutionEvent |
 | pytest | 16/16 (test_cross_library_auto.py) |
 | GEP strict | 7/7 |
 | 跨学科 5 库 | v3.0 神经元网络（闭环互引） |
 | 安全 | 本机运行 / 生产部署未启动 |
 
-## 4 阶段闭环
+## 4 阶段闭环（收窄范围优先级：阶段 1+2 最成熟）
 
-1. **借鉴**（v0.4 ~ v1.0）：DeepSeek Harness 文章 + 3 件不动的事
-2. **自进化**（v1.0 ~ v10.0）：Evolver 半自动 + 65 期演化 + cron 6h
-3. **协作网络**（v10.0 ~ v10.1）：A2A 双向 157/157 + safe reject 守护
-4. **跨学科 5 库**（v12.0 ~ v14.0）：v3.0 神经元网络 + runtime learning 复盘
+1. **借鉴**（迭代 #1 ~ #16）：DeepSeek Harness 文章 + 3 件不动的事
+2. **自进化**（迭代 #17 ~ #65）：Evolver 半自动 + cron 6h
+3. **协作网络**（迭代 #66 ~ #70）：A2A 双向 157/157 + safe reject 守护 **[实验性]**
+4. **跨学科 5 库**（迭代 #71 ~ #75）：v3.0 神经元网络 + runtime learning 复盘 **[实验性]**
+
+> **优先聚焦阶段 1+2**（事件流 + 工具流水线）——这两个阶段有真实 OpenClaw 插件落地，风险最低。先积累真实用户和 Star，再逐步开放阶段 3+4 的实验性部分。
 
 ## 文档索引
 
@@ -138,3 +145,70 @@ cat 方法论.md
 - `docs/ROADMAP_v14.md` — 最新一版 ROADMAP
 - `docs/SOLIDIFY.md` — Solidify 守门规则 + v10.2 修订记录
 - `learnings/runtime-learning-2026-08-15-full-recap.md` — 4 阶段完整复盘
+
+## 复现脚本（本地跑通，不依赖生产节点）
+
+| 脚本 | 内容 | 验证 |
+|------|------|------|
+| `examples/01_local_evolver.py` | 本机 Evolver 一周期（scan → extract → validate） | `[SIMULATED: 本地]` |
+| `examples/02_cross_library_evidence.py` | 5 库 evidence v3.0 自动生成 | `[SIMULATED: 本地]` |
+| `examples/03_a2a_bidirectional.py` | A2A 双向同步（端口 19890/19891）| `[SIMULATED: 本地]` |
+| `examples/04_pytest_integration.py` | pytest 集成 + 跨库示例 | `[SIMULATED: 本地]` |
+| `examples/05_png_generation.py` | 5 库图谱 PNG 自动生成（需 graphviz） | `[SIMULATED: 本地]` |
+| `examples/06_safe_reject_demo.py` | Solidify safe reject 守护演示 | `[SIMULATED: 本地]` |
+| `examples/07_png_svg_demo.py` | PNG + SVG 双格式可视化 | `[SIMULATED: 本地]` |
+
+> 所有脚本跑在本机 124.222.159.224（VM-0-11-ubuntu），**不依赖** 美机 47.89.153.254（生产节点未启动）。
+
+---
+
+## 资产分类说明（脚注）
+
+¹ **Gene 总数 152 = 外部知识库导入 Gene (145) + Evolver 候选 Gene (7)**
+
+| 类别 | 数量 | 来源 | 变化性 |
+|------|------|------|--------|
+| **外部知识库导入 Gene** | 145 | 5 库 (BeautifulMathematics / cell-biology / CognitivePsychology / OpenStaxBiology / evomap) 静态导入 | 相对固定 |
+| **Evolver 候选 Gene** | 7 | cron 6h 从 `events.jsonl` 挖掘高频工具调用模式 | **每次 cron 周期动态变化** |
+
+> **口径说明**：旧文档中出现的 "149 / 154 / 132 / 494" 等数字 = 不同时间点 Evolver 累积候选数（包含已被 reject 或已被 Solidify 覆盖的版本）。**当前可见候选数 = 7**（清理后）。如需"全期累积数"，看 `docs/ROADMAP_INDEX.md` 历史。
+
+**SemVer vs 迭代轮次说明**：
+- **迭代轮次 #1 ~ #75**：gep-harness 内部版本（commit 序号，文档用）
+- **SemVer v0.1.0 / v1.0.0**：仅在 GitHub Release tag 使用（如 v33.0）
+
+## 5 库跨学科映射方法论
+
+**使用边界（启发式，不是门禁）**：
+
+| 场景 | 是否需要 5 库 mapping |
+|------|---------------------|
+| **不可逆架构决策**（如是否引入插件运行时）| ✅ 强制 |
+| **自动化 vs 人工审批**（如是否全自动 Solidify）| ✅ 强制（重锤场合）|
+| **日常小改动**（如给 Gene 加个字段）| ❌ 不需要 |
+| **一般技术权衡**（库选择、性能 vs 可读性）| ❌ 不需要 |
+
+**证据质量分层**：
+
+每条 `cross_library_evidence` 字段带 `reviewed` 标记：
+
+```json
+{
+  "cross_library_evidence": [
+    {
+      "library": "BeautifulMathematics",
+      "evidence": "Ch12 算法: ...",
+      "reviewed": true   // ← 人工复核确认这个类比成立
+    },
+    {
+      "library": "cell-biology",
+      "evidence": "Ch15 信号传导: ...",
+      "reviewed": false  // ← LLM 自动生成关键词，未经复核
+    }
+  ]
+}
+```
+
+> **未复核的证据 = 启发信号，不等于论证**。跨学科类比经常是弱类比，强行凑 5 条会降低整体证据信噪比。**至少 1-2 条真正相关即可**。
+
+**保留的"重锤"**：Arrow 不可能性证明 Solidify 不能全自动 = 扎实的数学论证，**只用在"自动化 vs 人工审批"类高风险决策**。其他场合用轻量工程评审代替。

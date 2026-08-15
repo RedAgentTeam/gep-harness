@@ -31,14 +31,14 @@
 - 📚 文档 `c332664` — gep-harness v11.0: ROADMAP - Plan B 收尾 + safe reject 验证
 - 📦 其他 `4514f6a` — gep-harness v10.2: Plan B 落地 - 修 7 个候选字段 + 8 审计事件
 - 🧪 测试 `bebb6c6` — gep-harness v10.1: pytest + cron full-cycle (auto-fill + non-interactive Solidify safe reject)
-- 📚 文档 `ef94cd7` — gep-harness v10.0: ROADMAP + cross_library_auto + cron 6h cycle 模拟 (5 库匹配→157 evidence 自动生成)
-- 🧪 测试 `ecbb111` — gep-harness a2a: standalone mock_peer.py + pytest fixture (157/157 verified end-to-end)
+- 📚 文档 `ef94cd7` — gep-harness v10.0: ROADMAP + cross_library_auto + cron 6h cycle 模拟 `[SIMULATED: 本地 mock_peer.py 回放]` (5 库匹配→157 evidence 自动生成)
+- 🧪 测试 `ecbb111` — gep-harness a2a: standalone mock_peer.py + pytest fixture `[SIMULATED: 本地 mock_peer.py 回放]` (157/157 verified end-to-end)
 - 🐛 修复 `11aacdf` — gep-harness: fix asset_id mismatch in 7 EvolutionEvent + 4 Gene (canonicalize exclude asset_id field)
 - 📦 其他 `889f88e` — gep-harness solidify: 7 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_read,gene_candidate_edit,gene_candidate_write_file,gene_candidate_message,gene_candidate_write)
 - 📦 其他 `53305d2` — gep-harness: Makefile evolve target 补全 (remove dry-run, add solidify/llm_fill hints)
 - 📦 其他 `b89961a` — gep-harness solidify: 7 genes approved (gene_candidate_exec,gene_candidate_read,gene_candidate_process,gene_candidate_write_file,gene_candidate_edit,gene_candidate_message,gene_candidate_write)
-- 📚 文档 `787f560` — gep-harness v9.0: ROADMAP final (149 genes, 154/154 assets, 12008 events, 47% UNIQUE下降, cron 6h, LLM fill pending 402)
-- 📦 其他 `9f204e7` — gep-harness v9.0: Evolver scan (11988 events) + 5-tool hotpath拆解验证 (47% UNIQUE下降 11391→5959) + cron 6h + LLM fill pending (402 quota)
+- 📚 文档 `787f560` — gep-harness v9.0: ROADMAP final `[SIMULATED: 本地 mock_peer.py 回放]` (149 genes, 154/154 assets, 12008 events, 47% UNIQUE下降, cron 6h, LLM fill pending 402)
+- 📦 其他 `9f204e7` — gep-harness v9.0: Evolver scan `[SIMULATED: 本地 events.jsonl 回放]` (11988 events) + 5-tool hotpath拆解验证 (47% UNIQUE下降 11391→5959) + cron 6h + LLM fill pending (402 quota)
 - 📚 文档 `fc2b11e` — gep-harness v8: ROADMAP final (149 genes, 154/154 assets, 11708 events, 5-tool hotpath fully拆解)
 - 📦 其他 `961cc54` — gep-harness v8.4: 3 write拆解 (small 101c/98% + medium 2c/2% + multi_path 18c/72%) — write hotpath solve
 - 📦 其他 `ff2b619` — gep-harness v8.3: 2 read拆解 (sequential 267c/66% + paginated 139c/34%) — read hotpath solve
