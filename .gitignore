@@ -99,3 +99,42 @@ backup/
 # Cross-platform
 .mypy_cache/
 .pyre/
+# === Sensitization / Privacy (2026-08-15 add) ===
+# 本地路径泄漏（任何 /data/disk/, /root/, /home/, /Users/）
+*data/disk/*
+*root/.openclaw/*
+*home/ubuntu/*
+*Users/*
+
+# 邮箱（GitHub 标准：README 用 `<email@example.com>` 占位符，仓库不留真邮箱）
+*@gmail.com
+*@qq.com
+*@163.com
+*@unvw.com
+*@redagentteam.com
+
+# IP 地址（Feishu webhook / 私有 IP）
+*0.0.0.0*
+*127.0.0.1*
+*10.0.0.*
+*172.16.*
+*192.168.*
+*47.89.153.254   # 美机生产节点（严禁泄漏）
+
+# 凭证文件
+.env
+.env.local
+.env.production
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+
+# SSH key
+*.ssh/id_*
+known_hosts
+
+# Cron / 临时 staging
+/tmp/
+staging/
