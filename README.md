@@ -111,3 +111,30 @@ cat 方法论.md
 | **P3** | GDI 动态阈值 | 随节点历史自适应 |
 
 详见 `docs/ROADMAP_v0.5.md`（待写）。
+---
+
+## 现状（2026-08-15 v14.0 收尾）
+
+| 维度 | 数据 |
+|------|------|
+| ROADMAP 期数 | 75（v0.5 ~ v14.0） |
+| Gene 数 | 152（清理后 7 候选） |
+| Event 数 | 19+ EvolutionEvent |
+| pytest | 16/16 (test_cross_library_auto.py) |
+| GEP strict | 7/7 |
+| 跨学科 5 库 | v3.0 神经元网络（闭环互引） |
+| 安全 | 本机运行 / 生产部署未启动 |
+
+## 4 阶段闭环
+
+1. **借鉴**（v0.4 ~ v1.0）：DeepSeek Harness 文章 + 3 件不动的事
+2. **自进化**（v1.0 ~ v10.0）：Evolver 半自动 + 65 期演化 + cron 6h
+3. **协作网络**（v10.0 ~ v10.1）：A2A 双向 157/157 + safe reject 守护
+4. **跨学科 5 库**（v12.0 ~ v14.0）：v3.0 神经元网络 + runtime learning 复盘
+
+## 文档索引
+
+- `docs/ROADMAP_INDEX.md` — 75 期 ROADMAP 历史索引
+- `docs/ROADMAP_v14.md` — 最新一版 ROADMAP
+- `docs/SOLIDIFY.md` — Solidify 守门规则 + v10.2 修订记录
+- `learnings/runtime-learning-2026-08-15-full-recap.md` — 4 阶段完整复盘
