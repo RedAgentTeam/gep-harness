@@ -43,20 +43,15 @@ PLAN_GENES = GEP_HARNESS / 'plan/genes'
 PLAN_EVENTS = GEP_HARNESS / 'plan/events'
 STAGING = Path('/tmp/v_staging')
 
-# P0-3 fix: import canonicalize from canonicalize.py (single source of truth)
-# Replaces the old inline json.dumps(sort_keys=True) implementation which only
-# sorted top-level keys and excluded fields differently from canonicalize.py.
-from canonicalize import canonicalize as _canonicalize, compute_asset_id as _compute_asset_id_canonical  # noqa: E402
-
-
-def compute_asset_id(g):
-    """GEP strict canonicalize — delegates to canonicalize.py (single source of truth).
-    Excludes asset_id + protected fields, then recursive-canonicalizes the rest.
-    """
-    protected = {'type', 'schema_version', 'id', 'signals_match', 'preconditions',
-                 'constraints', 'validation', 'asset_id'}
-    payload = {k: v for k, v in g.items() if k not in protected and not k.startswith('_')}
-    return _compute_asset_id_canonical(payload)
+# P0-3/C1 fix: DIRECTLY use canonicalize.py's compute_asset_id as the single
+# source of truth. Do NOT add a local wrapper that strips additional fields,
+# because that creates TWO asset_id algorithms for the same Gene:
+#   1. solidifypo's local compute_asset_id (strips 8 protected + asset_id)
+#   2. canonicalize.py's compute_asset_id (strips only asset_id)
+# Validate_gep uses #2, so any Gene solidified under #1 will fail verify.
+#
+# Now both solidify and validate_gep use the SAME algorithm.
+from canonicalize import compute_asset_id  # noqa: E402
 
 
 def load_existing_genes():
