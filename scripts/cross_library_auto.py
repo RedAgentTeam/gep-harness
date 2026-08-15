@@ -98,6 +98,16 @@ LIBRARY_TEMPLATES: Dict[str, Dict[str, str]] = {
     },
 }
 
+# 5 库章节号映射（v13.0 v2.0 evidence 升级）
+# 章节号参考：v12.0 已固化的 7 候选 evidence + gene_harness_append_only_event_stream.json
+LIBRARY_CHAPTER: Dict[str, str] = {
+    "BeautifulMathematics": "Ch12 算法",          # 算法流水线 / Ch17 分形（备用）
+    "cell-biology": "Ch15 信号传导",              # 信号转导 / 反馈回路
+    "CognitivePsychology": "Ch6 长时记忆",         # 记忆锚点 / 长时记忆
+    "OpenStaxBiology": "Ch01 进化",               # 进化适应 / 自然选择
+    "evomap": "GEP v1.12.1 §2.3 EvolutionEvent",  # GEP 协议 / 事件流
+}
+
 
 def match_evidence(library: str, signals: List[str], summary: str) -> Tuple[str, float]:
     """匹配一个库的 evidence，返回 (evidence_text, confidence)。
@@ -125,10 +135,12 @@ def match_evidence(library: str, signals: List[str], summary: str) -> Tuple[str,
     return best_text, round(best_conf, 2)
 
 
-def auto_cross_library_evidence(gene: dict) -> List[str]:
+def auto_cross_library_evidence(gene: dict, version: str = "v2.0") -> List[str]:
     """输入 Gene dict，输出 5 字符串列表（5 库各一条）。
 
-    每个字符串格式："{library_name} {reason}"（≤ 80 chars）
+    每个字符串格式：
+    - v1.0: "{library_name} {reason}"（≤ 80 chars）
+    - v2.0: "{library_name} {chapter} {reason}"（含章节号 + 字段关联）
     """
     signals = gene.get("signals_match", []) or gene.get("signals", []) or []
     summary = gene.get("summary", "") or ""
@@ -136,10 +148,16 @@ def auto_cross_library_evidence(gene: dict) -> List[str]:
     result = []
     for library in ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]:
         text, conf = match_evidence(library, signals, summary)
-        line = f"{library} {text}"
-        # 截断到 80 chars
-        if len(line) > 80:
-            line = line[:77] + "..."
+        chapter = LIBRARY_CHAPTER.get(library, "")
+        if version == "v2.0" and chapter:
+            # v2.0: 章节号 + 字段关联
+            line = f"{library} {chapter}: {text}"
+        else:
+            # v1.0: 简单格式
+            line = f"{library} {text}"
+        # 截断到 120 chars（v2.0 放宽到章节号 + 完整说明）
+        if len(line) > 120:
+            line = line[:117] + "..."
         result.append(line)
     return result
 
@@ -161,11 +179,36 @@ def fill_file(gene_path: Path, dry_run: bool = False) -> dict:
     }
 
 
+def validate_evidence_quality(gene: dict) -> Tuple[int, int, List[str]]:
+    """验证 Gene 的 5 库 evidence 质量。
+
+    返回 (matched_count, total, warnings)
+    - matched_count: 命中具体模板（非 _default）的库数
+    - total: 总库数（5）
+    - warnings: 质量警告列表
+
+    规则：
+    - 至少 3/5 库命中具体模板（>= 0.6 覆盖率）
+    - 否则返回 warnings 列表
+    """
+    evidence = gene.get("cross_library_evidence", []) or []
+    warnings = []
+    matched = 0
+    for ev in evidence:
+        if not ev.startswith("OLD") and "_default" not in ev and not ev.endswith("可证") and not ev.endswith("选择性通透"):
+            # 非 _default 模板（具体证据）
+            matched += 1
+    if matched < 3:
+        warnings.append(f"⚠️  only {matched}/5 libraries matched specific templates (need >= 3)")
+    return matched, len(evidence), warnings
+
+
 def main():
     parser = argparse.ArgumentParser(description="5 库跨学科映射自动化")
     parser.add_argument("input", help="Gene 文件或目录")
     parser.add_argument("--dry-run", action="store_true", help="只输出不写盘")
     parser.add_argument("--limit", type=int, default=10, help="最多处理多少文件")
+    parser.add_argument("--validate", action="store_true", help="验证 5 库 evidence 质量（不修改文件）")
     args = parser.parse_args()
 
     input_path = Path(args.input)
@@ -177,6 +220,24 @@ def main():
     if not files:
         print(f"❌ No gene files found at {input_path}")
         sys.exit(1)
+
+    if args.validate:
+        print(f"=== 5 库 evidence 质量验证 ({len(files)} files) ===\n")
+        total_warnings = 0
+        for f in files:
+            try:
+                gene = json.load(open(f))
+                matched, total, warnings = validate_evidence_quality(gene)
+                gid = gene.get("id", f.name)
+                status = "✅" if not warnings else "⚠️"
+                print(f"{status} {gid}: {matched}/{total} libraries matched specific templates")
+                for w in warnings:
+                    print(f"   {w}")
+                    total_warnings += 1
+            except Exception as e:
+                print(f"❌ {f.name}: {e}")
+        print(f"\n=== 总计: {total_warnings} 个质量警告 ===")
+        sys.exit(0 if total_warnings == 0 else 1)
 
     print(f"=== 5 库跨学科映射自动化 (dry_run={args.dry_run}) ===")
     print(f"Processing {len(files)} files...\n")

@@ -228,3 +228,44 @@ def test_confidence_caps_at_1():
     many_signals = ["exec", "read", "write", "hot_path", "high_freq", "feedback", "ttl", "cache", "retry"]
     text, conf = cla.match_evidence("cell-biology", many_signals, "summary")
     assert 0.0 <= conf <= 1.0, f"conf out of range: {conf}"
+
+
+def test_v2_evidence_with_chapter():
+    """v2.0 evidence 含章节号 + 字段关联。"""
+    g = {
+        "signals_match": ["high_freq:5663_calls"],
+        "summary": "Hot-path optimization for exec"
+    }
+    ev_v2 = cla.auto_cross_library_evidence(g, version="v2.0")
+    assert len(ev_v2) == 5
+    # 章节号存在
+    assert any("Ch12" in e for e in ev_v2), "BeautifulMathematics Ch12 missing"
+    assert any("Ch15" in e for e in ev_v2), "cell-biology Ch15 missing"
+    assert any("Ch6" in e for e in ev_v2), "CognitivePsychology Ch6 missing"
+    assert any("Ch01" in e for e in ev_v2), "OpenStaxBiology Ch01 missing"
+    assert any("§2.3" in e for e in ev_v2), "evomap GEP §2.3 missing"
+
+
+def test_v1_vs_v2_evidence_difference():
+    """v1.0 vs v2.0 evidence 格式差异。"""
+    g = {"signals_match": ["exec"], "summary": "test"}
+    ev_v1 = cla.auto_cross_library_evidence(g, version="v1.0")
+    ev_v2 = cla.auto_cross_library_evidence(g, version="v2.0")
+    assert len(ev_v1) == 5
+    assert len(ev_v2) == 5
+    # v2.0 长度应 > v1.0（章节号 + 字段关联）
+    avg_v1 = sum(len(e) for e in ev_v1) / len(ev_v1)
+    avg_v2 = sum(len(e) for e in ev_v2) / len(ev_v2)
+    assert avg_v2 > avg_v1, f"v2.0 ({avg_v2}) 应比 v1.0 ({avg_v1}) 长度更长"
+    # v2.0 至少 3 条含明确章节号（ChXX / §X.X）
+    chapter_hits = sum(1 for e in ev_v2 if any(p in e for p in ["Ch12", "Ch15", "Ch6", "Ch01", "§2.3"]))
+    assert chapter_hits >= 3, f"v2.0 应至少有 3 条含章节号，实际 {chapter_hits}"
+
+
+def test_library_chapter_dict():
+    """LIBRARY_CHAPTER 5 库齐全。"""
+    expected = {"BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"}
+    assert set(cla.LIBRARY_CHAPTER.keys()) == expected
+    # 每个章节号非空
+    for lib, ch in cla.LIBRARY_CHAPTER.items():
+        assert ch, f"{lib} chapter empty"
