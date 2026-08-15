@@ -36,5 +36,18 @@
     "cell-biology 适应",
     "BeautifulMathematics"
   ],
-  "asset_id": "sha256:3750953aa32a24465b48fecd2f7a83748043c32c75eb9cbb4ba66a79f0433696"
+  "asset_id": "sha256:3750953aa32a24465b48fecd2f7a83748043c32c75eb9cbb4ba66a79f0433696",
+  "scope": [
+    "openclaw",
+    "gep-harness",
+    "history",
+    "tool:hotpath:write_file"
+  ],
+  "confidence": 0.75,
+  "trigger": [
+    "65_phases_evolution",
+    "hotpath_tool:write_file",
+    "auto_reject_safe_v10.1",
+    "gdi_threshold:0.95"
+  ]
 }

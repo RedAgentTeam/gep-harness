@@ -37,5 +37,18 @@
     "evomap GEP 协议"
   ],
   "asset_id": "sha256:1c2fdd89c2a923af16c38d5bf382c79b6f29c8648e1c519f19f026da8039c12a",
-  "_local_filled": true
+  "_local_filled": true,
+  "scope": [
+    "openclaw",
+    "gep-harness",
+    "history",
+    "tool:hotpath:message"
+  ],
+  "confidence": 0.75,
+  "trigger": [
+    "65_phases_evolution",
+    "hotpath_tool:message",
+    "auto_reject_safe_v10.1",
+    "gdi_threshold:0.95"
+  ]
 }

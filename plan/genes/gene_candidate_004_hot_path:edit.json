@@ -36,5 +36,18 @@
     "evomap 演化变异",
     "OpenStaxBiology DNA 修复"
   ],
-  "asset_id": "sha256:0f437fbdac53a185e3f21b7f2ce345e35498d7d4f7c6a742745879a5e7700e20"
+  "asset_id": "sha256:0f437fbdac53a185e3f21b7f2ce345e35498d7d4f7c6a742745879a5e7700e20",
+  "scope": [
+    "openclaw",
+    "gep-harness",
+    "history",
+    "tool:hotpath:edit"
+  ],
+  "confidence": 0.75,
+  "trigger": [
+    "65_phases_evolution",
+    "hotpath_tool:edit",
+    "auto_reject_safe_v10.1",
+    "gdi_threshold:0.95"
+  ]
 }

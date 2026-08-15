@@ -1,0 +1,67 @@
+{
+  "type": "EvolutionEvent",
+  "schema_version": "1.12.1",
+  "id": "evt_audit_2026_08_15_gene_candidate_7_revise",
+  "event_type": "audit_summary",
+  "ts": "2026-08-15T10:02:00+08:00",
+  "actor": {
+    "handle": "devagent",
+    "evox_install_id": "openclaw-devagent-001",
+    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988"
+  },
+  "details": {
+    "summary": "Plan B 落地：清理 130 重复 + 修 7 个 Gene 候选字段 + 7/7 GEP strict + 9/9 pytest",
+    "plan_b_steps": [
+      "1. 备份 plan/genes/ (tar + git 兜底)",
+      "2. clean_legacy_genes.py --execute (删 130 + 重命名 1)",
+      "3. 手动清理 5 个二次副本 (含 2 次误删恢复)",
+      "4. 修 7 个候选字段 (scope + confidence + trigger)",
+      "5. GEP strict 7/7 校验 PASS",
+      "6. pytest 9/9 PASS",
+      "7. 留 EvolutionEvent 7 + 1 审计事件"
+    ],
+    "files_modified": [
+      "gene_candidate_000_hot_path:exec.json",
+      "gene_candidate_001_hot_path:read.json",
+      "gene_candidate_002_hot_path:process.json",
+      "gene_candidate_003_hot_path:write_file.json",
+      "gene_candidate_004_hot_path:edit.json",
+      "gene_candidate_005_hot_path:message.json",
+      "gene_candidate_006_hot_path:write.json"
+    ],
+    "events_created": [
+      "evt_revise_2026_08_15_gene_candidate_exec_*",
+      "evt_revise_2026_08_15_gene_candidate_read_*",
+      "evt_revise_2026_08_15_gene_candidate_process_*",
+      "evt_revise_2026_08_15_gene_candidate_write_file_*",
+      "evt_revise_2026_08_15_gene_candidate_edit_*",
+      "evt_revise_2026_08_15_gene_candidate_message_*",
+      "evt_revise_2026_08_15_gene_candidate_write_*"
+    ],
+    "validation": {
+      "gep_strict": "7/7 PASS",
+      "pytest": "9/9 PASS",
+      "schema_version": "1.12.1"
+    },
+    "cleanup_metrics": {
+      "files_before": 162,
+      "files_after": 152,
+      "deleted_via_clean_script": 130,
+      "deleted_manually": 5,
+      "renamed": 1,
+      "files_modified": 7
+    },
+    "approval_required": true,
+    "approval_authority": "胡老师 (Red Ho)",
+    "approval_format": "y/N 逐个审批 7 个候选"
+  },
+  "context_signals": [
+    "gep-harness v10.1",
+    "Solidify safe reject v10.1",
+    "9/9 pytest",
+    "7/7 GEP strict",
+    "字段补全 scope/confidence/trigger",
+    "audit chain complete"
+  ],
+  "asset_id": "2dc66d78960d6f4a37d2bd7f508c44e105ba7567410d2401c48e875fe3b74427"
+}

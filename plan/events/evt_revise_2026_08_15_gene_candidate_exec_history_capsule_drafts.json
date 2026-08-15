@@ -1,0 +1,60 @@
+{
+  "type": "EvolutionEvent",
+  "schema_version": "1.12.1",
+  "id": "evt_revise_2026_08_15_gene_candidate_exec_history_capsule_drafts",
+  "event_type": "asset_revise",
+  "ts": "2026-08-15T10:02:00+08:00",
+  "actor": {
+    "handle": "devagent",
+    "evox_install_id": "openclaw-devagent-001",
+    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988"
+  },
+  "target": {
+    "asset_type": "Gene",
+    "asset_id": "sha256:dcd4580339e8cd5687def818d4a805915ac2659350d8d2712b0d873c424d1df3",
+    "gene_id": "gene_candidate_exec",
+    "file": "plan/genes/gene_candidate_000_hot_path:exec.json"
+  },
+  "details": {
+    "revise_type": "field_completion",
+    "fields_added": [
+      "scope",
+      "confidence",
+      "trigger"
+    ],
+    "scope_value": [
+      "openclaw",
+      "gep-harness",
+      "history",
+      "tool:hotpath:exec"
+    ],
+    "confidence_value": 0.75,
+    "trigger_value": [
+      "65_phases_evolution",
+      "hotpath_tool:exec",
+      "auto_reject_safe_v10.1",
+      "gdi_threshold:0.95"
+    ],
+    "trigger_reason": "v0.9 候选缺 scope/confidence/trigger 字段影响 Gene→Capsule 路由精度，按 Plan B 修订",
+    "validation": "7/7 GEP strict 校验通过, pytest 9/9 通过",
+    "scope_baseline": "plan/capsules/capsule_plan_gep_harness_2026_08_14.json",
+    "approval_pending": true,
+    "approval_authority": "胡老师 (Red Ho)"
+  },
+  "category": "repair",
+  "blast_radius": {
+    "files": 7,
+    "lines": 21
+  },
+  "context_signals": [
+    "Plan B: 先修再 Solidify",
+    "scope → [openclaw, gep-harness, history, tool:hotpath:{tool}]",
+    "confidence → 0.75",
+    "trigger → 65_phases_evolution + hotpath_tool:{tool} + auto_reject_safe_v10.1 + gdi_threshold:0.95",
+    "7/7 GEP strict",
+    "9/9 pytest",
+    "y/N 审批 pending"
+  ],
+  "decay_after_days": 90,
+  "asset_id": "91f01b40a1594f7eafa9093c98b0727311437cdafaf6d343c0cbe647696239a4"
+}
