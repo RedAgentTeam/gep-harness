@@ -34,3 +34,6 @@
 - evomap → BeautifulMathematics: 0.90
 - evomap → CognitivePsychology: 0.85
 - evomap → OpenStaxBiology: 0.90
+## 5 库关联图谱（PNG 自动生成）
+
+![5 库关联强度图谱](5LIB_GRAPH.png)

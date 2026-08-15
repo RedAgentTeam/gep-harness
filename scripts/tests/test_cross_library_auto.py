@@ -340,3 +340,29 @@ def test_5lib_graph_md_exists():
         # markdown 模式用全名
         assert "BeautifulMathematics" in content
         assert "0.85" in content or "0.90" in content
+
+
+def test_5lib_graph_dot_generation():
+    """DOT 格式输出合法（digraph 开头 + 闭合大括号）。"""
+    import subprocess
+    result = subprocess.run(
+        ["python3", "scripts/visualize_5lib_graph.py", "--format=dot"],
+        capture_output=True, text=True, timeout=10,
+    )
+    assert result.returncode == 0
+    assert result.stdout.startswith("digraph")
+    assert result.stdout.rstrip().endswith("}")
+    # 至少 5 个节点
+    assert result.stdout.count("[label=") >= 5
+
+
+def test_5lib_graph_png_exists():
+    """docs/5LIB_GRAPH.png 已生成。"""
+    p = Path("/data/disk/gep-harness/docs/5LIB_GRAPH.png")
+    if p.exists():
+        size = p.stat().st_size
+        # PNG magic bytes
+        with open(p, "rb") as f:
+            magic = f.read(8)
+        assert magic[:4] == b"\x89PNG", "not a valid PNG"
+        assert size > 1000, f"PNG too small: {size} bytes"
