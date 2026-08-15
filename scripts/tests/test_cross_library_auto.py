@@ -366,3 +366,34 @@ def test_5lib_graph_png_exists():
             magic = f.read(8)
         assert magic[:4] == b"\x89PNG", "not a valid PNG"
         assert size > 1000, f"PNG too small: {size} bytes"
+
+
+def test_5lib_graph_svg_exists():
+    """docs/5LIB_GRAPH.svg 已生成（DOT → SVG）。"""
+    p = Path("/data/disk/gep-harness/docs/5LIB_GRAPH.svg")
+    if p.exists():
+        size = p.stat().st_size
+        # SVG 闭合标签在文件末尾，读全文件
+        content = p.read_text(encoding="utf-8", errors="ignore")
+        assert "<svg" in content, "not a valid SVG"
+        assert "</svg>" in content, "SVG missing closing tag"
+        assert size > 1000, f"SVG too small: {size} bytes"
+
+
+def test_5lib_graph_svg_via_dot():
+    """DOT → SVG 通过 dot 命令验证（subprocess）。"""
+    import subprocess
+    # 先生成 DOT
+    dot = subprocess.run(
+        ["python3", "scripts/visualize_5lib_graph.py", "--format=dot"],
+        capture_output=True, text=True, timeout=10,
+    )
+    # 转 SVG
+    svg_proc = subprocess.run(
+        ["dot", "-Tsvg", "-o", "/tmp/test_5lib.svg"],
+        input=dot.stdout, capture_output=True, text=True, timeout=10,
+    )
+    assert svg_proc.returncode == 0, f"dot failed: {svg_proc.stderr}"
+    svg_content = Path("/tmp/test_5lib.svg").read_text()
+    assert "<svg" in svg_content
+    assert "BeautifulMathematics" in svg_content
