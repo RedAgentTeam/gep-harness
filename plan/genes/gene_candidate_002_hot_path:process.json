@@ -30,11 +30,11 @@
   ],
   "summary": "Hot-path optimization for process (191 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "BeautifulMathematics Ch12 算法: process = 长跑算法的有限状态机（long-run termination 证明）",
-    "cell-biology Ch15 适应: process 自适应 TTL = 膜流动性（fluidity）→ 风险等级",
-    "CognitivePsychology Ch6 一般化: process 一般化 = 跨会话调试（trajectory replay）",
-    "OpenStaxBiology Ch01 方法论: process 实验方法 = 受控变量（cwd/env/args 快照）",
-    "evomap GEP v1.12.1 §2.3 EvolutionEvent: process 上下文快照便于审计链重建"
+    "BeautifulMathematics Ch12 算法: 高频事件：大数定律 → 期望收敛 → [CognitivePsychology Ch6 长时记忆] → [evomap GEP v1.12.1 §2.3 EvolutionEvent]",
+    "cell-biology Ch15 信号传导: 高频：neuronal firing rate 上限 ~200Hz → [BeautifulMathematics Ch12 算法] → [OpenStaxBiology Ch01 进化]",
+    "CognitivePsychology Ch6 长时记忆: 高频：practice effect 自动化 → [OpenStaxBiology Ch01 进化] → [cell-biology Ch15 信号传导]",
+    "OpenStaxBiology Ch01 进化: 高频：r/K selection r-strategist → [evomap GEP v1.12.1 §2.3 EvolutionEvent] → [BeautifulMathematics Ch12 算法]",
+    "evomap GEP v1.12.1 §2.3 EvolutionEvent: 高频：batch merge 减少 round-trip → [cell-biology Ch15 信号传导] → [CognitivePsychology Ch6 长时记忆]"
   ],
   "asset_id": "sha256:764e76d748ba11e93a7abb5404025989d10d9a81c90c1ab1ef10e924bdb2f4a1",
   "scope": [
@@ -50,5 +50,5 @@
     "auto_reject_safe_v10.1",
     "gdi_threshold:0.95"
   ],
-  "evidence_version": "v2.0"
+  "evidence_version": "v3.0"
 }

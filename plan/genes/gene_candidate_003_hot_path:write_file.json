@@ -30,11 +30,11 @@
   ],
   "summary": "Hot-path optimization for write_file (92 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "BeautifulMathematics Ch12 算法: write_file = 单写者多读者不变性（read-before-write 幂等）",
-    "cell-biology Ch15 反馈回路: write_file 失败 retry = 负反馈（homeostasis）",
-    "CognitivePsychology Ch6 一般化: write_file 一般化 = 草稿→定稿（commit 路径）",
-    "OpenStaxBiology Ch01 方法论: write_file 实验方法 = 复现验证（asset_id 校验）",
-    "evomap GEP v1.12.1 §2.3 EvolutionEvent: write_file 失败重试入审计链"
+    "BeautifulMathematics Ch12 算法: 高频事件：大数定律 → 期望收敛 → [CognitivePsychology Ch6 长时记忆] → [evomap GEP v1.12.1 §2.3 EvolutionEvent]",
+    "cell-biology Ch15 信号传导: 高频：neuronal firing rate 上限 ~200Hz → [BeautifulMathematics Ch12 算法] → [OpenStaxBiology Ch01 进化]",
+    "CognitivePsychology Ch6 长时记忆: 高频：practice effect 自动化 → [OpenStaxBiology Ch01 进化] → [cell-biology Ch15 信号传导]",
+    "OpenStaxBiology Ch01 进化: 高频：r/K selection r-strategist → [evomap GEP v1.12.1 §2.3 EvolutionEvent] → [BeautifulMathematics Ch12 算法]",
+    "evomap GEP v1.12.1 §2.3 EvolutionEvent: 高频：batch merge 减少 round-trip → [cell-biology Ch15 信号传导] → [CognitivePsychology Ch6 长时记忆]"
   ],
   "asset_id": "sha256:3750953aa32a24465b48fecd2f7a83748043c32c75eb9cbb4ba66a79f0433696",
   "scope": [
@@ -50,5 +50,5 @@
     "auto_reject_safe_v10.1",
     "gdi_threshold:0.95"
   ],
-  "evidence_version": "v2.0"
+  "evidence_version": "v3.0"
 }
