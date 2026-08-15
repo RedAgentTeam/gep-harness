@@ -1,14 +1,17 @@
-"""5 库关联强度图谱可视化 — v17.0 5 库 v5.0 升级。
+"""5 库关联强度图谱可视化 — v22.0 升级。
 
 输入：LIBRARY_GRAPH_EDGE（cross_library_auto.py）
-输出：ASCII 矩阵 + Markdown 表格 + DOT 格式（Graphviz 可视化）
+输出：ASCII 矩阵 + Markdown + DOT + PNG + SVG（5 种格式）
 
 跑法：
     python3 scripts/visualize_5lib_graph.py
     python3 scripts/visualize_5lib_graph.py --output=docs/5LIB_GRAPH.md
+    python3 scripts/visualize_5lib_graph.py --png=docs/5LIB_GRAPH.png --svg=docs/5LIB_GRAPH.svg
 """
 
 import argparse
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -22,11 +25,9 @@ LIBS = ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStax
 def render_ascii_matrix() -> str:
     """ASCII 5×5 关联强度矩阵。"""
     lines = ["5 库关联强度矩阵 (v5.0)\n"]
-    # 表头
     header = "From \\ To".ljust(20) + "".join(lib[:6].ljust(8) for lib in LIBS)
     lines.append(header)
     lines.append("-" * len(header))
-    # 行
     for src in LIBS:
         row = src[:18].ljust(20)
         for tgt in LIBS:
@@ -37,9 +38,9 @@ def render_ascii_matrix() -> str:
 
 
 def render_markdown_table() -> str:
-    """Markdown 表格（含章节号）。"""
+    """Markdown 表格（含章节号 + 强关联路径）。"""
     lines = ["# 5 库关联强度图谱（v5.0）\n"]
-    lines.append("| From \\\\ To | " + " | ".join(LIBS) + " |")
+    lines.append("| From \\ To | " + " | ".join(LIBS) + " |")
     lines.append("|" + "---|" * (len(LIBS) + 1))
     for src in LIBS:
         row = [src]
@@ -74,9 +75,22 @@ def render_dot_format() -> str:
     return "\n".join(lines)
 
 
+def render_via_graphviz(dot_content: str, fmt: str, output_path: Path) -> bool:
+    """调用 graphviz dot 生成 PNG/SVG。"""
+    if not shutil.which("dot"):
+        return False
+    result = subprocess.run(
+        ["dot", f"-T{fmt}", "-o", str(output_path)],
+        input=dot_content, capture_output=True, text=True, timeout=15,
+    )
+    return result.returncode == 0 and output_path.exists()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=str, help="输出 Markdown 文件路径")
+    parser.add_argument("--png", type=str, help="生成 PNG 文件路径（需 graphviz）")
+    parser.add_argument("--svg", type=str, help="生成 SVG 文件路径（需 graphviz）")
     parser.add_argument("--format", type=str, default="ascii", choices=["ascii", "markdown", "dot"])
     args = parser.parse_args()
 
@@ -90,6 +104,14 @@ def main() -> None:
     if args.output:
         Path(args.output).write_text(render_markdown_table())
         print(f"\n✅ Markdown 写入: {args.output}")
+
+    dot_content = render_dot_format()
+    if args.png:
+        ok = render_via_graphviz(dot_content, "png", Path(args.png))
+        print(f"\n{'✅' if ok else '❌'} PNG: {args.png}")
+    if args.svg:
+        ok = render_via_graphviz(dot_content, "svg", Path(args.svg))
+        print(f"\n{'✅' if ok else '❌'} SVG: {args.svg}")
 
 
 if __name__ == "__main__":
