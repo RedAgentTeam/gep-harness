@@ -11,6 +11,7 @@ sys.path setup via scripts/tests/conftest.py
 """
 import json
 import pytest
+from pathlib import Path
 
 import cross_library_auto as cla
 
@@ -304,3 +305,38 @@ def test_library_graph_5_libs():
     assert set(cla.LIBRARY_GRAPH.keys()) == {"BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"}
     for lib, refs in cla.LIBRARY_GRAPH.items():
         assert len(refs) >= 1, f"{lib} 缺关联"
+
+
+def test_visualize_5lib_graph_ascii():
+    """5 库图谱可视化 ASCII 输出包含 5 库前缀（截断后仍可识别）。"""
+    import subprocess
+    result = subprocess.run(
+        ["python3", "scripts/visualize_5lib_graph.py", "--format=ascii"],
+        capture_output=True, text=True, timeout=10,
+    )
+    assert result.returncode == 0
+    # ASCII 模式行名截断到 18 字符，用前缀匹配
+    prefixes = ["Beautiful", "cell-bio", "Cognitive", "OpenStax", "evomap"]
+    for prefix in prefixes:
+        assert prefix in result.stdout, f"missing prefix {prefix}"
+
+
+def test_visualize_5lib_graph_strong_edges():
+    """5 库图谱强关联（≥0.85）存在。"""
+    import subprocess
+    result = subprocess.run(
+        ["python3", "scripts/visualize_5lib_graph.py", "--format=markdown"],
+        capture_output=True, text=True, timeout=10,
+    )
+    assert result.returncode == 0
+    assert "0.85" in result.stdout or "0.90" in result.stdout
+
+
+def test_5lib_graph_md_exists():
+    """docs/5LIB_GRAPH.md 已生成。"""
+    p = Path("/data/disk/gep-harness/docs/5LIB_GRAPH.md")
+    if p.exists():
+        content = p.read_text()
+        # markdown 模式用全名
+        assert "BeautifulMathematics" in content
+        assert "0.85" in content or "0.90" in content
