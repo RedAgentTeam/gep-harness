@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.12.1",
+  "type": "EvolutionEvent",
+  "id": "evt_decision_2026_08_15_history_capsule_b_method",
+  "parent": "evt_decision_2026_08_15_clean_legacy_genes_proposal",
+  "intent": "preserve",
+  "signals": [
+    "gene_history_preservation",
+    "65_phases_evolution",
+    "胡老师选B决议",
+    "scientifically_sound_method"
+  ],
+  "genes_used": [
+    "gene_candidate_exec",
+    "gene_candidate_process",
+    "gene_candidate_read",
+    "gene_candidate_write",
+    "gene_candidate_write_file",
+    "gene_candidate_message",
+    "gene_candidate_edit"
+  ],
+  "decision": "选 B（不删只打包）：把 130 个 v15~v72 旧版本 Gene 打包成 Capsule，保留 65 期演化历史",
+  "alternatives_considered": [
+    {
+      "option": "A",
+      "method": "直接删除，按 mtime 保留最新",
+      "rejected_reason": "mtime ≠ 内容质量；演化历史丢；不可逆"
+    },
+    {
+      "option": "B",
+      "method": "打包成 Capsule 保留演化历史",
+      "selected_reason": "沉淀为研究资产；plan/genes/ 主目录干净；可逆；对应 docs/ROADMAP_v0.5~v9.0 共 65 期"
+    },
+    {
+      "option": "C",
+      "method": "移到 plan/genes_archive/",
+      "rejected_reason": "没有现成 archive 目录管理机制；额外维护成本"
+    }
+  ],
+  "blast_radius": {
+    "files": 9,
+    "lines": 0
+  },
+  "personality_state": {
+    "rigor": 0.9,
+    "risk_tolerance": 0.3,
+    "creativity": 0.5
+  },
+  "context": {
+    "question_to_hu": "评估'直接删：按 mtime 保留最新'这个方法是否正确",
+    "hu_decision": "选B",
+    "ts": "2026-08-15T01:31:00+08:00",
+    "session_id": "agent:devagent:feishu:devagent:direct:ou_a9dcdee21100e3560ab36fd59a886988",
+    "model": "minimax/MiniMax-M3"
+  },
+  "outcome": {
+    "status": "in_progress",
+    "drafts_generated": 9,
+    "gep_strict_pass": "9/9",
+    "next_step": "Solidify 人工审批门（胡老师 y/N）"
+  },
+  "validation": [
+    "openclaw_harness_schema_v1.12.1"
+  ],
+  "ts": "2026-08-15T01:37:30+08:00",
+  "asset_id": "sha256:b89ff0fe7ecc6bd9f430a065008734eccd57e386dcd603470aff8d4fdd4c8a81"
+}
