@@ -36,7 +36,7 @@
 ├── Makefile                           # 管理命令（verify / replay / clean）
 ├── CHANGELOG.md                       # 变更记录
 ├── 数据溯源.md                          # 引用源头（DeepSeek 文章 + GEP 协议 + 5 库）
-├── 方法论.md                          # 5 库跨学科映射方法
+├── 方法论.md                          # 启发式联想辅助方法
 ├── plan/                              # GEP 资产（PLAN 阶段产出）
 │   ├── genes/                         # 5 个 Gene
 │   ├── capsules/                      # 2 个 Capsule
@@ -61,10 +61,10 @@
 | 决策 | 依据 |
 |---|---|
 | **不引入 Skill 抽象** | OpenClaw 用 Gene/Capsule（~230 tokens 策略单元），Skill 是人类理解载体（~2500 tokens）。两者是 test-time control vs 知识载体的不同尺度 |
-| **不引入运行时插件加载** | Cordis 式动态注入会稀释 Gene 信号匹配精度。cell-biology "膜选择性通透" 原则要求稳定边界 |
+| **不引入运行时插件加载** | 动态注入会稀释工具调用信号匹配精度。"稳定边界"原则要求 Gene 库不被运行时修改 |
 | **保留 Gene/Capsule 体系** | GEP §1-§5 + EvoMap evolver-claude-code-plugin 标准 |
-| **Solidify 必走人工审批** | CognitivePsychology 9 大认知错觉 + Arrow 定理：不存在完美聚合方法 |
-| **5 库跨学科映射** | BeautifulMathematics / cell-biology / CognitivePsychology / OpenStaxBiology / evomap |
+| **Solidify 必走人工审批** | 自动聚合存在系统偏差（Arrow 定理：不存在完美聚合方法），必须人工把关 |
+| **启发式联想辅助** | 用"算法流水线 / 细胞膜 / 记忆锚点 / 自然选择 / 演化事件"5 个视角辅助思考决策 |
 
 ---
 
@@ -127,7 +127,7 @@ cat 方法论.md
 | Event 数 | 19+ EvolutionEvent |
 | pytest | 16/16 (test_cross_library_auto.py) |
 | GEP strict | 7/7 |
-| 跨学科 5 库 | v3.0 神经元网络（闭环互引） |
+| 启发式联想辅助 | v3.0 神经元网络（闭环互引） |
 | 安全 | 本机运行 / 生产部署未启动 |
 
 ## 4 阶段闭环（收窄范围优先级：阶段 1+2 最成熟）
@@ -135,7 +135,7 @@ cat 方法论.md
 1. **借鉴**（迭代 #1 ~ #16）：DeepSeek Harness 文章 + 3 件不动的事
 2. **自进化**（迭代 #17 ~ #65）：Evolver 半自动 + cron 6h
 3. **协作网络**（迭代 #66 ~ #70）：A2A 双向 157/157 + safe reject 守护 **[实验性]**
-4. **跨学科 5 库**（迭代 #71 ~ #75）：v3.0 神经元网络 + runtime learning 复盘 **[实验性]**
+4. **启发式联想辅助**（迭代 #71 ~ #75）：v3.0 神经元网络 + runtime learning 复盘 **[实验性]**
 
 > **优先聚焦阶段 1+2**（事件流 + 工具流水线）——这两个阶段有真实 OpenClaw 插件落地，风险最低。先积累真实用户和 Star，再逐步开放阶段 3+4 的实验性部分。
 
@@ -168,7 +168,7 @@ cat 方法论.md
 
 | 类别 | 数量 | 来源 | 变化性 |
 |------|------|------|--------|
-| **外部知识库导入 Gene** | 145 | 5 库 (BeautifulMathematics / cell-biology / CognitivePsychology / OpenStaxBiology / evomap) 静态导入 | 相对固定 |
+| **外部知识库导入 Gene** | 145 | 技术参考文档（启发式联想辅助） | 相对固定 |
 | **Evolver 候选 Gene** | 7 | cron 6h 从 `events.jsonl` 挖掘高频工具调用模式 | **每次 cron 周期动态变化** |
 
 > **口径说明**：旧文档中出现的 "149 / 154 / 132 / 494" 等数字 = 不同时间点 Evolver 累积候选数（包含已被 reject 或已被 Solidify 覆盖的版本）。**当前可见候选数 = 7**（清理后）。如需"全期累积数"，看 `docs/ROADMAP_INDEX.md` 历史。
@@ -177,11 +177,11 @@ cat 方法论.md
 - **迭代轮次 #1 ~ #75**：gep-harness 内部版本（commit 序号，文档用）
 - **SemVer v0.1.0 / v1.0.0**：仅在 GitHub Release tag 使用（如 v33.0）
 
-## 5 库跨学科映射方法论
+## 启发式联想辅助方法论
 
 **使用边界（启发式，不是门禁）**：
 
-| 场景 | 是否需要 5 库 mapping |
+| 场景 | 是否需要 启发式联想辅助 |
 |------|---------------------|
 | **不可逆架构决策**（如是否引入插件运行时）| ✅ 强制 |
 | **自动化 vs 人工审批**（如是否全自动 Solidify）| ✅ 强制（重锤场合）|
@@ -196,12 +196,12 @@ cat 方法论.md
 {
   "cross_library_evidence": [
     {
-      "library": "BeautifulMathematics",
-      "evidence": "Ch12 算法: ...",
+      "lens": "algorithm-pipeline",
+      "evidence": "用算法流水线类比工具调用 4 步: ...",
       "reviewed": true   // ← 人工复核确认这个类比成立
     },
     {
-      "library": "cell-biology",
+      "lens": "cell-membrane",
       "evidence": "Ch15 信号传导: ...",
       "reviewed": false  // ← LLM 自动生成关键词，未经复核
     }
@@ -219,7 +219,7 @@ cat 方法论.md
 
 > 本项目的诞生，源于一群在不同领域给予我帮助的人。
 
-### evomap.ai
+### 协议视角（GEP 演化事件）.ai
 
 在我没有任何计算机基础的情况下，evomap.ai 是我唯一的知识来源。这个项目从零到一，都建立在这套系统之上。
 

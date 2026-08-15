@@ -17,13 +17,13 @@
 | **Phase 1** | Append-only event stream (session trajectory foundation) | ✅ DONE |
 | **Phase 2** | Tool call pipeline (Hook→Permission→Timeout→Execute→Rewrite→Emit) | ✅ DONE |
 | **Phase 3** | Evolver semi-auto (Scan/Signal/Mutate auto + Solidify manual) | ✅ DONE |
-| **Phase 4** | Cross-discipline 5 libraries (BeautifulMathematics / cell-biology / CognitivePsychology / OpenStaxBiology / evomap) | ✅ DONE |
+| **Phase 4** | 启发式联想辅助（5 source documents） | ✅ DONE |
 
 ## 3 Untouchable Rules
 
 1. **No Skill abstraction** — OpenClaw uses Gene/Capsule (~230 tokens policy unit)
 2. **No runtime plugin loading** — Cordis-style dynamic injection dilutes Gene signal matching precision
-3. **Solidify must go through manual approval** — 9 cognitive biases from CognitivePsychology + Arrow's theorem
+3. **Solidify must go through manual approval** — automatic aggregation has systemic biases (Arrow's theorem: no perfect aggregation method), humans must verify
 
 ## Current Status (2026-08-15 v14.0)
 
@@ -34,7 +34,7 @@
 | Events | 19+ EvolutionEvent |
 | pytest | 16/16 (test_cross_library_auto.py) |
 | GEP strict | 7/7 |
-| Cross-discipline 5 libraries | v3.0 neural network (closed-loop cross-reference) |
+| Heuristic analogy helper | v3.0 neural network (closed-loop cross-reference) |
 | Security | Local running / Production deployment NOT started |
 
 ## 4-Phase Closed Loop
@@ -42,7 +42,7 @@
 1. **Borrow** (v0.4 ~ v1.0): DeepSeek Harness article + 3 untouchable rules
 2. **Self-Evolve** (v1.0 ~ v10.0): Evolver semi-auto + 65 phases evolution + cron 6h
 3. **Collaboration Network** (v10.0 ~ v10.1): A2A bidirectional 157/157 + safe reject guard
-4. **Cross-Discipline 5 Libraries** (v12.0 ~ v14.0): v3.0 neural network + runtime learning recap
+4. **Heuristic Analogy Helper** (v12.0 ~ v14.0): v3.0 neural network + runtime learning recap
 
 ## Quick Start
 
@@ -87,7 +87,7 @@ MIT — see `LICENSE`.
 │   └── events/                        # EvolutionEvent audit trail
 │
 ├── scripts/                           # Core scripts
-│   ├── cross_library_auto.py          # 5-library evidence auto-gen
+│   ├── cross_library_auto.py          # heuristic evidence auto-gen
 │   ├── visualize_5lib_graph.py        # PNG/SVG/PDF/EPS visualization
 │   ├── solidify.py                    # Solidify approval gate
 │   ├── validate_gep.py                # GEP strict validation
@@ -122,17 +122,17 @@ make evolve-full   # Full cycle + auto-fill + list pending Solidify
 2. ❌ No runtime plugin loading — Cordis-style dynamic injection dilutes Gene signal precision
 3. ❌ No automatic Solidify — manual approval only (Arrow's impossibility theorem)
 
-## Cross-Discipline 5 Libraries (Heuristic, not Gate)
+## Heuristic Analogy Helper (Heuristic, not Gate)
 
-| Library | Chapter |
-|---------|---------|
-| BeautifulMathematics | Ch12 Algorithms |
-| cell-biology | Ch15 Signal Transduction |
-| CognitivePsychology | Ch6 Long-term Memory |
-| OpenStaxBiology | Ch01 Evolution |
-| evomap | GEP v1.12.1 §2.3 EvolutionEvent |
+| Lens | Concept |
+|------|---------|
+| Algorithm pipeline | Tool-call Hook→Permission→Execute→Emit flow |
+| Cell membrane selectivity | Solidify guard filters out bad Genes |
+| Long-term memory anchor | Cron 6h reuses previous high-frequency tool results |
+| Natural selection | Evolver adapts Genes to changing patterns |
+| Evolution event audit | Each Solidify writes an audit log entry |
 
-**Usage boundary**: 5-library mapping is a heuristic, not a gate. Required for irreversible architectural decisions and "automation vs human review" choices; optional for routine changes.
+**Usage boundary**: heuristic analogy helper is a heuristic, not a gate. Required for irreversible architectural decisions and "automation vs human review" choices; optional for routine changes.
 
 Each evidence entry should carry a `reviewed: bool` field distinguishing manually-verified analogies from LLM auto-generated candidates.
 
@@ -141,10 +141,10 @@ Each evidence entry should carry a `reviewed: bool` field distinguishing manuall
 | Script | Description |
 |--------|-------------|
 | `examples/01_local_evolver.py` | Local Evolver one-cycle |
-| `examples/02_cross_library_evidence.py` | 5-library evidence v3.0 auto-gen |
+| `examples/02_cross_library_evidence.py` | heuristic evidence v3.0 auto-gen |
 | `examples/03_a2a_bidirectional.py` | A2A bidirectional sync (port 19890/19891) |
-| `examples/04_pytest_integration.py` | pytest integration + cross-library |
-| `examples/05_png_generation.py` | 5-library PNG generation (needs graphviz) |
+| `examples/04_pytest_integration.py` | pytest integration + cross-source |
+| `examples/05_png_generation.py` | heuristic PNG generation (needs graphviz) |
 | `examples/06_safe_reject_demo.py` | Solidify safe-reject guard demo |
 | `examples/07_png_svg_demo.py` | PNG + SVG dual-format visualization |
 
@@ -166,7 +166,7 @@ All scripts run on local <本机 dev IP> (VM-0-11-ubuntu), **not** on production
 2. **Self-evolve via Evolver + append-only event stream** — preserves auditability
 3. **Manual Solidify + auto-reject guard** — Arrow's impossibility theorem (no full automation)
 4. **A2A + Gene sync via ed25519** — multi-node collaboration with verifiable provenance
-5. **Cross-discipline 5 libraries as heuristic** — reasoning aid, not gate
+5. **Heuristic analogy helper as heuristic** — reasoning aid, not gate
 
 ## Acknowledgments
 
