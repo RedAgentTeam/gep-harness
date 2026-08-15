@@ -82,6 +82,11 @@ def main():
     parser = argparse.ArgumentParser(description="A2A mock peer for local gene_sync testing")
     parser.add_argument("--port", type=int, default=19880, help="listen port")
     parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="listen host (use 0.0.0.0 for cross-node deployment)",
+    )
+    parser.add_argument(
         "--decision",
         choices=["accepted", "rejected", "quarantined"],
         default="accepted",
@@ -91,7 +96,7 @@ def main():
 
     MockPeerHandler.decision = args.decision
 
-    server = ReusableTCPServer(("127.0.0.1", args.port), MockPeerHandler)
+    server = ReusableTCPServer((args.host, args.port), MockPeerHandler)
     print(f"[mock_peer] listening on 127.0.0.1:{args.port} decision={args.decision}", file=sys.stderr, flush=True)
     try:
         server.serve_forever()

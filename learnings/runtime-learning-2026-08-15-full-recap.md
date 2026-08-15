@@ -192,7 +192,7 @@ BeautifulMathematics → CognitivePsychology → OpenStaxBiology → evomap → 
 - 7 候选 evidence v3.0 重生成（覆盖 v12.0 手写版）
 - AGENTS.md / SOUL.md 同步更新 5 库 v2.0/v3.0
 - 历史索引 v1.4~v14 共 80+ 期 ROADMAP
-- 美机 47.89.153.254 同步（**严禁没胡老师确认**）
+- 美机 <美机生产 IP> 同步（**严禁没胡老师确认**）
 
 ### 6.3 runtime learning → 下次 runtime 入口
 

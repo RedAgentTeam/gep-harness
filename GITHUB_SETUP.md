@@ -11,7 +11,7 @@
 1. ✅ 不编凭证（SOUL #1）— yesimagine@gmail.com 由你自己配
 2. ✅ 不凭印象诊断 — 所有路径都先查
 3. ✅ 不 write 覆盖 memory — MEMORY.md 全程 append
-4. ❌ 不在本机做生产相关改动 — 本机 124.222.159.224 仅 dev/test
+4. ❌ 不在本机做生产相关改动 — 本机 <本机 dev IP> 仅 dev/test
 5. ❌ 不在没确认的情况下动生产节点机器 — 美机全程未触碰
 
 ---

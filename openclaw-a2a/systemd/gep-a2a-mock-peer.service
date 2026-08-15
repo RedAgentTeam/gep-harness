@@ -1,0 +1,24 @@
+[Unit]
+Description=GEP A2A Mock Peer (for non-prod cross-node Gene sync testing)
+Documentation=https://github.com/EvoMap/gep-sdk-js
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/data/disk/gep-harness/openclaw-a2a
+ExecStart=/usr/bin/python3 /data/disk/gep-harness/openclaw-a2a/src/mock_peer.py --host=0.0.0.0 --port=19880 --decision=accepted
+Restart=on-failure
+RestartSec=10
+
+# Security hardening (non-prod only)
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gep-a2a-mock
+
+[Install]
+WantedBy=multi-user.target

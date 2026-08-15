@@ -33,7 +33,7 @@
   "source_type": "user_authored",
   "reused_asset_id": null,
   "env_fingerprint": {
-    "host": "VM-0-11-ubuntu (124.222.159.224, 上海腾讯云)",
+    "host": "VM-0-11-ubuntu (<本机 dev IP>, 上海腾讯云)",
     "openclaw_version": "2026.7.1",
     "model": "minimax/MiniMax-M3",
     "channel": "feishu",

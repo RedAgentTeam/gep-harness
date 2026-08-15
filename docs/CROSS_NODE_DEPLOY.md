@@ -78,7 +78,7 @@ Each node runs `mock_peer.py` listening on a port. Genes are wrapped in A2A enve
 
 ## Production Deployment Steps (PENDING OPERATOR APPROVAL)
 
-⚠️ **DO NOT execute without explicit confirmation.** 美机 (47.89.153.254) 任何变更必须先问"在哪台机器做"。
+⚠️ **DO NOT execute without explicit confirmation.** 美机 (<美机生产 IP>) 任何变更必须先问"在哪台机器做"。
 
 1. Operator specifies target node IP and SSH credentials.
 2. Deploy `mock_peer.py` to target node.

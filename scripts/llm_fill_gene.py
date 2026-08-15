@@ -21,8 +21,15 @@ STEPFUN_API_KEY = os.environ.get(
     "STEPFUN_API_KEY",
     "CJahJE5zpT4Gl3tCR2Q9Ang2nlJR6CSkhS8yakQnBWShoWzp4QJND7Ig3QRX0cRH",
 )
-STEPFUN_BASE_URL = os.environ.get("STEPFUN_BASE_URL", "https://api.stepfun.com/v1")
+STEPFUN_BASE_URL = os.environ.get("STEPFUN_BASE_URL", "https://api.stepfun.com/step_plan/v1")
 STEPFUN_MODEL = os.environ.get("STEPFUN_MODEL", "step-3.5-flash")
+
+# ⚠️ 2026-08-15 WARNING:
+# StepFun reasoning model (step-3.5-flash / step-3.7-flash) 不适合此任务
+# 现象: content_len=0 + finish_reason="length"，model 陷入 "wait wait" 推理循环
+# 实际请求会触发 LLM request timed out（>30s 网关超时）
+# 替代方案: 本地 Python 生成 strategy + sha256(asset_id)，见 scripts/local_fill_gene.py
+# 或: 换非 reasoning 模型（需先查 /v1/models 确认可用 id）
 
 SCHEMA_VERSION = "1.12.1"
 

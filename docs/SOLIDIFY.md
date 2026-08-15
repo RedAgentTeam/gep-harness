@@ -109,7 +109,7 @@ Solidify **只能**写 `plan/genes/` 和 `plan/events/`——**严禁触碰**：
 - `/opt/goapi/`
 - `/opt/a2a/`（A2A mock_peer 部署在生产节点）
 - `/etc/goapi/credentials.env`
-- 美机（47.89.153.254）任何文件
+- 美机（<美机生产 IP>）任何文件
 - 美机 goapi.service / redapi.service / systemd
 
 任何"在 Solidify 里加一段部署 goapi"的尝试——立即拒绝 + 写 learnings。

@@ -1,0 +1,9 @@
+{
+  "peers": [
+    {
+      "node_id": "mock-peer-001",
+      "url": "http://127.0.0.1:19880/a2a/receive",
+      "public_key": "mock"
+    }
+  ]
+}

@@ -98,7 +98,7 @@ Before submitting a PR:
 
 ## Production Deployment Restrictions
 
-⚠️ **Production nodes (e.g. 美机 47.89.153.254) require explicit operator confirmation.**
+⚠️ **Production nodes (e.g. 美机 <美机生产 IP>) require explicit operator confirmation.**
 
 Before any production change:
 

@@ -29,7 +29,7 @@
       "/opt/goapi/goapi",
       "/etc/goapi/credentials.env",
       "/data/disk/openclaw/.secrets",
-      "47.89.153.254:/opt/redapi",
+      "<美机生产 IP>:/opt/redapi",
       "/usr/bin/systemctl"
     ]
   },
