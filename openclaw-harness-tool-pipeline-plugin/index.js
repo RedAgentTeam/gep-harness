@@ -22,25 +22,37 @@ const DEFAULT_BIN =
     ".openclaw/workspace/devagent/openclaw-harness/bin"
   );
 
+// C3 fix: tool-pipeline does NOT own the emitter daemon.
+// event-stream (priority 1) owns EmitterDaemon; tool-pipeline (priority 2)
+// simply re-uses it for the single redacted after_tool_call emit.
+// Raw before/after is already written by event-stream.
 const EMITTER = path.join(DEFAULT_BIN, "event_emitter.py");
 
-// Built-in hard-coded forbidden paths (cannot be overridden by config)
-const BUILTIN_FORBIDDEN = [
-  "/opt/goapi/goapi",
-  "/etc/goapi/credentials.env",
-  "/data/disk/openclaw/.secrets",
-  "/usr/bin/systemctl",
-];
+// Reuse EmitterDaemon from event-stream plugin (singleton via module-level var)
+let _daemon = null;
+async function getDaemon() {
+  if (_daemon) return _daemon;
+  // Lazy-import to avoid circular deps; event-stream exports EmitterDaemon
+  const mod = await import(
+    path.join(DEFAULT_BIN, "..", "openclaw-harness-plugin", "index.js")
+  );
+  _daemon = new mod.EmitterDaemon({ pythonBin: "python3" });
+  await _daemon.ready;
+  return _daemon;
+}
 
-// Built-in redact patterns (regex strings)
-const BUILTIN_REDACT = [
-  "Red\\d{6,}",                    // SSH password prefix
-  "47\\.89\\.\\d+\\.\\d+",          // US node IP
-  "sk-[A-Za-z0-9]{20,}",            // OpenAI API key
-  "ghp_[A-Za-z0-9]{20,}",           // GitHub PAT
-  "Bearer\\s+[A-Za-z0-9._\\-]{20,}",// Bearer token
-];
+// C3 fix: emit via daemon instead of per-call spawn.
+// Returns a fire-and-forget promise (emit failures are non-fatal).
+async function emitDaemon(sessionId, kind, args) {
+  try {
+    const d = await getDaemon();
+    await d.emit({ sessionId, kind, args });
+  } catch (e) {
+    console.error(`[harness-tool-pipeline] daemon emit failed: ${e.message}`);
+  }
+}
 
+// Fallback: single-call spawn (used only if daemon is not available)
 function safeEmit(args, timeoutMs = 5000) {
   return new Promise((resolve) => {
     try {
@@ -68,6 +80,23 @@ function safeEmit(args, timeoutMs = 5000) {
     }
   });
 }
+
+// Built-in hard-coded forbidden paths (cannot be overridden by config)
+const BUILTIN_FORBIDDEN = [
+  "/opt/goapi/goapi",
+  "/etc/goapi/credentials.env",
+  "/data/disk/openclaw/.secrets",
+  "/usr/bin/systemctl",
+];
+
+// Built-in redact patterns (regex strings)
+const BUILTIN_REDACT = [
+  "Red\\d{6,}",                    // SSH password prefix
+  "47\\.89\\.\\d+\\.\\d+",          // US node IP
+  "sk-[A-Za-z0-9]{20,}",            // OpenAI API key
+  "ghp_[A-Za-z0-9]{20,}",           // GitHub PAT
+  "Bearer\\s+[A-Za-z0-9._\\-]{20,}",// Bearer token
+];
 
 function sessionIdFromCtx(ctx) {
   return ctx?.sessionKey || ctx?.runId || ctx?.agentId || "unknown-session";
@@ -197,17 +226,9 @@ export default {
           };
         }
 
-        // 2. (timeout + execute happen in OpenClaw core, we don't proxy)
-        //    We just emit before as usual.
-        await safeEmit([
-          "emit",
-          sessionId,
-          "tool_call_before",
-          "--tool",
-          toolName,
-          "--args",
-          JSON.stringify(params),
-        ]);
+        // C3 fix: before_tool_call emit is handled by event-stream (priority 1).
+        // tool-pipeline does NOT emit the raw before event to avoid duplicates.
+        // Permission check result is logged above; no additional emit needed.
       },
       { priority: 2 } // Run AFTER event-stream (priority 1) so audit log fires first
     );
@@ -245,20 +266,23 @@ export default {
           console.error(`[harness-tool-pipeline] redact failed: ${e.message}`);
         }
 
-        await safeEmit([
-          "emit",
+        // C3 fix: emit redacted after_tool_call via daemon (single emit path).
+        // event-stream already emitted the raw after; this is the REDACTED copy.
+        await emitDaemon(
           sessionId,
           "tool_call_after",
-          "--tool",
-          toolName,
-          "--result",
-          JSON.stringify({
-            ...redacted,
-            _pipeline_meta: { duration_ms: duration, redact_count: redactCount },
-          }),
-          "--duration",
-          String(duration),
-        ]);
+          [
+            "--tool",
+            toolName,
+            "--result",
+            JSON.stringify({
+              ...redacted,
+              _pipeline_meta: { duration_ms: duration, redact_count: redactCount },
+            }),
+            "--duration",
+            String(duration),
+          ]
+        );
       },
       { priority: 2 }
     );

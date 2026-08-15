@@ -1,82 +1,136 @@
-"""CHANGELOG 自动生成 — gep-harness v30.0。
+#!/usr/bin/env python3
+"""
+generate_changelog.py — auto-generate CHANGELOG.md from git log.
 
-从 git log 自动提取 commit → CHANGELOG.md。
+Single source of truth: CHANGELOG.md first entry sets version/commit_count/pytest.
+README 现状区 must match these values (enforced by docs_lint.py).
 
-跑法：
-    python3 scripts/generate_changelog.py
-    python3 scripts/generate_changelog.py --since=v25.0
+Usage:
+    python3 scripts/generate_changelog.py              # regenerate CHANGELOG
+    python3 scripts/generate_changelog.py --dry-run     # print without writing
+    python3 scripts/generate_changelog.py --since v36.0  # only new commits
 """
 
-import argparse
+import re
 import subprocess
 import sys
 from pathlib import Path
+from datetime import datetime, timezone
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parents[1]
+CHANGELOG = REPO / "CHANGELOG.md"
 
+# Category emoji mapping (by commit subject keyword)
+CAT_ICONS = {
+    "ci": "🔧",
+    "test": "🧪",
+    "docs": "📚",
+    "fix": "🐛",
+    "feat": "✨",
+    "refactor": "♻️",
+    "chore": "📦",
+    "perf": "⚡",
+    "security": "🔒",
+    "dep": "📦",
+    "pkg": "📦",
+}
 
-def run_git_log(since: str | None = None, limit: int = 50) -> list[str]:
-    """跑 git log 提取 commit。"""
-    cmd = ["git", "log", "--oneline", f"-{limit}"]
-    if since:
-        cmd.append(f"{since}..HEAD")
-    result = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True)
-    return [line for line in result.stdout.splitlines() if line]
-
-
-def categorize_commit(message: str) -> str:
-    """按 commit message 关键词分类。"""
-    msg = message.lower()
-    if "test" in msg or "pytest" in msg:
-        return "🧪 测试"
-    if "docs" in msg or "roadmap" in msg:
-        return "📚 文档"
-    if "feat" in msg or "新增" in msg or "upgrade" in msg or "升级" in msg:
-        return "✨ 功能"
-    if "fix" in msg or "bug" in msg:
-        return "🐛 修复"
-    if "ci" in msg or "github" in msg:
-        return "🔧 CI"
-    return "📦 其他"
+CAT_ORDER = ["fix", "feat", "test", "ci", "docs", "refactor", "perf", "security", "chore", "dep", "pkg"]
 
 
-def render_changelog(commits: list[str]) -> str:
-    """渲染 CHANGELOG.md。"""
+def run_git(*args):
+    result = subprocess.run(
+        ["git"] + list(args),
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"git {' '.join(args)} failed:\n{result.stderr}")
+    return result.stdout.strip()
+
+
+def categorize(commit_msg: str) -> str:
+    subject = commit_msg.split("\n")[0].lower()
+    for cat in CAT_ORDER:
+        if cat in subject:
+            return cat
+    return "chore"
+
+
+def parse_commit_log(raw: str) -> list[dict]:
+    """Parse `git log --pretty=format:...` into list of entries."""
+    lines = raw.split("\n")
+    commits = []
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        if not line:
+            i += 1
+            continue
+        parts = line.split("|||")
+        if len(parts) < 3:
+            i += 1
+            continue
+        sha = parts[0][:9]
+        subject = parts[1]
+        author = parts[2] if len(parts) > 2 else "unknown"
+        cat = categorize(subject)
+        commits.append({"sha": sha, "subject": subject, "author": author, "cat": cat})
+        i += 1
+    return commits
+
+
+def build_changelog(commits: list[dict], total_commits: int) -> str:
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
     lines = [
         "# CHANGELOG — gep-harness",
         "",
         "> 自动生成（git log 提取）",
-        f"> 总 commit 数：{len(commits)}",
+        f"> 总 commit 数：{total_commits}",
         "",
     ]
-    # 按 hash 分组
-    for line in commits:
-        parts = line.split(maxsplit=1)
-        if len(parts) < 2:
-            continue
-        sha, message = parts
-        cat = categorize_commit(message)
-        lines.append(f"- {cat} `{sha}` — {message}")
-    lines.append("")
+
+    for c in commits:
+        icon = CAT_ICONS.get(c["cat"], "📦")
+        lines.append(f"- {icon} `{c['sha']}` — {c['subject']}")
+
+    lines += ["", f"> 最后生成：{now}", ""]
     return "\n".join(lines)
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--since", type=str, help="起始 commit/tag")
-    parser.add_argument("--limit", type=int, default=50, help="最大 commit 数")
-    parser.add_argument("--output", type=str, default="CHANGELOG.md", help="输出文件")
-    args = parser.parse_args()
+def main():
+    since = None
+    dry_run = False
+    args = sys.argv[1:]
+    i = 0
+    while i < len(args):
+        if args[i] == "--since" and i + 1 < len(args):
+            since = args[i + 1]
+            i += 2
+        elif args[i] == "--dry-run":
+            dry_run = True
+            i += 1
+        else:
+            i += 1
 
-    commits = run_git_log(since=args.since, limit=args.limit)
-    if not commits:
-        print("❌ 无 commit")
+    fmt = "%H|||%s|||%an"
+    git_args = ["log", f"--pretty=format:{fmt}"]
+    if since:
+        git_args.append(f"{since}..HEAD")
+
+    raw = run_git(*git_args)
+    commits = parse_commit_log(raw)
+    total = int(run_git("rev-list", "--count", "HEAD"))
+    changelog = build_changelog(commits, total)
+
+    if dry_run:
+        print(changelog)
         return
 
-    changelog = render_changelog(commits)
-    out = REPO / args.output
-    out.write_text(changelog)
-    print(f"✅ CHANGELOG 写入: {out} ({len(commits)} commits)")
+    CHANGELOG.write_text(changelog)
+    print(f"✅ CHANGELOG.md 已更新：{len(commits)} entries, {total} total commits")
 
 
 if __name__ == "__main__":

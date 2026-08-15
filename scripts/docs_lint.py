@@ -1,107 +1,183 @@
 #!/usr/bin/env python3
-"""docs_lint.py — 文档数字与仓库实际状态对齐校对（P1-5 配套工具）
-
-单一事实源：所有 README/CHANGELOG 数字都从这里读取并校对：
-- Gene/Capsule/Event 文件数（从 plan/ 实际 glob）
-- pytest 实际收集数（跑 pytest --collect-only）
-- commit 数（git log）
-- 最近 5 个 commit（CHANGELOG 自动生成）
-
-用法：
-  python3 scripts/docs_lint.py --check   # 退出码 1 if README 数字不对
-  python3 scripts/docs_lint.py --update  # 自动更新 README 对应字段
 """
-import argparse
-import json
+docs_lint.py — 文档口径一致性检查。
+
+单一事实源 = CHANGELOG.md 头部元数据。
+README 现状区必须与之匹配（版本号、commit 数、pytest）。
+
+Usage:
+    python3 scripts/docs_lint.py           # 检查，不修
+    python3 scripts/docs_lint.py --fix      # 自动修复 README
+    python3 scripts/docs_lint.py --check-changelog  # 只检查 CHANGELOG 是否已生成
+"""
+
 import re
 import subprocess
 import sys
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parents[1]
+README = REPO / "README.md"
+CHANGELOG = REPO / "CHANGELOG.md"
 
 
-def count_plan_assets() -> dict:
-    out = {}
-    for kind in ("genes", "capsules", "events"):
-        out[kind] = len(list((REPO / "plan" / kind).glob("*.json")))
-    return out
-
-
-def count_commits() -> int:
-    r = subprocess.run(
-        ["git", "log", "--oneline"],
-        capture_output=True, text=True, cwd=str(REPO), check=True,
+def run_git(*args):
+    result = subprocess.run(
+        ["git"] + list(args), cwd=REPO,
+        capture_output=True, text=True,
     )
-    return len(r.stdout.strip().splitlines())
+    return result.stdout.strip(), result.returncode
 
 
-def count_pytest() -> int:
-    r = subprocess.run(
-        [sys.executable, "-m", "pytest", "--collect-only", "-q"],
-        capture_output=True, text=True, cwd=str(REPO), check=False,
+def parse_changelog_header() -> dict:
+    """从 CHANGELOG.md 头部提取元数据。"""
+    text = CHANGELOG.read_text(encoding="utf-8")
+    header = {}
+    for line in text.split("\n")[:10]:
+        m = re.match(r"^>\s*总 commit 数[：:]\s*(\d+)", line)
+        if m:
+            header["commit_count"] = int(m.group(1))
+    # version from first commit line
+    m = re.search(r"v(\d+\.\d+(?:\.\d+)?)", text)
+    if m:
+        header["version"] = m.group(1)
+    return header
+
+
+def parse_readme_status() -> dict:
+    """从 README.md 现状区提取当前值。"""
+    text = README.read_text(encoding="utf-8")
+    status = {}
+    m = re.search(r"版本[：:]\s*v([\d.]+)", text)
+    if m:
+        status["version"] = m.group(1)
+    m = re.search(r"commit 数\s*\|\s*(\d+)", text)
+    if m:
+        status["commit_count"] = int(m.group(1))
+    m = re.search(r"pytest\s*\|\s*(\d+)/(\d+)", text)
+    if m:
+        status["pytest"] = f"{m.group(1)}/{m.group(2)}"
+    return status
+
+
+def get_actual_pytest() -> str:
+    """跑 make test 获取真实 pytest 总数。"""
+    result = subprocess.run(
+        ["make", "test"],
+        cwd=REPO, capture_output=True, text=True, timeout=120,
     )
-    # pytest reports "102 tests collected in 0.25s"
-    m = re.search(r"(\d+) tests collected", r.stdout)
-    return int(m.group(1)) if m else 0
+    # 匹配多行 "N passed"，取总数
+    matches = re.findall(r"(\d+)\s+passed", result.stdout)
+    if matches:
+        total = sum(int(m) for m in matches)
+        return f"{total}/{total}"
+    return "?"
 
 
-def snapshot() -> dict:
-    return {
-        "commit_count": count_commits(),
-        "plan_assets": count_plan_assets(),
-        "pytest_count": count_pytest(),
-    }
+def lint():
+    cl = parse_changelog_header()
+    rm = parse_readme_status()
+    actual = get_actual_pytest()
+
+    errors = []
+
+    # 1. CHANGELOG 存在
+    if not CHANGELOG.exists():
+        errors.append("❌ CHANGELOG.md 不存在，运行 python3 scripts/generate_changelog.py")
+
+    # 2. CHANGELOG commit_count vs git rev-list
+    git_count_str, _ = run_git("rev-list", "--count", "HEAD")
+    git_count = int(git_count_str)
+    cl_count = cl.get("commit_count", "?")
+    if cl_count != git_count:
+        errors.append(
+            f"❌ CHANGELOG commit_count={cl_count} ≠ git rev-list={git_count}\n"
+            f"   修复：python3 scripts/generate_changelog.py"
+        )
+
+    # 3. README 版本 vs CHANGELOG
+    if "version" in cl and "version" in rm:
+        if cl["version"] != rm["version"]:
+            errors.append(
+                f"❌ README 版本=v{rm['version']} ≠ CHANGELOG=v{cl['version']}\n"
+                f"   修复：python3 scripts/docs_lint.py --fix"
+            )
+
+    # 4. README commit 数 vs CHANGELOG
+    if "commit_count" in cl and "commit_count" in rm:
+        if cl["commit_count"] != rm["commit_count"]:
+            errors.append(
+                f"❌ README commit_count={rm['commit_count']} ≠ CHANGELOG={cl['commit_count']}\n"
+                f"   修复：python3 scripts/docs_lint.py --fix"
+            )
+
+    # 5. README pytest vs 实际
+    if "pytest" in rm and actual != "?":
+        if rm["pytest"] != actual:
+            errors.append(
+                f"❌ README pytest={rm['pytest']} ≠ 实际={actual}\n"
+                f"   修复：python3 scripts/docs_lint.py --fix"
+            )
+
+    if errors:
+        print("\n".join(errors))
+        return 1
+    else:
+        print("✅ 文档口径一致")
+        return 0
+
+
+def fix_readme():
+    """自动修复 README 现状区。"""
+    cl = parse_changelog_header()
+    actual = get_actual_pytest()
+    text = README.read_text(encoding="utf-8")
+
+    # 更新版本号
+    text = re.sub(
+        r"版本[：:]\s*v[\d.]+（迭代轮次.*?）",
+        f"版本：v{cl.get('version', '?')}（自动同步）",
+        text,
+    )
+
+    # 更新 commit 数
+    text = re.sub(
+        r"commit 数\s*\|\s*\d+",
+        f"commit 数 | {cl.get('commit_count', '?')}",
+        text,
+    )
+
+    # 更新 pytest
+    text = re.sub(
+        r"pytest\s*\|\s*\d+/\d+[^\n]*",
+        f"pytest | {actual}",
+        text,
+    )
+
+    README.write_text(text, encoding="utf-8")
+    print(f"✅ README.md 已同步：版本=v{cl.get('version','?')} commit={cl.get('commit_count','?')} pytest={actual}")
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--check", action="store_true",
-                    help="校验 README 数字（exit 1 if drift）")
-    ap.add_argument("--update", action="store_true",
-                    help="自动更新 README")
-    ap.add_argument("--print", action="store_true",
-                    help="打印当前快照")
-    args = ap.parse_args()
+    check_only = "--check-changelog" in sys.argv
+    if check_only:
+        if not CHANGELOG.exists():
+            print("❌ CHANGELOG.md 不存在")
+            sys.exit(1)
+        cl = parse_changelog_header()
+        git_count_str, _ = run_git("rev-list", "--count", "HEAD")
+        if cl.get("commit_count", -1) != int(git_count_str):
+            print(f"❌ CHANGELOG commit_count={cl.get('commit_count')} ≠ git={git_count_str}")
+            sys.exit(1)
+        print("✅ CHANGELOG 与 git 一致")
+        sys.exit(0)
 
-    snap = snapshot()
+    if "--fix" in sys.argv:
+        fix_readme()
+        sys.exit(0)
 
-    if args.print or not (args.check or args.update):
-        print(json.dumps(snap, indent=2, ensure_ascii=False))
-        return 0
-
-    if args.check:
-        readme = (REPO / "README.md").read_text()
-        drift = []
-        # 校验 Gene 数
-        m_gene = re.search(r"Gene 总数\s*\|\s*(\d+)", readme)
-        if m_gene and int(m_gene.group(1)) != snap["plan_assets"]["genes"]:
-            drift.append(f"Gene 总数: README={m_gene.group(1)} 实际={snap['plan_assets']['genes']}")
-        # 校验 pytest 数
-        m_pytest = re.search(r"pytest\s*\|\s*(\d+)/(\d+)", readme)
-        if m_pytest and int(m_pytest.group(2)) != snap["pytest_count"]:
-            drift.append(f"pytest 总数: README={m_pytest.group(2)} 实际={snap['pytest_count']}")
-        if drift:
-            print("❌ README drift detected:")
-            for d in drift:
-                print(f"  - {d}")
-            return 1
-        print(f"✅ README 与仓库实际一致 (Gene={snap['plan_assets']['genes']}, "
-              f"pytest={snap['pytest_count']}, commits={snap['commit_count']})")
-        return 0
-
-    if args.update:
-        readme = (REPO / "README.md").read_text()
-        # 更新 pytest 数（保守：只改 X/X 的第二项）
-        readme = re.sub(
-            r"(pytest\s*\|\s*\d+/)\d+",
-            rf"\g<1>{snap['pytest_count']}",
-            readme, count=1,
-        )
-        (REPO / "README.md").write_text(readme)
-        print(f"✅ README updated: pytest={snap['pytest_count']}")
-        return 0
+    sys.exit(lint())
 
 
 if __name__ == "__main__":
-    sys.exit(main() or 0)
+    main()

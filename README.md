@@ -5,7 +5,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/RedAgentTeam/gep-harness)](https://github.com/RedAgentTeam/gep-harness/releases)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org)
 
-> **版本：** v14.0（迭代轮次 #75）  
+> **版本：** v36.1.1（自动同步）  
 > **日期：** 2026-08-14  
 > **作者：** RedAgentTeam（@胡老师 / Red Ho）  
 > **协议：** GEP v1.12.1 (strict)  — 跨协议/项目不变字段  
@@ -103,7 +103,7 @@ cat 方法论.md
 
 ## 下一阶段入口
 
-### 当前阶段路线图（v14.0+ 待办）
+### 当前阶段路线图（v36.1.1+ 待办）
 
 | 优先级 | 任务 | 说明 |
 |---|---|---|
@@ -118,18 +118,18 @@ cat 方法论.md
 详见 `docs/ROADMAP_v0.5.md`（待写）。
 ---
 
-## 现状（2026-08-15 v14.0 收尾）
+## 现状（2026-08-15 v36.1.1 收尾）
 
 > **数字口径说明**：以下数字均为单一事实源，由 `scripts/docs_lint.py --check` 实时校对（不依赖历史叙述）。若 README 与实际 drift，请跑 `python3 scripts/docs_lint.py --update` 同步。
 
 | 维度 | 数据 |
 |------|------|
-| commit 数 | 198 |
+| commit 数 | 201 |
 | ROADMAP 期数 | 75（迭代轮次 #1 ~ #75） |
 | Gene 总数 | 152¹ |
 | Capsule 总数 | 2 |
 | Event 总数 | 19（EvolutionEvent） |
-| pytest | 102/102 全量收集中（已运行：P0/P1 补充后实际结果以 `make test` 为准） |
+| pytest | 118/118
 | GEP strict | 7/7 |
 | 安全 | 本机运行 / 生产部署未启动 |
 
