@@ -120,6 +120,50 @@ LIBRARY_GRAPH: Dict[str, List[str]] = {
     "evomap": ["cell-biology", "CognitivePsychology"],            # 事件 → 信号 → 记忆
 }
 
+# 5 库关联强度矩阵（v15.0 v4.0 神经元网络扩展）
+# LIBRARY_GRAPH_EDGE[v1][v2] = 关联强度 (0~1)
+# 强化现有闭环 + 增加 5 个跨环关联：
+#   BM ↔ Bio（算法 ↔ 生物）直接关联
+#   Cog ↔ evomap（认知 ↔ 协议）直接关联
+#   Bio ↔ Bio + Cog ↔ Cog 自身反馈
+LIBRARY_GRAPH_EDGE: Dict[str, Dict[str, float]] = {
+    "BeautifulMathematics": {
+        "cell-biology": 0.85,         # BM ↔ Bio (新增跨环)
+        "CognitivePsychology": 0.9,   # 原闭环
+        "OpenStaxBiology": 0.7,       # 跨环关联
+        "evomap": 0.9,                # 原闭环
+        "BeautifulMathematics": 0.5,  # 自身反馈
+    },
+    "cell-biology": {
+        "BeautifulMathematics": 0.85, # 原闭环
+        "CognitivePsychology": 0.7,   # 跨环关联
+        "OpenStaxBiology": 0.9,       # 原闭环
+        "evomap": 0.7,                # 跨环关联
+        "cell-biology": 0.5,          # 自身反馈
+    },
+    "CognitivePsychology": {
+        "BeautifulMathematics": 0.9,  # 原闭环
+        "cell-biology": 0.7,          # 原闭环
+        "OpenStaxBiology": 0.9,       # 原闭环
+        "evomap": 0.85,               # 新增跨环 (Cog ↔ evomap)
+        "CognitivePsychology": 0.5,   # 自身反馈
+    },
+    "OpenStaxBiology": {
+        "BeautifulMathematics": 0.7,  # 跨环关联
+        "cell-biology": 0.9,          # 原闭环
+        "CognitivePsychology": 0.9,   # 原闭环
+        "evomap": 0.9,                # 原闭环
+        "OpenStaxBiology": 0.5,       # 自身反馈
+    },
+    "evomap": {
+        "BeautifulMathematics": 0.9,  # 原闭环
+        "cell-biology": 0.7,          # 原闭环
+        "CognitivePsychology": 0.85,  # 新增跨环
+        "OpenStaxBiology": 0.9,       # 原闭环
+        "evomap": 0.5,                # 自身反馈
+    },
+}
+
 
 def match_evidence(library: str, signals: List[str], summary: str) -> Tuple[str, float]:
     """匹配一个库的 evidence，返回 (evidence_text, confidence)。
