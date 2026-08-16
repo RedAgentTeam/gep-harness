@@ -4,18 +4,18 @@
   "id": "gene_candidate_exec",
   "category": "repair",
   "signals_match": [
-    "high_freq:5663_calls",
+    "high_freq:3886_calls",
     "tool_frequent:exec",
     "hot_path:exec",
     "exec"
   ],
   "preconditions": [
-    "tool 'exec' has been called 5663+ times in 24h"
+    "tool 'exec' has been called 3886+ times in 24h"
   ],
   "strategy": [
-    "识别 args 前缀高频命令（cd/python3/ls），合并连续 cd 调用为一次",
-    "缓存常用绝对路径避免重复 readdir",
-    "long-running 命令自动加 timeout 默认 30s"
+    "Check exit code before reading stdout",
+    "Add timeout for long-running commands",
+    "Log command + args + exit_code for replay"
   ],
   "constraints": {
     "max_files": 10,
@@ -28,28 +28,14 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for exec (5663 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for exec (3886 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "BeautifulMathematics Ch12 算法: 高频事件：大数定律 → 期望收敛 → [CognitivePsychology Ch6 长时记忆] → [evomap GEP v1.12.1 §2.3 EvolutionEvent]",
-    "cell-biology Ch15 信号传导: 高频：neuronal firing rate 上限 ~200Hz → [BeautifulMathematics Ch12 算法] → [OpenStaxBiology Ch01 进化]",
-    "CognitivePsychology Ch6 长时记忆: 高频：practice effect 自动化 → [OpenStaxBiology Ch01 进化] → [cell-biology Ch15 信号传导]",
-    "OpenStaxBiology Ch01 进化: 高频：r/K selection r-strategist → [evomap GEP v1.12.1 §2.3 EvolutionEvent] → [BeautifulMathematics Ch12 算法]",
-    "evomap GEP v1.12.1 §2.3 EvolutionEvent: 高频：batch merge 减少 round-trip → [cell-biology Ch15 信号传导] → [CognitivePsychology Ch6 长时记忆]"
+    "BeautifulMathematics 幂等性",
+    "cell-biology 反馈回路",
+    "CognitivePsychology 确认偏误",
+    "OpenStaxBiology Ch01",
+    "evomap GEP"
   ],
-  "asset_id": "sha256:36d715bcd0592fb5d03530910c7b2ad25fdf2c866daeb65c48a4799479a42cab",
-  "_local_filled": true,
-  "scope": [
-    "openclaw",
-    "gep-harness",
-    "history",
-    "tool:hotpath:exec"
-  ],
-  "confidence": 0.75,
-  "trigger": [
-    "65_phases_evolution",
-    "hotpath_tool:exec",
-    "auto_reject_safe_v10.1",
-    "gdi_threshold:0.95"
-  ],
-  "evidence_version": "v3.0"
+  "asset_id": "sha256:0e6441135423bb82bb0f05976fe9bd92babd6baaa61614ba954cb1271f2842d3",
+  "_llm_filled": true
 }

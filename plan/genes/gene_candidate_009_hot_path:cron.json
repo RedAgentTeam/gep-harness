@@ -1,21 +1,21 @@
 {
   "type": "Gene",
   "schema_version": "1.12.1",
-  "id": "gene_candidate_process",
+  "id": "gene_candidate_cron",
   "category": "repair",
   "signals_match": [
-    "high_freq:198_calls",
-    "tool_frequent:process",
-    "hot_path:process",
-    "process"
+    "high_freq:10_calls",
+    "tool_frequent:cron",
+    "hot_path:cron",
+    "cron"
   ],
   "preconditions": [
-    "tool 'process' has been called 198+ times in 24h"
+    "tool 'cron' has been called 10+ times in 24h"
   ],
   "strategy": [
-    "Profile process usage patterns",
-    "Add caching for process with TTL",
-    "Log all calls to events.jsonl"
+    "Add caching for cron with TTL",
+    "Log all calls to events.jsonl",
+    "Profile cron usage patterns"
   ],
   "constraints": {
     "max_files": 10,
@@ -28,7 +28,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for process (198 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for cron (10 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "CognitivePsychology 一般化",
     "evomap GEP",
@@ -36,6 +36,6 @@
     "cell-biology 适应",
     "BeautifulMathematics"
   ],
-  "asset_id": "sha256:6fd94767bdb24b0b055d8c076007a055f570ba985de45908abc0b72fa57c971b",
+  "asset_id": "sha256:6e76d16fba400e40d94856b7ef333e871b5e0864fcd4d91a88c41b60cc84a2f8",
   "_llm_filled": true
 }

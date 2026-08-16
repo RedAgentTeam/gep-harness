@@ -1,0 +1,41 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_candidate_write",
+  "category": "repair",
+  "signals_match": [
+    "high_freq:164_calls",
+    "tool_frequent:write",
+    "hot_path:write",
+    "write"
+  ],
+  "preconditions": [
+    "tool 'write' has been called 164+ times in 24h"
+  ],
+  "strategy": [
+    "Profile write usage patterns",
+    "Add caching for write with TTL",
+    "Log all calls to events.jsonl"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "summary": "Hot-path optimization for write (164 calls in 24h, 3 strategies)",
+  "cross_library_evidence": [
+    "cell-biology 转录",
+    "CognitivePsychology 记忆巩固",
+    "BeautifulMathematics 算法正确性",
+    "evomap 事件日志",
+    "OpenStaxBiology Ch06"
+  ],
+  "asset_id": "sha256:89a36de7c039219e7b3ef92a45d4e369cc8e42a02fb58c78b33c0f7e4a142454",
+  "_llm_filled": true
+}

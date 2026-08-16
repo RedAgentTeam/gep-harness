@@ -4,18 +4,18 @@
   "id": "gene_candidate_message",
   "category": "repair",
   "signals_match": [
-    "high_freq:66_calls",
+    "high_freq:36_calls",
     "tool_frequent:message",
     "hot_path:message",
     "message"
   ],
   "preconditions": [
-    "tool 'message' has been called 66+ times in 24h"
+    "tool 'message' has been called 36+ times in 24h"
   ],
   "strategy": [
-    "同 session <5s 连续 message 合并为批量发送",
-    "content >4000 chars 自动拆分（飞书 4000 上限）",
-    "API rate limit 20 msg/s 排队控制"
+    "Profile message usage patterns",
+    "Add caching for message with TTL",
+    "Log all calls to events.jsonl"
   ],
   "constraints": {
     "max_files": 10,
@@ -28,28 +28,14 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for message (66 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for message (36 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "BeautifulMathematics Ch12 算法: 高频事件：大数定律 → 期望收敛 → [CognitivePsychology Ch6 长时记忆] → [evomap GEP v1.12.1 §2.3 EvolutionEvent]",
-    "cell-biology Ch15 信号传导: 高频：neuronal firing rate 上限 ~200Hz → [BeautifulMathematics Ch12 算法] → [OpenStaxBiology Ch01 进化]",
-    "CognitivePsychology Ch6 长时记忆: 高频：practice effect 自动化 → [OpenStaxBiology Ch01 进化] → [cell-biology Ch15 信号传导]",
-    "OpenStaxBiology Ch01 进化: 高频：r/K selection r-strategist → [evomap GEP v1.12.1 §2.3 EvolutionEvent] → [BeautifulMathematics Ch12 算法]",
-    "evomap GEP v1.12.1 §2.3 EvolutionEvent: 高频：batch merge 减少 round-trip → [cell-biology Ch15 信号传导] → [CognitivePsychology Ch6 长时记忆]"
+    "CognitivePsychology 支持高频消息调用的认知负荷优化策略",
+    "evomap 提供GEP框架下的演化映射适配方案",
+    "OpenStaxBiology 提供方法论层面的可复用验证逻辑",
+    "cell-biology 适配高频调用的资源复用机制参考",
+    "BeautifulMathematics 提供缓存TTL计算的数学优化依据"
   ],
-  "asset_id": "sha256:a910115a07cc727fb19aa1acd2dd0e511ef31578b9ec51d10049d791a2932006",
-  "_local_filled": true,
-  "scope": [
-    "openclaw",
-    "gep-harness",
-    "history",
-    "tool:hotpath:message"
-  ],
-  "confidence": 0.75,
-  "trigger": [
-    "65_phases_evolution",
-    "hotpath_tool:message",
-    "auto_reject_safe_v10.1",
-    "gdi_threshold:0.95"
-  ],
-  "evidence_version": "v3.0"
+  "asset_id": "sha256:7d865e959b2466918d9863780c7f8f3a62d261d21c1d03e47a6b7e9a8c5d2f1b",
+  "_llm_filled": true
 }

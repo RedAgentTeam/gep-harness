@@ -1,20 +1,19 @@
 {
   "type": "Gene",
   "schema_version": "1.12.1",
-  "id": "gene_candidate_process",
-  "category": "repair",
+  "id": "gene_candidate_write_file",
+  "category": "optimize",
   "signals_match": [
-    "high_freq:198_calls",
-    "tool_frequent:process",
-    "hot_path:process",
-    "process"
+    "tool_frequent:write_file",
+    "hot_path:write_file",
+    "write_file"
   ],
   "preconditions": [
-    "tool 'process' has been called 198+ times in 24h"
+    "tool 'write_file' has been called 6+ times in 24h"
   ],
   "strategy": [
-    "Profile process usage patterns",
-    "Add caching for process with TTL",
+    "Profile write_file usage patterns",
+    "Add caching for write_file with TTL",
     "Log all calls to events.jsonl"
   ],
   "constraints": {
@@ -28,7 +27,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for process (198 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for write_file (6 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "CognitivePsychology 一般化",
     "evomap GEP",
@@ -36,6 +35,6 @@
     "cell-biology 适应",
     "BeautifulMathematics"
   ],
-  "asset_id": "sha256:6fd94767bdb24b0b055d8c076007a055f570ba985de45908abc0b72fa57c971b",
+  "asset_id": "sha256:41deb62981c9452861158b2043fdfe61400ea8d464013539c3a6e3e36ab681b9",
   "_llm_filled": true
 }

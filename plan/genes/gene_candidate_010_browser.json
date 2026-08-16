@@ -1,20 +1,19 @@
 {
   "type": "Gene",
   "schema_version": "1.12.1",
-  "id": "gene_candidate_process",
-  "category": "repair",
+  "id": "gene_candidate_browser",
+  "category": "optimize",
   "signals_match": [
-    "high_freq:198_calls",
-    "tool_frequent:process",
-    "hot_path:process",
-    "process"
+    "tool_frequent:browser",
+    "hot_path:browser",
+    "browser"
   ],
   "preconditions": [
-    "tool 'process' has been called 198+ times in 24h"
+    "tool 'browser' has been called 8+ times in 24h"
   ],
   "strategy": [
-    "Profile process usage patterns",
-    "Add caching for process with TTL",
+    "Profile browser usage patterns",
+    "Add caching for browser with TTL",
     "Log all calls to events.jsonl"
   ],
   "constraints": {
@@ -28,7 +27,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for process (198 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for browser (8 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "CognitivePsychology 一般化",
     "evomap GEP",
@@ -36,6 +35,6 @@
     "cell-biology 适应",
     "BeautifulMathematics"
   ],
-  "asset_id": "sha256:6fd94767bdb24b0b055d8c076007a055f570ba985de45908abc0b72fa57c971b",
+  "asset_id": "sha256:ee19aa9cfd4dacfd67b9f59375c5c0f5c2957cab18aefbe1eebfedb47c5a2f61",
   "_llm_filled": true
 }

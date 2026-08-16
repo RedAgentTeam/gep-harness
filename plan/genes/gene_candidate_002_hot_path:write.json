@@ -1,0 +1,42 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_candidate_write",
+  "category": "repair",
+  "signals_match": [
+    "high_freq:120_calls",
+    "tool_frequent:write",
+    "hot_path:write",
+    "write"
+  ],
+  "preconditions": [
+    "tool 'write' has been called 120+ times in 24h"
+  ],
+  "strategy": [
+    "Add caching for write with TTL",
+    "Log all calls to events.jsonl",
+    "Profile write usage patterns"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "summary": "Hot-path optimization for write (120 calls in 24h, 3 strategies)",
+  "cross_library_evidence": [
+    "BeautifulMathematics Ch12 算法: 高频事件：大数定律 → 期望收敛",
+    "cell-biology Ch15 信号传导: 高频：neuronal firing rate 上限 ~200Hz",
+    "CognitivePsychology Ch6 长时记忆: 高频：practice effect 自动化",
+    "OpenStaxBiology Ch01 进化: 高频：r/K selection r-strategist",
+    "evomap GEP v1.12.1 §2.3 EvolutionEvent: 高频：batch merge 减少 round-trip"
+  ],
+  "asset_id": "sha256:491e8ddfc0f6a6601c624b36c1076146cce05938bb230502d897b892323ecfd8",
+  "_cross_library_auto": true,
+  "_llm_filled": true
+}

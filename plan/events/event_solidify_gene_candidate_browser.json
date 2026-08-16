@@ -1,7 +1,7 @@
 {
   "schema_version": "1.12.1",
   "type": "EvolutionEvent",
-  "id": "evt_solidify_gene_candidate_process_2026_08_17",
+  "id": "evt_solidify_gene_candidate_browser_2026_08_17",
   "parent": "evt_plan_gep_harness_cycle_001",
   "intent": "optimize",
   "signals": [
@@ -9,9 +9,9 @@
     "hotpath_gene"
   ],
   "genes_used": [
-    "gene_candidate_process"
+    "gene_candidate_browser"
   ],
-  "mutation_id": "mut_solidify_gene_candidate_process_2026_08_17",
+  "mutation_id": "mut_solidify_gene_candidate_browser_2026_08_17",
   "personality_state": {
     "rigor": 0.9,
     "risk_tolerance": 0.3,
@@ -28,10 +28,10 @@
   },
   "source_type": "solidify_approved",
   "meta": {
-    "ts": "2026-08-17T00:41:09.612435",
-    "signal_key": "solidify_gene_candidate_process",
-    "from_staging": "gene_candidate_002_hot_path:process.json",
-    "to_plan": "plan/genes/gene_candidate_002_hot_path:process.json"
+    "ts": "2026-08-17T00:41:09.624002",
+    "signal_key": "solidify_gene_candidate_browser",
+    "from_staging": "gene_candidate_010_browser.json",
+    "to_plan": "plan/genes/gene_candidate_010_browser.json"
   },
-  "asset_id": "sha256:1d8742a350ce41224d5672ad0c41a9a5d90b5746e33790700573a795f262ca9f"
+  "asset_id": "sha256:c37ae6abc991ac5c83f1f64341c0e03a478fa99a682b9996d2d028e3e7620eec"
 }

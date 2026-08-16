@@ -4,13 +4,13 @@
   "id": "gene_candidate_edit",
   "category": "repair",
   "signals_match": [
-    "high_freq:162_calls",
+    "high_freq:172_calls",
     "tool_frequent:edit",
     "hot_path:edit",
     "edit"
   ],
   "preconditions": [
-    "tool 'edit' has been called 162+ times in 24h"
+    "tool 'edit' has been called 172+ times in 24h"
   ],
   "strategy": [
     "Verify oldText uniqueness before replace",
@@ -28,7 +28,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for edit (162 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for edit (172 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "cell-biology 基因突变",
     "CognitivePsychology 确认偏误",
@@ -36,6 +36,6 @@
     "evomap 演化变异",
     "OpenStaxBiology DNA 修复"
   ],
-  "asset_id": "sha256:5bb9929ca4ad8fe270b33ceb6db46f1d3cb9c0375e6eac4e90bc160d1a0a2e6f",
+  "asset_id": "sha256:8c1a3e8a2be3afd25d19817609869dd7efdd372b7bd6d7daecbb8a625266bf39",
   "_llm_filled": true
 }

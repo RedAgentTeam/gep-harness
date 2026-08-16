@@ -1,21 +1,20 @@
 {
   "type": "Gene",
   "schema_version": "1.12.1",
-  "id": "gene_candidate_process",
+  "id": "gene_candidate_apply_patch",
   "category": "repair",
   "signals_match": [
-    "high_freq:198_calls",
-    "tool_frequent:process",
-    "hot_path:process",
-    "process"
+    "tool_frequent:apply_patch",
+    "hot_path:apply_patch",
+    "apply_patch"
   ],
   "preconditions": [
-    "tool 'process' has been called 198+ times in 24h"
+    "tool 'apply_patch' has been called 6+ times in 24h"
   ],
   "strategy": [
-    "Profile process usage patterns",
-    "Add caching for process with TTL",
-    "Log all calls to events.jsonl"
+    "Add caching for apply_patch with TTL",
+    "Log all calls to events.jsonl",
+    "Profile apply_patch usage patterns"
   ],
   "constraints": {
     "max_files": 10,
@@ -28,7 +27,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for process (198 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for apply_patch (6 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "CognitivePsychology 一般化",
     "evomap GEP",
@@ -36,6 +35,6 @@
     "cell-biology 适应",
     "BeautifulMathematics"
   ],
-  "asset_id": "sha256:6fd94767bdb24b0b055d8c076007a055f570ba985de45908abc0b72fa57c971b",
+  "asset_id": "sha256:6017142f5506ab885ea01acd76c4488ba3dc3e970e0bf2707f7217388c664091",
   "_llm_filled": true
 }

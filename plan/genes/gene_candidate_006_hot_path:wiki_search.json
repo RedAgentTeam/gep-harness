@@ -1,20 +1,20 @@
 {
   "type": "Gene",
   "schema_version": "1.12.1",
-  "id": "gene_candidate_process",
-  "category": "repair",
+  "id": "gene_candidate_wiki_search",
+  "category": "optimize",
   "signals_match": [
-    "high_freq:198_calls",
-    "tool_frequent:process",
-    "hot_path:process",
-    "process"
+    "high_freq:20_calls",
+    "tool_frequent:wiki_search",
+    "hot_path:wiki_search",
+    "wiki_search"
   ],
   "preconditions": [
-    "tool 'process' has been called 198+ times in 24h"
+    "tool 'wiki_search' has been called 20+ times in 24h"
   ],
   "strategy": [
-    "Profile process usage patterns",
-    "Add caching for process with TTL",
+    "Profile wiki_search usage patterns",
+    "Add caching for wiki_search with TTL",
     "Log all calls to events.jsonl"
   ],
   "constraints": {
@@ -28,7 +28,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for process (198 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for wiki_search (20 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "CognitivePsychology 一般化",
     "evomap GEP",
@@ -36,6 +36,6 @@
     "cell-biology 适应",
     "BeautifulMathematics"
   ],
-  "asset_id": "sha256:6fd94767bdb24b0b055d8c076007a055f570ba985de45908abc0b72fa57c971b",
+  "asset_id": "sha256:3f7b1e1e205bcd8b69a6dfb7d3615b92f50a0aa036ab38374447deb0b9ff104d",
   "_llm_filled": true
 }

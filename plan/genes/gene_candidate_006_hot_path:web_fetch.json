@@ -1,0 +1,41 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_candidate_web_fetch",
+  "category": "optimize",
+  "signals_match": [
+    "high_freq:26_calls",
+    "tool_frequent:web_fetch",
+    "hot_path:web_fetch",
+    "web_fetch"
+  ],
+  "preconditions": [
+    "tool 'web_fetch' has been called 26+ times in 24h"
+  ],
+  "strategy": [
+    "Add retry with backoff for timeout",
+    "Cache URL + status_code + content_hash",
+    "Set maxChars to avoid OOM on large pages"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "summary": "Hot-path optimization for web_fetch (26 calls in 24h, 3 strategies)",
+  "cross_library_evidence": [
+    "OpenStaxBiology 信息传递",
+    "CognitivePsychology 注意力机制",
+    "BeautifulMathematics 熵减",
+    "evomap A2A 协议",
+    "cell-biology 受体"
+  ],
+  "asset_id": "sha256:b22c3648c2ee7c94df60136e84c43edfb998b69f24f1047f8b39b22d690cd6cb",
+  "_llm_filled": true
+}
