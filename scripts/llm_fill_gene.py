@@ -54,7 +54,7 @@ def call_stepfun(prompt: str, model: str = STEPFUN_MODEL) -> str:
     body = json.dumps({
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 1024,
+        "max_tokens": 4096,
         "temperature": 0.1,
     }).encode("utf-8")
     req = urllib.request.Request(
@@ -67,7 +67,18 @@ def call_stepfun(prompt: str, model: str = STEPFUN_MODEL) -> str:
     )
     with urllib.request.urlopen(req, timeout=30) as resp:
         data = json.loads(resp.read().decode("utf-8"))
-    return data["choices"][0]["message"]["content"].strip()
+    msg = data["choices"][0]["message"]
+    content = msg.get("content", "").strip()
+    if not content:
+        # reasoning model: content is empty, fall back to reasoning_content
+        rc = msg.get("reasoning_content", "").strip()
+        # Try to extract the actual JSON from reasoning_content
+        if rc:
+            import re
+            m = re.search(r"({.*?})", rc, re.DOTALL)
+            if m:
+                content = m.group(1)
+    return content
 
 
 def fill_gene(gene: dict) -> dict:
@@ -76,12 +87,24 @@ def fill_gene(gene: dict) -> dict:
         input_json=json.dumps(gene, indent=2, ensure_ascii=False),
     )
     raw = call_stepfun(prompt)
-    # Strip markdown fences if present
+    # Strip markdown fences if present (handle ```json, ```, or no fence at all)
+    raw = raw.strip()
     if raw.startswith("```"):
         raw = "\n".join(raw.split("\n")[1:])
         if raw.endswith("```"):
             raw = "\n".join(raw.split("\n")[:-1])
-    filled = json.loads(raw)
+    if not raw:
+        raise ValueError("LLM returned empty response")
+    try:
+        filled = json.loads(raw)
+    except json.JSONDecodeError as e:
+        # Try to extract the first {...} block as fallback
+        import re
+        m = re.search(r'\{.*?\}', raw, re.DOTALL)
+        if m:
+            filled = json.loads(m.group())
+        else:
+            raise ValueError(f"LLM returned non-JSON: {raw[:200]}") from e
     # Merge: preserve protected fields, replace editable ones
     PROTECTED = {"type", "schema_version", "id", "signals_match", "preconditions",
                  "constraints", "validation", "summary"}

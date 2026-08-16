@@ -129,7 +129,7 @@ cat 方法论.md
 | Gene 总数 | 152¹ |
 | Capsule 总数 | 2 |
 | Event 总数 | 19（EvolutionEvent） |
-| pytest | 464/464
+| pytest | 220/220
 | GEP strict | 7/7 |
 | 安全 | 本机运行 / 生产部署未启动 |
 
