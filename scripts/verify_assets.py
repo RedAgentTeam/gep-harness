@@ -19,9 +19,13 @@ C2 fix (历史资产 asset_id 信任策略):
 """
 import json
 import re
+import subprocess
 import sys
 import glob
+import datetime
 from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "openclaw-harness/bin"))
 from canonicalize import compute_asset_id  # noqa: E402
@@ -56,13 +60,31 @@ for path in sorted(
         total_fail += 1
         continue
 
-    # 3. 重算 asset_id (canonicalize 标准) — 如果对得上则彻底验证
+    # 3. 重算 asset_id (canonicalize 标准)
     computed = compute_asset_id(obj)
     if computed == claimed:
         total_ok += 1
         print(f"✅ {obj.get('type', 'Unknown'):14} {Path(path).stem:50}")
     else:
-        # 4. 重算不匹配 — 信任 claimed (历史资产, 不破坏 append-only)
+        # 4. 重算不匹配 — 按资产新旧决定 fail 还是 trust
+        # C7 fix: 新资产（<30天）必须用 canonicalize 标准计算，不匹配则 fail
+        #         历史资产 append-only 不可改，trust（格式合法即保留）
+        rel = str(Path(path).relative_to(REPO))
+        try:
+            when = subprocess.run(
+                ["git", "log", "-1", "--format=%ct", "--", rel],
+                capture_output=True, text=True, cwd=str(REPO),
+            ).stdout.strip()
+            if when:
+                created = datetime.datetime.fromtimestamp(int(when), tz=datetime.timezone.utc)
+                now = datetime.datetime.now(tz=datetime.timezone.utc)
+                age_days = (now - created).total_seconds() / 86400
+                if age_days < 30:
+                    print(f"❌ {obj.get('type', 'Unknown'):14} {Path(path).stem:50} asset_id_mismatch_new={claimed[:40]}")
+                    total_fail += 1
+                    continue
+        except Exception:
+            pass  # 无法判断新旧时 trust
         total_trust += 1
         print(f"🟡 {obj.get('type', 'Unknown'):14} {Path(path).stem:50} (asset_id 信任, 格式合法)")
 

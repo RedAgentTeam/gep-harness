@@ -44,5 +44,5 @@
     "from_staging": "staging/gene_candidate_000_exec_filled.json",
     "to_plan": "plan/genes/gene_devagent_exec_hotpath_49_calls_24h.json"
   },
-  "asset_id": "sha256:8732ee49cb6909f79b5d7a993e4911ae615b5e53b8767959426ceb9b410180b2"
+  "asset_id": "sha256:34509c8c02f0809dec5a3aaf33bcf09e442d42e1f93c5150078d0342fcda5f06"
 }

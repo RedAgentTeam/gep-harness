@@ -56,5 +56,5 @@
     "y/N 审批 pending"
   ],
   "decay_after_days": 90,
-  "asset_id": "c74ac69b28f6684d32c915886869e49735e51a62e326e2545b08e195529b1018"
+  "asset_id": "sha256:21124e53a665662c90d17dcc0691d77ebee8f5e19f20ee04bf822021b243377e"
 }

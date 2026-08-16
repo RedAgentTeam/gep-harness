@@ -124,12 +124,12 @@ cat 方法论.md
 
 | 维度 | 数据 |
 |------|------|
-| commit 数 | 201 |
+| commit 数 | 202 |
 | ROADMAP 期数 | 75（迭代轮次 #1 ~ #75） |
 | Gene 总数 | 152¹ |
 | Capsule 总数 | 2 |
 | Event 总数 | 19（EvolutionEvent） |
-| pytest | 118/118
+| pytest | 464/464
 | GEP strict | 7/7 |
 | 安全 | 本机运行 / 生产部署未启动 |
 

@@ -28,6 +28,9 @@ jobs:
       - name: Run GEP strict validation
         run: make verify
 
+      - name: Check docs consistency (version/commit/pytest)
+        run: python3 scripts/docs_lint.py
+
       - name: Run pytest
         run: make test
 

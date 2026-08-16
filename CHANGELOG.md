@@ -1,8 +1,9 @@
 # CHANGELOG — gep-harness
 
 > 自动生成（git log 提取）
-> 总 commit 数：201
+> 总 commit 数：202
 
+- 📦 `d65726d5b` — gep-harness v36.2: C3+C4 闭环（第二轮复查收尾）
 - 🧪 `4e8521ded` — gep-harness v36.1.1: 补 test_canonicalize_solidify.py（C1 回归测试）
 - 📦 `997abba06` — gep-harness v36.1: C1+C2 真闭环（第二轮复查修复）
 - 📦 `fbe028dc0` — gep-harness v36.0: P0/P1 全部闭环（10 项安全/架构修复）
@@ -205,4 +206,4 @@
 - 📦 `087a50d16` — gep-harness v0.5: A2A broadcast + node discovery (45/45 passed)
 - 📦 `68be0200e` — gep-harness: bootstrap independent repo (exclude parent /data/disk/)
 
-> 最后生成：2026-08-15 18:21 UTC
+> 最后生成：2026-08-15 18:36 UTC
