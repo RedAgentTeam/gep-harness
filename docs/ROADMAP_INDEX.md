@@ -1,7 +1,7 @@
 # ROADMAP 历史索引 v1.4 ~ v14.0
 
-> 自动生成于 2026-08-15 13:23
-> 总数: 75 期
+> 自动生成于 2026-08-17 00:41
+> 总数: 76 期
 
 ## 索引
 
@@ -97,7 +97,14 @@
 ### Plan B 收尾（v10.2 ~ v14.0）
 - 7 候选字段补全 → evidence v2.0 → 跨 5 库神经元网络
 
-## 共 75 期 ROADMAP
+## 共 76 期 ROADMAP
+## v36.6 索引（2026-08-17 凌晨闭环）
+
+- v36.3 `6ea6cd2` clean legacy hotpath (122 deleted, v13-v40)
+- v36.4 `b475ccc` fix llm_fill_gene.py + filled 32 candidates
+- v36.5 `e501bf4` events.jsonl +16 (cron cycle)
+- v36.6 `94198ce` solidify 32 genes approved (Stage 3 闭环)
+
 ## 5 库关联图谱（v9.0 自动嵌入）
 
 | 格式 | 文件 | 大小 |
