@@ -147,3 +147,6 @@ staging/
 # 美机 + 本机 IP（占位符保留，防止未来真实 IP 被写回）
 *<美机生产 IP>*
 *<本机 dev IP>*
+
+# Append-only audit event stream (本地累积,不入库)
+openclaw-harness/events/events.jsonl
