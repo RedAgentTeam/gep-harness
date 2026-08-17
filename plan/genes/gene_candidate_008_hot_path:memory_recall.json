@@ -4,18 +4,18 @@
   "id": "gene_candidate_memory_recall",
   "category": "repair",
   "signals_match": [
-    "high_freq:14_calls",
+    "high_freq:10_calls",
     "tool_frequent:memory_recall",
     "hot_path:memory_recall",
     "memory_recall"
   ],
   "preconditions": [
-    "tool 'memory_recall' has been called 14+ times in 24h"
+    "tool 'memory_recall' has been called 10+ times in 24h"
   ],
   "strategy": [
+    "Profile memory_recall usage patterns",
     "Add caching for memory_recall with TTL",
-    "Log all calls to events.jsonl",
-    "Profile memory_recall usage patterns"
+    "Log all calls to events.jsonl"
   ],
   "constraints": {
     "max_files": 10,
@@ -28,7 +28,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for memory_recall (14 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for memory_recall (10 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "CognitivePsychology 一般化",
     "evomap GEP",
@@ -36,6 +36,5 @@
     "cell-biology 适应",
     "BeautifulMathematics"
   ],
-  "asset_id": "sha256:72fd316397cd12f7f11ff791b676f24053ab82dfa52d88f7116db8a6c02a5e74",
-  "_llm_filled": true
+  "asset_id": "sha256:PLACEHOLDER_LLM_TO_FILL"
 }

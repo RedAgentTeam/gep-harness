@@ -4,13 +4,13 @@
   "id": "gene_candidate_write",
   "category": "repair",
   "signals_match": [
-    "high_freq:106_calls",
+    "high_freq:96_calls",
     "tool_frequent:write",
     "hot_path:write",
     "write"
   ],
   "preconditions": [
-    "tool 'write' has been called 106+ times in 24h"
+    "tool 'write' has been called 96+ times in 24h"
   ],
   "strategy": [
     "Profile write usage patterns",
@@ -28,7 +28,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for write (106 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for write (96 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "cell-biology 转录",
     "CognitivePsychology 记忆巩固",
@@ -36,6 +36,5 @@
     "evomap 事件日志",
     "OpenStaxBiology Ch06"
   ],
-  "asset_id": "sha256:438bcb00c6dec68513676aa43fc97ca98265f05646c1d82785930e4462d332e3",
-  "_llm_filled": true
+  "asset_id": "sha256:PLACEHOLDER_LLM_TO_FILL"
 }

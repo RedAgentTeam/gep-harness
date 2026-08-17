@@ -1,20 +1,19 @@
 {
   "type": "Gene",
   "schema_version": "1.12.1",
-  "id": "gene_candidate_process",
-  "category": "repair",
+  "id": "gene_candidate_update_plan",
+  "category": "optimize",
   "signals_match": [
-    "high_freq:314_calls",
-    "tool_frequent:process",
-    "hot_path:process",
-    "process"
+    "tool_frequent:update_plan",
+    "hot_path:update_plan",
+    "update_plan"
   ],
   "preconditions": [
-    "tool 'process' has been called 314+ times in 24h"
+    "tool 'update_plan' has been called 6+ times in 24h"
   ],
   "strategy": [
-    "Profile process usage patterns",
-    "Add caching for process with TTL",
+    "Profile update_plan usage patterns",
+    "Add caching for update_plan with TTL",
     "Log all calls to events.jsonl"
   ],
   "constraints": {
@@ -28,7 +27,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for process (314 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for update_plan (6 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "CognitivePsychology 一般化",
     "evomap GEP",

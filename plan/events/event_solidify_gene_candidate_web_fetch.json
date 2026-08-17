@@ -28,10 +28,10 @@
   },
   "source_type": "solidify_approved",
   "meta": {
-    "ts": "2026-08-17T00:41:09.618119",
+    "ts": "2026-08-17T10:59:52.108977",
     "signal_key": "solidify_gene_candidate_web_fetch",
     "from_staging": "gene_candidate_007_hot_path:web_fetch.json",
     "to_plan": "plan/genes/gene_candidate_007_hot_path:web_fetch.json"
   },
-  "asset_id": "sha256:bdbcaab6967d4cb26fa51a7fe90794f9b095f0c71d04b5a7947c4ac0d4b8f17d"
+  "asset_id": "sha256:8863aa2ecf2795ca3f6a485470dccbbd183ebf4f4656880d55d41d939eb89404"
 }

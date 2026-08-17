@@ -28,10 +28,10 @@
   },
   "source_type": "solidify_approved",
   "meta": {
-    "ts": "2026-08-17T00:41:09.620583",
+    "ts": "2026-08-17T10:59:52.112849",
     "signal_key": "solidify_gene_candidate_memory_recall",
     "from_staging": "gene_candidate_008_memory_recall.json",
     "to_plan": "plan/genes/gene_candidate_008_memory_recall.json"
   },
-  "asset_id": "sha256:4c70916f4f9068a9b6c239e8394ab656a9934cd88dbdc5c7b9d9d993d07aa3fd"
+  "asset_id": "sha256:eeef59175530a80d538aee7972638e9ec0fd31f22ef05fb2424d84a1861b668a"
 }

@@ -13,9 +13,9 @@
     "tool 'cron' has been called 10+ times in 24h"
   ],
   "strategy": [
+    "Profile cron usage patterns",
     "Add caching for cron with TTL",
-    "Log all calls to events.jsonl",
-    "Profile cron usage patterns"
+    "Log all calls to events.jsonl"
   ],
   "constraints": {
     "max_files": 10,
@@ -36,6 +36,5 @@
     "cell-biology 适应",
     "BeautifulMathematics"
   ],
-  "asset_id": "sha256:6e76d16fba400e40d94856b7ef333e871b5e0864fcd4d91a88c41b60cc84a2f8",
-  "_llm_filled": true
+  "asset_id": "sha256:PLACEHOLDER_LLM_TO_FILL"
 }

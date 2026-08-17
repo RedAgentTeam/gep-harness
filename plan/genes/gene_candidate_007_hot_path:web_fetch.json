@@ -4,13 +4,13 @@
   "id": "gene_candidate_web_fetch",
   "category": "optimize",
   "signals_match": [
-    "high_freq:20_calls",
+    "high_freq:16_calls",
     "tool_frequent:web_fetch",
     "hot_path:web_fetch",
     "web_fetch"
   ],
   "preconditions": [
-    "tool 'web_fetch' has been called 20+ times in 24h"
+    "tool 'web_fetch' has been called 16+ times in 24h"
   ],
   "strategy": [
     "Add retry with backoff for timeout",
@@ -28,7 +28,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for web_fetch (20 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for web_fetch (16 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "OpenStaxBiology 信息传递",
     "CognitivePsychology 注意力机制",
@@ -36,6 +36,5 @@
     "evomap A2A 协议",
     "cell-biology 受体"
   ],
-  "asset_id": "sha256:096ce2dd54b3ed376817139ae1a1402f8349df9232a1163911dbf921d5ff6c60",
-  "_llm_filled": true
+  "asset_id": "sha256:PLACEHOLDER_LLM_TO_FILL"
 }

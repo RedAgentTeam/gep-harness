@@ -28,10 +28,10 @@
   },
   "source_type": "solidify_approved",
   "meta": {
-    "ts": "2026-08-17T00:41:09.626170",
+    "ts": "2026-08-17T10:59:52.119815",
     "signal_key": "solidify_gene_candidate_subagents",
     "from_staging": "gene_candidate_011_subagents.json",
     "to_plan": "plan/genes/gene_candidate_011_subagents.json"
   },
-  "asset_id": "sha256:93828484a5592501d7ff89816858361b9109d6f853405e569c7bdca659f851d0"
+  "asset_id": "sha256:7a3acdfc2b9a5a1c46eec8cb13b61c01243a206bd509b9499448998ca6391a82"
 }

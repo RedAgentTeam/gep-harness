@@ -4,13 +4,13 @@
   "id": "gene_candidate_read",
   "category": "optimize",
   "signals_match": [
-    "high_freq:328_calls",
+    "high_freq:202_calls",
     "tool_frequent:read",
     "hot_path:read",
     "read"
   ],
   "preconditions": [
-    "tool 'read' has been called 328+ times in 24h"
+    "tool 'read' has been called 202+ times in 24h"
   ],
   "strategy": [
     "Cache frequently read files (path, size > 1MB)",
@@ -28,7 +28,7 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for read (328 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for read (202 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
     "OpenStaxBiology 信息论",
     "CognitivePsychology 记忆锚点",

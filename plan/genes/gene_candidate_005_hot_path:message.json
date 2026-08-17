@@ -4,13 +4,13 @@
   "id": "gene_candidate_message",
   "category": "repair",
   "signals_match": [
-    "high_freq:36_calls",
+    "high_freq:28_calls",
     "tool_frequent:message",
     "hot_path:message",
     "message"
   ],
   "preconditions": [
-    "tool 'message' has been called 36+ times in 24h"
+    "tool 'message' has been called 28+ times in 24h"
   ],
   "strategy": [
     "Profile message usage patterns",
@@ -28,14 +28,13 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for message (36 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for message (28 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "CognitivePsychology 支持高频消息调用的认知负荷优化策略",
-    "evomap 提供GEP框架下的演化映射适配方案",
-    "OpenStaxBiology 提供方法论层面的可复用验证逻辑",
-    "cell-biology 适配高频调用的资源复用机制参考",
-    "BeautifulMathematics 提供缓存TTL计算的数学优化依据"
+    "CognitivePsychology 一般化",
+    "evomap GEP",
+    "OpenStaxBiology 方法论",
+    "cell-biology 适应",
+    "BeautifulMathematics"
   ],
-  "asset_id": "sha256:7d865e959b2466918d9863780c7f8f3a62d261d21c1d03e47a6b7e9a8c5d2f1b",
-  "_llm_filled": true
+  "asset_id": "sha256:PLACEHOLDER_LLM_TO_FILL"
 }
