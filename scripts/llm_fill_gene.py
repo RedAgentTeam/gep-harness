@@ -169,6 +169,7 @@ def main():
                 print(f"  ⊘ {cand.name} already filled, skipping")
                 continue
             print(f"=== Filling {cand.name} ===")
+            gene = json.load(open(cand))
             if args.dry_run:
                 print(f"  [dry-run] Would fill category={gene.get('category')}")
                 continue
