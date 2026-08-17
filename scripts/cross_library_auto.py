@@ -191,6 +191,25 @@ def match_evidence(library: str, signals: List[str], summary: str) -> Tuple[str,
     return best_text, round(best_conf, 2)
 
 
+def trust_score(library: str, signals: List[str], summary: str) -> float:
+    """v13.0: 计算证据 trust_score（基于 LIBRARY_GRAPH_EDGE 关联强度）。
+
+    trust_score = match_evidence confidence × LIBRARY_GRAPH_EDGE 出度均值
+
+    含义：
+    - match confidence（0.3~1.0）= 当前库能命中具体模板的程度
+    - LIBRARY_GRAPH_EDGE 出度均值（0~1）= 该库与其他 4 库的关联强度
+
+    返回 0~1，越高表示该库的证据可信度越高。
+    """
+    _, conf = match_evidence(library, signals, summary)
+    edges = LIBRARY_GRAPH_EDGE.get(library, {})
+    if not edges:
+        return round(conf * 0.5, 3)
+    out_avg = sum(edges.values()) / len(edges)
+    return round(conf * out_avg, 3)
+
+
 def auto_cross_library_evidence(gene: dict, version: str = "v2.0") -> List[str]:
     """输入 Gene dict，输出 5 字符串列表（5 库各一条）。
 
@@ -198,6 +217,7 @@ def auto_cross_library_evidence(gene: dict, version: str = "v2.0") -> List[str]:
     - v1.0: "{library_name} {reason}"（≤ 80 chars）
     - v2.0: "{library_name} {chapter}: {reason}"（含章节号 + 字段关联）
     - v3.0: v2.0 + 跨库互引（→ [关联库] 关联字段）
+    - v13.0: v3.0 + trust_score 置信分（[trust=0.85] 尾部）
     """
     signals = gene.get("signals_match", []) or gene.get("signals", []) or []
     summary = gene.get("summary", "") or ""
@@ -207,7 +227,17 @@ def auto_cross_library_evidence(gene: dict, version: str = "v2.0") -> List[str]:
     for library in libs:
         text, conf = match_evidence(library, signals, summary)
         chapter = LIBRARY_CHAPTER.get(library, "")
-        if version == "v3.0" and chapter:
+        if version == "v13.0" and chapter:
+            # v13.0: 章节号 + 字段关联 + 跨库互引 + trust_score
+            line = f"{library} {chapter}: {text}"
+            refs = LIBRARY_GRAPH.get(library, [])
+            for ref_lib in refs[:2]:
+                ref_chapter = LIBRARY_CHAPTER.get(ref_lib, "")
+                if ref_chapter:
+                    line += f" → [{ref_lib} {ref_chapter}]"
+            ts = trust_score(library, signals, summary)
+            line += f" [trust={ts:.2f}]"
+        elif version == "v3.0" and chapter:
             # v3.0: 章节号 + 字段关联 + 跨库互引
             line = f"{library} {chapter}: {text}"
             # 加跨库互引（最多 2 个）

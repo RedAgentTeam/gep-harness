@@ -111,7 +111,8 @@ def fill_gene(gene: dict) -> dict:
     for k, v in filled.items():
         if k not in PROTECTED:
             gene[k] = v
-    gene["_llm_filled"] = True
+    # _llm_filled removed: it's an internal marker that polluted asset_id hash.
+    # Use llm_filled_at.json sidecar (see main()) to track which genes were LLM-filled.
     return gene
 
 
@@ -156,9 +157,15 @@ def main():
         output_dir.mkdir(parents=True, exist_ok=True)
         candidates = sorted(staging.glob("gene_candidate_*.json"))
         filled_count = 0
+        # Sidecar manifest tracks which genes have been LLM-filled,
+        # avoiding writing _llm_filled into Gene JSON (would pollute asset_id hash).
+        manifest_path = output_dir / "llm_filled_manifest.json"
+        if manifest_path.exists():
+            manifest = json.load(open(manifest_path))
+        else:
+            manifest = {"filled": [], "schema_version": "1.12.1"}
         for cand in candidates:
-            gene = json.load(open(cand))
-            if gene.get("_llm_filled"):
+            if cand.name in manifest["filled"]:
                 print(f"  ⊘ {cand.name} already filled, skipping")
                 continue
             print(f"=== Filling {cand.name} ===")
@@ -171,9 +178,11 @@ def main():
                 json.dump(filled, open(out_path, "w"), ensure_ascii=False, indent=2)
                 print(f"  ✅ category={filled.get('category')}  "
                       f"evidence={filled.get('cross_library_evidence')}")
+                manifest["filled"].append(cand.name)
                 filled_count += 1
             except Exception as e:
                 print(f"  ❌ {e}")
+        json.dump(manifest, open(manifest_path, "w"), ensure_ascii=False, indent=2)
         print(f"\n=== {filled_count}/{len(candidates)} candidates filled ===")
 
 

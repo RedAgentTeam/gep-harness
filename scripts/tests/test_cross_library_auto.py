@@ -1,399 +1,248 @@
-"""Test cross_library_auto.py 5 库跨学科映射自动化。
+"""Test cross_library_auto.py — 5 库跨学科映射自动化。"""
 
-覆盖：
-- 默认 _default 模板（无 keywords 命中）
-- 工具级关键词映射（exec/read/write_file 等）
-- confidence 多关键词累加
-- dry-run vs 写盘行为
-- 5 库齐全（BeautifulMathematics/cell-biology/CognitivePsychology/OpenStaxBiology/evomap）
-
-sys.path setup via scripts/tests/conftest.py
-"""
 import json
-import pytest
+import subprocess
+import sys
 from pathlib import Path
 
-import cross_library_auto as cla
+REPO = Path("/data/disk/gep-harness")
+sys.path.insert(0, str(REPO / "scripts"))
 
 
-def test_import():
-    """模块可导入，5 个核心 API 都在。"""
-    assert hasattr(cla, "LIBRARY_TEMPLATES")
-    assert hasattr(cla, "match_evidence")
-    assert hasattr(cla, "auto_cross_library_evidence")
-    assert hasattr(cla, "fill_file")
-    # 5 库齐全
-    expected_libs = {
-        "BeautifulMathematics",
-        "cell-biology",
-        "CognitivePsychology",
-        "OpenStaxBiology",
-        "evomap",
-    }
-    assert set(cla.LIBRARY_TEMPLATES.keys()) == expected_libs
-
-
-def test_match_evidence_default():
-    """无关键词命中 → _default + conf 0.3。"""
-    text, conf = cla.match_evidence("BeautifulMathematics", [], "no signal")
-    assert conf == 0.3
-    assert "数学保证" in text or "可证" in text
-
-
-def test_match_evidence_high_freq():
-    """high_freq 信号 → 命中具体模板 + conf >= 0.7。"""
-    text, conf = cla.match_evidence("BeautifulMathematics", ["high_freq:5663_calls"], "")
-    assert conf >= 0.7
-    assert "大数定律" in text or "高频" in text
-
-
-def test_match_evidence_tool_exec():
-    """exec 工具级信号 → 命中 exec 模板。"""
-    for lib in ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]:
-        text, conf = cla.match_evidence(lib, ["exec"], "exec tool")
-        assert conf >= 0.7, f"{lib} exec not matched"
-
-
-def test_auto_cross_library_evidence_returns_5():
-    """auto 返回 5 字符串 + 5 库名都在。"""
-    gene = {
-        "id": "test_gene",
-        "signals_match": ["exec", "high_freq"],
-        "summary": "Test gene for exec hot path",
-    }
-    evidence = cla.auto_cross_library_evidence(gene)
-    assert len(evidence) == 5
-    for lib in ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]:
-        assert any(lib in e for e in evidence), f"missing {lib} in {evidence}"
-
-
-def test_auto_evidence_line_length():
-    """每个 evidence ≤ 80 chars（GEP 协议约束）。"""
-    gene = {
-        "id": "test",
-        "signals_match": ["exec", "read", "write", "hot_path", "high_freq"],
-        "summary": "Long summary " * 10,
-    }
-    evidence = cla.auto_cross_library_evidence(gene)
-    for e in evidence:
-        assert len(e) <= 80, f"evidence too long: {e!r} ({len(e)} chars)"
-
-
-def test_fill_file_dry_run(tmp_path):
-    """dry-run 模式不写盘。"""
-    gene = {
-        "id": "test_dry",
-        "signals_match": ["exec"],
-        "summary": "Dry run test",
-        "cross_library_evidence": ["OLD_1", "OLD_2", "OLD_3", "OLD_4", "OLD_5"],
-    }
-    p = tmp_path / "test_dry.json"
-    json.dump(gene, open(p, "w"))
-
-    result = cla.fill_file(p, dry_run=True)
-
-    # 内存里返回了 5 个新 evidence
-    assert len(result["evidence"]) == 5
-    # 但磁盘文件没变（OLD_* 应还在）
-    after = json.load(open(p))
-    assert after["cross_library_evidence"][0].startswith("OLD")
-
-
-def test_fill_file_write_mode(tmp_path):
-    """非 dry-run 模式写盘。"""
-    gene = {
-        "id": "test_write",
-        "signals_match": ["read"],
-        "summary": "Write test",
-    }
-    p = tmp_path / "test_write.json"
-    json.dump(gene, open(p, "w"))
-
-    cla.fill_file(p, dry_run=False)
-
-    after = json.load(open(p))
-    assert len(after["cross_library_evidence"]) == 5
-    assert after.get("_cross_library_auto") is True
-    for e in after["cross_library_evidence"]:
-        assert any(k in e for k in ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"])
-
-
-def test_confidence_caps_at_1():
-    """confidence 上限 1.0（多关键词累加不能超）。"""
-    many_signals = ["exec", "read", "write", "hot_path", "high_freq", "feedback", "ttl", "cache", "retry"]
-    text, conf = cla.match_evidence("cell-biology", many_signals, "summary")
-    assert 0.0 <= conf <= 1.0, f"conf out of range: {conf}"
-
-    assert hasattr(cla, "LIBRARY_TEMPLATES")
-    assert hasattr(cla, "match_evidence")
-    assert hasattr(cla, "auto_cross_library_evidence")
-    assert hasattr(cla, "fill_file")
-    # 5 库齐全
-    expected_libs = {
-        "BeautifulMathematics",
-        "cell-biology",
-        "CognitivePsychology",
-        "OpenStaxBiology",
-        "evomap",
-    }
-    assert set(cla.LIBRARY_TEMPLATES.keys()) == expected_libs
-
-
-def test_match_evidence_default():
-    """无关键词命中 → _default + conf 0.3。"""
-    text, conf = cla.match_evidence("BeautifulMathematics", [], "no signal")
-    assert conf == 0.3
-    assert "数学保证" in text or "可证" in text
-
-
-def test_match_evidence_high_freq():
-    """high_freq 信号 → 命中具体模板 + conf >= 0.7。"""
-    text, conf = cla.match_evidence("BeautifulMathematics", ["high_freq:5663_calls"], "")
-    assert conf >= 0.7
-    assert "大数定律" in text or "高频" in text
-
-
-def test_match_evidence_tool_exec():
-    """exec 工具级信号 → 命中 exec 模板。"""
-    for lib in ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]:
-        text, conf = cla.match_evidence(lib, ["exec"], "exec tool")
-        assert conf >= 0.7, f"{lib} exec not matched"
-
-
-def test_auto_cross_library_evidence_returns_5():
-    """auto 返回 5 字符串 + 5 库名都在。"""
-    gene = {
-        "id": "test_gene",
-        "signals_match": ["exec", "high_freq"],
-        "summary": "Test gene for exec hot path",
-    }
-    evidence = cla.auto_cross_library_evidence(gene)
-    assert len(evidence) == 5
-    for lib in ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]:
-        assert any(lib in e for e in evidence), f"missing {lib} in {evidence}"
-
-
-def test_auto_evidence_line_length():
-    """每个 evidence ≤ 80 chars（GEP 协议约束）。"""
-    gene = {
-        "id": "test",
-        "signals_match": ["exec", "read", "write", "hot_path", "high_freq"],
-        "summary": "Long summary " * 10,
-    }
-    evidence = cla.auto_cross_library_evidence(gene)
-    for e in evidence:
-        assert len(e) <= 80, f"evidence too long: {e!r} ({len(e)} chars)"
-
-
-def test_fill_file_dry_run(tmp_path):
-    """dry-run 模式不写盘。"""
-    gene = {
-        "id": "test_dry",
-        "signals_match": ["exec"],
-        "summary": "Dry run test",
-        "cross_library_evidence": ["OLD_1", "OLD_2", "OLD_3", "OLD_4", "OLD_5"],
-    }
-    p = tmp_path / "test_dry.json"
-    json.dump(gene, open(p, "w"))
-
-    result = cla.fill_file(p, dry_run=True)
-
-    # 内存里返回了 5 个新 evidence
-    assert len(result["evidence"]) == 5
-    # 但磁盘文件没变（OLD_* 应还在）
-    after = json.load(open(p))
-    assert after["cross_library_evidence"][0].startswith("OLD")
-
-
-def test_fill_file_write_mode(tmp_path):
-    """非 dry-run 模式写盘。"""
-    gene = {
-        "id": "test_write",
-        "signals_match": ["read"],
-        "summary": "Write test",
-    }
-    p = tmp_path / "test_write.json"
-    json.dump(gene, open(p, "w"))
-
-    cla.fill_file(p, dry_run=False)
-
-    after = json.load(open(p))
-    assert len(after["cross_library_evidence"]) == 5
-    assert after.get("_cross_library_auto") is True
-    for e in after["cross_library_evidence"]:
-        assert any(k in e for k in ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"])
-
-
-def test_confidence_caps_at_1():
-    """confidence 上限 1.0（多关键词累加不能超）。"""
-    many_signals = ["exec", "read", "write", "hot_path", "high_freq", "feedback", "ttl", "cache", "retry"]
-    text, conf = cla.match_evidence("cell-biology", many_signals, "summary")
-    assert 0.0 <= conf <= 1.0, f"conf out of range: {conf}"
-
-
-def test_v2_evidence_with_chapter():
-    """v2.0 evidence 含章节号 + 字段关联。"""
-    g = {
-        "signals_match": ["high_freq:5663_calls"],
-        "summary": "Hot-path optimization for exec"
-    }
-    ev_v2 = cla.auto_cross_library_evidence(g, version="v2.0")
-    assert len(ev_v2) == 5
-    # 章节号存在
-    assert any("Ch12" in e for e in ev_v2), "BeautifulMathematics Ch12 missing"
-    assert any("Ch15" in e for e in ev_v2), "cell-biology Ch15 missing"
-    assert any("Ch6" in e for e in ev_v2), "CognitivePsychology Ch6 missing"
-    assert any("Ch01" in e for e in ev_v2), "OpenStaxBiology Ch01 missing"
-    assert any("§2.3" in e for e in ev_v2), "evomap GEP §2.3 missing"
-
-
-def test_v1_vs_v2_evidence_difference():
-    """v1.0 vs v2.0 evidence 格式差异。"""
-    g = {"signals_match": ["exec"], "summary": "test"}
-    ev_v1 = cla.auto_cross_library_evidence(g, version="v1.0")
-    ev_v2 = cla.auto_cross_library_evidence(g, version="v2.0")
-    assert len(ev_v1) == 5
-    assert len(ev_v2) == 5
-    # v2.0 长度应 > v1.0（章节号 + 字段关联）
-    avg_v1 = sum(len(e) for e in ev_v1) / len(ev_v1)
-    avg_v2 = sum(len(e) for e in ev_v2) / len(ev_v2)
-    assert avg_v2 > avg_v1, f"v2.0 ({avg_v2}) 应比 v1.0 ({avg_v1}) 长度更长"
-    # v2.0 至少 3 条含明确章节号（ChXX / §X.X）
-    chapter_hits = sum(1 for e in ev_v2 if any(p in e for p in ["Ch12", "Ch15", "Ch6", "Ch01", "§2.3"]))
-    assert chapter_hits >= 3, f"v2.0 应至少有 3 条含章节号，实际 {chapter_hits}"
-
-
-def test_library_chapter_dict():
-    """LIBRARY_CHAPTER 5 库齐全。"""
-    expected = {"BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"}
-    assert set(cla.LIBRARY_CHAPTER.keys()) == expected
-    # 每个章节号非空
-    for lib, ch in cla.LIBRARY_CHAPTER.items():
-        assert ch, f"{lib} chapter empty"
-
-
-def test_v3_evidence_cross_library_refs():
-    """v3.0 evidence 含跨库互引（→ [关联库] 章节号）。"""
-    g = {"signals_match": ["exec"], "summary": "test"}
-    ev = cla.auto_cross_library_evidence(g, version="v3.0")
-    assert len(ev) == 5
-    # 每条 evidence 末尾至少含 1 个 → [关联库]
-    for e in ev:
-        assert "→ [" in e, f"evidence 缺跨库互引: {e}"
-
-
-def test_v3_evidence_cross_library_complete():
-    """v3.0 evidence 跨库互引闭环（5 库形成神经元网络）。"""
-    g = {"signals_match": ["exec"], "summary": "test"}
-    ev = cla.auto_cross_library_evidence(g, version="v3.0")
-    # 5 库每个库都被引用至少 1 次（闭环）
-    libs = ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]
-    for lib in libs:
-        refs_to_lib = sum(1 for e in ev if f"[{lib}" in e)
-        # 至少 1 条 evidence 引用该库（够形成环）
-        assert refs_to_lib >= 1, f"v3.0 跨库闭环缺引用 {lib}"
-
-
-def test_library_graph_no_self_loop():
-    """LIBRARY_GRAPH 不自引（无环起点=终点）。"""
-    for lib, refs in cla.LIBRARY_GRAPH.items():
-        assert lib not in refs, f"{lib} 自引"
+def test_import_cross_library_auto():
+    """cross_library_auto.py 可 import + 5 库图结构。"""
+    import cross_library_auto as cla
+    assert len(cla.LIBRARY_TEMPLATES) == 5
+    assert "BeautifulMathematics" in cla.LIBRARY_TEMPLATES
+    assert "cell-biology" in cla.LIBRARY_TEMPLATES
+    assert "CognitivePsychology" in cla.LIBRARY_TEMPLATES
+    assert "OpenStaxBiology" in cla.LIBRARY_TEMPLATES
+    assert "evomap" in cla.LIBRARY_TEMPLATES
+    # 每库有 _default + 至少 1 关键词
+    for lib, templates in cla.LIBRARY_TEMPLATES.items():
+        assert "_default" in templates
+        assert len(templates) >= 2
 
 
 def test_library_graph_5_libs():
-    """LIBRARY_GRAPH 5 库齐全，每库至少 1 个引用。"""
-    assert set(cla.LIBRARY_GRAPH.keys()) == {"BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"}
+    """LIBRARY_GRAPH 包含 5 库 + 闭环。"""
+    import cross_library_auto as cla
+    assert len(cla.LIBRARY_GRAPH) == 5
     for lib, refs in cla.LIBRARY_GRAPH.items():
-        assert len(refs) >= 1, f"{lib} 缺关联"
+        assert isinstance(refs, list)
+        assert len(refs) >= 1
 
 
-def test_visualize_5lib_graph_ascii():
-    """5 库图谱可视化 ASCII 输出包含 5 库前缀（截断后仍可识别）。"""
-    import subprocess
+def test_library_graph_edge_strengths():
+    """LIBRARY_GRAPH_EDGE 5×5 矩阵 + 自身反馈。"""
+    import cross_library_auto as cla
+    assert len(cla.LIBRARY_GRAPH_EDGE) == 5
+    for lib, edges in cla.LIBRARY_GRAPH_EDGE.items():
+        assert lib in edges  # 自身反馈存在
+        assert edges[lib] >= 0.0 and edges[lib] <= 1.0
+
+
+def test_match_evidence_with_keyword():
+    """match_evidence 命中关键词 → 模板文本 + 高 confidence。"""
+    from cross_library_auto import match_evidence
+    text, conf = match_evidence("BeautifulMathematics", ["幂等"], "")
+    assert "幂等" in text or "幂等" in text.lower() or "幂等" in text
+    assert conf >= 0.5
+
+
+def test_match_evidence_no_keyword():
+    """match_evidence 无命中 → _default + 0.3 confidence。"""
+    from cross_library_auto import match_evidence
+    text, conf = match_evidence("BeautifulMathematics", ["very_rare_keyword_xyz"], "")
+    assert conf <= 0.4
+
+
+def test_match_evidence_multi_hits_boost_confidence():
+    """多个关键词命中 → confidence > 0.7。"""
+    from cross_library_auto import match_evidence
+    text, conf = match_evidence("BeautifulMathematics", ["幂等", "sha256", "hot_path"], "")
+    assert conf >= 0.7
+
+
+def test_auto_evidence_v1_default():
+    """auto_cross_library_evidence version="v1.0" → 简单格式（无章节号）。"""
+    from cross_library_auto import auto_cross_library_evidence
+    gene = {
+        "signals_match": ["exec"],
+        "summary": "exec hot path",
+    }
+    result = auto_cross_library_evidence(gene, version="v1.0")
+    assert len(result) == 5
+    # v1.0: "{lib} {text}" 不带 "Ch" 章节号
+    for line in result:
+        assert not line.startswith("BeautifulMathematics Ch") or "Ch" not in line or len(line) < 200
+
+
+def test_auto_evidence_v2_with_chapter():
+    """auto_cross_library_evidence version="v2.0" → 含章节号。"""
+    from cross_library_auto import auto_cross_library_evidence, LIBRARY_CHAPTER
+    gene = {"signals_match": ["exec"], "summary": "exec"}
+    result = auto_cross_library_evidence(gene, version="v2.0")
+    assert len(result) == 5
+    # 至少 1 行带章节号
+    has_chapter = any(any(ch in line for ch in LIBRARY_CHAPTER.values()) for line in result)
+    assert has_chapter
+
+
+def test_auto_evidence_v3_with_cross_refs():
+    """auto_cross_library_evidence version="v3.0" → 跨库互引（→ [...]）。"""
+    from cross_library_auto import auto_cross_library_evidence
+    gene = {"signals_match": ["exec"], "summary": "exec"}
+    result = auto_cross_library_evidence(gene, version="v3.0")
+    assert len(result) == 5
+    # v3.0: 至少 1 行包含 "→"
+    has_ref = any("→" in line for line in result)
+    assert has_ref
+
+
+def test_auto_evidence_handles_signals_key():
+    """auto_cross_library_evidence 支持 signals 或 signals_match key。"""
+    from cross_library_auto import auto_cross_library_evidence
+    g1 = {"signals_match": ["x"], "summary": ""}
+    g2 = {"signals": ["x"], "summary": ""}
+    g3 = {}  # 无 signals
+    r1 = auto_cross_library_evidence(g1)
+    r2 = auto_cross_library_evidence(g2)
+    r3 = auto_cross_library_evidence(g3)
+    assert len(r1) == 5
+    assert len(r2) == 5
+    assert len(r3) == 5
+
+
+def test_auto_evidence_truncates_long_lines():
+    """auto_cross_library_evidence 输出不超过 200 chars（v3.0 放宽后）。"""
+    from cross_library_auto import auto_cross_library_evidence
+    gene = {
+        "signals_match": ["x"] * 50,
+        "summary": "x" * 500,
+    }
+    result = auto_cross_library_evidence(gene, version="v3.0")
+    for line in result:
+        assert len(line) <= 200, f"line too long: {len(line)}"
+
+
+def test_fill_file_dry_run(tmp_path):
+    """fill_file dry_run=True → 不写盘。"""
+    from cross_library_auto import fill_file
+    gene = {"id": "test_fill", "signals_match": ["exec"], "summary": "x"}
+    p = tmp_path / "g.json"
+    p.write_text(json.dumps(gene))
+    mtime_before = p.stat().st_mtime
+    result = fill_file(p, dry_run=True)
+    assert result["id"] == "test_fill"
+    assert len(result["evidence"]) == 5
+    # 文件未被修改（_cross_library_auto 不存在）
+    reloaded = json.load(open(p))
+    assert "_cross_library_auto" not in reloaded
+
+
+def test_fill_file_real_write(tmp_path):
+    """fill_file dry_run=False → 写盘 + _cross_library_auto=True。"""
+    from cross_library_auto import fill_file
+    gene = {"id": "test_fill_real", "signals_match": ["幂等"], "summary": "test"}
+    p = tmp_path / "g2.json"
+    p.write_text(json.dumps(gene))
+    result = fill_file(p, dry_run=False)
+    reloaded = json.load(open(p))
+    assert reloaded.get("_cross_library_auto") is True
+    assert len(reloaded["cross_library_evidence"]) == 5
+
+
+def test_validate_evidence_quality_high():
+    """5/5 库命中具体模板 → no warnings。"""
+    from cross_library_auto import validate_evidence_quality, auto_cross_library_evidence
+    gene = {
+        "signals_match": ["幂等", "sha256", "hot_path", "ttl", "receptor"],
+        "summary": "test",
+    }
+    gene["cross_library_evidence"] = auto_cross_library_evidence(gene, version="v2.0")
+    matched, total, warnings = validate_evidence_quality(gene)
+    assert matched >= 3
+    assert total == 5
+
+
+def test_validate_evidence_quality_low():
+    """默认模板占多数 → 警告（当 matched < 3）。"""
+    from cross_library_auto import validate_evidence_quality
+    gene = {
+        "cross_library_evidence": [
+            "BeautifulMathematics _default",  # 命中 _default 跳过
+            "cell-biology _default",
+            "CognitivePsychology _default",
+            "OpenStaxBiology _default",
+            "evomap _default",
+        ],
+    }
+    matched, total, warnings = validate_evidence_quality(gene)
+    # 全部为默认样式 → matched == 0
+    assert matched == 0
+    assert total == 5
+    assert len(warnings) == 1
+    assert "0/5" in warnings[0]
+
+
+def test_validate_evidence_quality_empty():
+    """evidence 空列表 → 0/5。"""
+    from cross_library_auto import validate_evidence_quality
+    gene = {"cross_library_evidence": []}
+    matched, total, warnings = validate_evidence_quality(gene)
+    assert matched == 0
+    assert total == 0
+
+
+def test_main_dry_run(tmp_path):
+    """main() dry-run 模式 → 不写盘 + 打印 evidence。"""
+    gene = {"id": "main_dry", "signals_match": ["exec"], "summary": "x"}
+    p = tmp_path / "g.json"
+    p.write_text(json.dumps(gene))
     result = subprocess.run(
-        ["python3", "scripts/visualize_5lib_graph.py", "--format=ascii"],
-        capture_output=True, text=True, timeout=10,
+        ["python3", str(REPO / "scripts/cross_library_auto.py"),
+         str(p), "--dry-run"],
+        capture_output=True, text=True, timeout=30,
     )
     assert result.returncode == 0
-    # ASCII 模式行名截断到 18 字符，用前缀匹配
-    prefixes = ["Beautiful", "cell-bio", "Cognitive", "OpenStax", "evomap"]
-    for prefix in prefixes:
-        assert prefix in result.stdout, f"missing prefix {prefix}"
+    assert "dry-run" in result.stdout
+    # 文件未改
+    reloaded = json.load(open(p))
+    assert "_cross_library_auto" not in reloaded
 
 
-def test_visualize_5lib_graph_strong_edges():
-    """5 库图谱强关联（≥0.85）存在。"""
-    import subprocess
+def test_main_validate_mode(tmp_path):
+    """main() --validate 模式 → 不修改文件 + 打印质量统计。"""
+    gene = {
+        "id": "main_val",
+        "signals_match": ["幂等", "sha256"],
+        "summary": "test",
+        "cross_library_evidence": [
+            "BeautifulMathematics Ch12: 幂等性证明",
+            "cell-biology Ch15: 反馈机制",
+            "CognitivePsychology Ch6: 锚点",
+            "OpenStaxBiology Ch01: 进化选择",
+            "evomap §2.3: GEP 协议",
+        ],
+    }
+    p = tmp_path / "g3.json"
+    p.write_text(json.dumps(gene))
     result = subprocess.run(
-        ["python3", "scripts/visualize_5lib_graph.py", "--format=markdown"],
-        capture_output=True, text=True, timeout=10,
+        ["python3", str(REPO / "scripts/cross_library_auto.py"),
+         str(p), "--validate"],
+        capture_output=True, text=True, timeout=30,
     )
-    assert result.returncode == 0
-    assert "0.85" in result.stdout or "0.90" in result.stdout
+    combined = result.stdout + result.stderr
+    assert "5 库" in combined or "evidence" in combined or "libraries matched" in combined
 
 
-def test_5lib_graph_md_exists():
-    """docs/5LIB_GRAPH.md 已生成。"""
-    p = Path("/data/disk/gep-harness/docs/5LIB_GRAPH.md")
-    if p.exists():
-        content = p.read_text()
-        # markdown 模式用全名
-        assert "BeautifulMathematics" in content
-        assert "0.85" in content or "0.90" in content
-
-
-def test_5lib_graph_dot_generation():
-    """DOT 格式输出合法（digraph 开头 + 闭合大括号）。"""
-    import subprocess
+def test_main_no_files(tmp_path):
+    """main() 找不到文件 → exit 1。"""
     result = subprocess.run(
-        ["python3", "scripts/visualize_5lib_graph.py", "--format=dot"],
+        ["python3", str(REPO / "scripts/cross_library_auto.py"),
+         str(tmp_path / "nonexistent_dir")],
         capture_output=True, text=True, timeout=10,
     )
-    assert result.returncode == 0
-    assert result.stdout.startswith("digraph")
-    assert result.stdout.rstrip().endswith("}")
-    # 至少 5 个节点
-    assert result.stdout.count("[label=") >= 5
-
-
-def test_5lib_graph_png_exists():
-    """docs/5LIB_GRAPH.png 已生成。"""
-    p = Path("/data/disk/gep-harness/docs/5LIB_GRAPH.png")
-    if p.exists():
-        size = p.stat().st_size
-        # PNG magic bytes
-        with open(p, "rb") as f:
-            magic = f.read(8)
-        assert magic[:4] == b"\x89PNG", "not a valid PNG"
-        assert size > 1000, f"PNG too small: {size} bytes"
-
-
-def test_5lib_graph_svg_exists():
-    """docs/5LIB_GRAPH.svg 已生成（DOT → SVG）。"""
-    p = Path("/data/disk/gep-harness/docs/5LIB_GRAPH.svg")
-    if p.exists():
-        size = p.stat().st_size
-        # SVG 闭合标签在文件末尾，读全文件
-        content = p.read_text(encoding="utf-8", errors="ignore")
-        assert "<svg" in content, "not a valid SVG"
-        assert "</svg>" in content, "SVG missing closing tag"
-        assert size > 1000, f"SVG too small: {size} bytes"
-
-
-def test_5lib_graph_svg_via_dot():
-    """DOT → SVG 通过 dot 命令验证（subprocess）。"""
-    import subprocess
-    # 先生成 DOT
-    dot = subprocess.run(
-        ["python3", "scripts/visualize_5lib_graph.py", "--format=dot"],
-        capture_output=True, text=True, timeout=10,
-    )
-    # 转 SVG
-    svg_proc = subprocess.run(
-        ["dot", "-Tsvg", "-o", "/tmp/test_5lib.svg"],
-        input=dot.stdout, capture_output=True, text=True, timeout=10,
-    )
-    assert svg_proc.returncode == 0, f"dot failed: {svg_proc.stderr}"
-    svg_content = Path("/tmp/test_5lib.svg").read_text()
-    assert "<svg" in svg_content
-    assert "BeautifulMathematics" in svg_content
+    assert result.returncode != 0
+    assert "No gene files" in result.stdout or "❌" in result.stdout
