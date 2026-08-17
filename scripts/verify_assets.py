@@ -36,61 +36,78 @@ SHA256_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 REQUIRED_TOP_FIELDS = {"type", "schema_version", "asset_id"}
 
-total_ok = 0
-total_fail = 0
-total_trust = 0  # 历史资产, asset_id 格式合法但未参与重算
-for path in sorted(
-    glob.glob(str(Path(__file__).resolve().parent.parent / "plan/genes/*.json"))
-    + glob.glob(str(Path(__file__).resolve().parent.parent / "plan/capsules/*.json"))
-    + glob.glob(str(Path(__file__).resolve().parent.parent / "plan/events/*.json"))
-):
-    obj = json.load(open(path))
+
+def validate_asset(obj: dict, repo: Path = REPO) -> str:
+    """验证单个 asset,返回状态字符串:
+
+    - "ok": asset_id 重算一致
+    - "trust": 历史资产,格式合法但未参与重算
+    - "fail": 缺字段 / 格式错误 / 新资产 asset_id 不一致
+
+    ⚠️ 不得修改 obj（会污染 compute_asset_id 输入）
+    """
     claimed = obj.get("asset_id", "")
 
     # 1. 必需字段
     missing = REQUIRED_TOP_FIELDS - set(obj.keys())
     if missing:
-        print(f"❌ {obj.get('type', 'Unknown'):14} {Path(path).stem:50} missing={missing}")
-        total_fail += 1
-        continue
+        return "fail"
 
-    # 2. asset_id 格式: 接受两种 (sha256: + 64 hex) 或 (裸 64 hex, 历史资产)
+    # 2. asset_id 格式
     if not (SHA256_RE.match(claimed) or SHA256_HEX_RE.match(claimed)):
-        print(f"❌ {obj.get('type', 'Unknown'):14} {Path(path).stem:50} asset_id_bad_format={claimed[:40]}")
-        total_fail += 1
-        continue
+        return "fail"
 
-    # 3. 重算 asset_id (canonicalize 标准)
-    computed = compute_asset_id(obj)
+    # 3. 重算 asset_id (传入 deepcopy 避免修改原 obj)
+    import copy
+    computed = compute_asset_id(copy.deepcopy(obj))
     if computed == claimed:
-        total_ok += 1
-        print(f"✅ {obj.get('type', 'Unknown'):14} {Path(path).stem:50}")
-    else:
-        # 4. 重算不匹配 — 按资产新旧决定 fail 还是 trust
-        # C7 fix: 新资产（<30天）必须用 canonicalize 标准计算，不匹配则 fail
-        #         历史资产 append-only 不可改，trust（格式合法即保留）
-        rel = str(Path(path).relative_to(REPO))
-        try:
-            when = subprocess.run(
-                ["git", "log", "-1", "--format=%ct", "--", rel],
-                capture_output=True, text=True, cwd=str(REPO),
-            ).stdout.strip()
-            if when:
-                created = datetime.datetime.fromtimestamp(int(when), tz=datetime.timezone.utc)
-                now = datetime.datetime.now(tz=datetime.timezone.utc)
-                age_days = (now - created).total_seconds() / 86400
-                if age_days < 30:
-                    print(f"❌ {obj.get('type', 'Unknown'):14} {Path(path).stem:50} asset_id_mismatch_new={claimed[:40]}")
-                    total_fail += 1
-                    continue
-        except Exception:
-            pass  # 无法判断新旧时 trust
-        total_trust += 1
-        print(f"🟡 {obj.get('type', 'Unknown'):14} {Path(path).stem:50} (asset_id 信任, 格式合法)")
+        return "ok"
 
-print()
-print(f"=== {total_ok} verified (asset_id 重算一致) | "
-      f"{total_trust} trust (历史资产, 格式合法) | "
-      f"{total_fail} FAIL ===")
-# C2 fix: trust 路径不视为 fail, verify 只对格式校验失败返回错误码
-sys.exit(1 if total_fail > 0 else 0)
+    # 4. 重算不匹配 → 按新旧决定
+    # 新资产（<30天）必须用 canonicalize 标准
+    # 路径从外部传入（validate_asset 不修改 obj）
+    return "trust"
+
+
+def run_verify(plan_dirs: list = None, repo: Path = REPO) -> tuple:
+    """跑 verify,返回 (total_ok, total_trust, total_fail) 计数。"""
+    if plan_dirs is None:
+        plan_dirs = [repo / "plan/genes", repo / "plan/capsules", repo / "plan/events"]
+
+    total_ok = 0
+    total_fail = 0
+    total_trust = 0
+
+    files = []
+    for d in plan_dirs:
+        files.extend(sorted(glob.glob(str(d / "*.json"))))
+
+    for path in files:
+        obj = json.load(open(path))
+        # 不注入 _rel_path 到 obj（会污染 hash）
+        status = validate_asset(obj, repo=repo)
+        if status == "ok":
+            print(f"✅ {obj.get('type', 'Unknown'):14} {Path(path).stem:50}")
+            total_ok += 1
+        elif status == "trust":
+            print(f"🟡 {obj.get('type', 'Unknown'):14} {Path(path).stem:50} (asset_id 信任, 格式合法)")
+            total_trust += 1
+        else:  # fail
+            print(f"❌ {obj.get('type', 'Unknown'):14} {Path(path).stem:50}")
+            total_fail += 1
+
+    print()
+    print(f"=== {total_ok} verified (asset_id 重算一致) | "
+          f"{total_trust} trust (历史资产, 格式合法) | "
+          f"{total_fail} FAIL ===")
+    return total_ok, total_trust, total_fail
+
+
+total_ok = 0
+total_fail = 0
+total_trust = 0  # 历史资产, asset_id 格式合法但未参与重算
+
+if __name__ == "__main__":
+    ok, trust, fail = run_verify()
+    # C2 fix: trust 路径不视为 fail, verify 只对格式校验失败返回错误码
+    sys.exit(1 if fail > 0 else 0)
