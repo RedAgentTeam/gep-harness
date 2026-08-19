@@ -1,8 +1,8 @@
 # GEP Harness — OpenClaw Self-Evolving Foundation
 
-> **Version:** v14.0 (Phase 1-4 closed loop)
-> **Date:** 2026-08-15
-> **Author:** devagent @ Red Ho's instruction
+> **Version:** v41.1 (Phase 1-4 closed loop + GitHub Phase 3 prep)
+> **Date:** 2026-08-19
+> **Author:** RedAgentTeam (@胡老师 / Red Ho)
 > **Protocol:** GEP v1.12.1 (strict)
 > **License:** MIT
 

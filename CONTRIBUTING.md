@@ -1,16 +1,16 @@
 # Contributing to gep-harness
 
-> **Date:** 2026-08-15
-> **Status:** v14.0 active development
+> **Date:** 2026-08-19
+> **Status:** v41.1 active development (GitHub Phase 3 prep complete)
 > **License:** MIT
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/<owner>/gep-harness.git
+git clone https://github.com/RedAgentTeam/gep-harness.git
 cd gep-harness
-make verify        # GEP strict validation (7/7)
-make test          # pytest 16/16
+make verify        # GEP strict validation (90/90 verified)
+make test          # pytest 557/557 (openclaw-harness + scripts + openclaw-a2a)
 ```
 
 ## Development Workflow
@@ -38,9 +38,9 @@ PLAN → BUILD → DIFF → QA → APPROVAL → APPLY → DOCS
 
 ### 4. QA
 
-- Run `make verify` (GEP strict)
-- Run `make test` (pytest)
-- Check `--validate` for 5-library cross-references
+- Run `make verify` (GEP strict — currently 90 verified, 0 FAIL)
+- Run `make test` (pytest — currently 557 passed across `openclaw-harness/`, `scripts/tests/`, `openclaw-a2a/tests/`)
+- Check `python3 scripts/cross_library_auto.py --validate plan/genes/` for 5-library cross-references (should report 0 warnings)
 
 ### 5. APPROVAL
 
@@ -79,10 +79,12 @@ PLAN → BUILD → DIFF → QA → APPROVAL → APPLY → DOCS
 
 Before submitting a PR:
 
-- [ ] `make verify` passes (GEP strict 7/7)
-- [ ] `make test` passes (pytest 16/16+)
+- [ ] `make verify` passes (GEP strict — see current count in `make status`)
+- [ ] `make test` passes (pytest — see current count in `make status`)
 - [ ] `cross_library_auto.py --validate` shows 0 warnings
 - [ ] If you modified `plan/genes/`, include `--validate` output in PR description
+- [ ] If you discovered a new runtime failure mode, add a `learnings/YYYY-MM-DD-*.md` entry
+- [ ] **Solidify is manual** — auto-fill by cron (`scripts/cross_library_auto.py` without `--manual`) only writes to `/tmp/v_staging/` and stays out of `plan/genes/`. Solidify requires operator `y/N`.
 
 ## Adding a New Gene
 
@@ -132,4 +134,7 @@ Use GitHub Issues with labels:
 - `README.md` (中文) / `README.en.md` (English)
 - `OPEN_SOURCE_PLAN.md` — open-source preparation checklist
 - `docs/SOLIDIFY.md` — Solidify guard rules
-- `learnings/runtime-learning-2026-08-15-full-recap.md` — 4-phase recap
+- `docs/CROSS_NODE_DEPLOY.md` — A2A cross-node protocol (production deployment pending operator confirmation)
+- `AI_AUTHORSHIP.md` — Agent-led development model (transparency declaration)
+- `learnings/runtime-learning-2026-08-15-full-recap.md` — 4-phase recap (v0.4 → v33.0)
+- `learnings/runtime-learning-2026-08-15-full-recap-v33-v41.md` — Phase 3 + GitHub prep recap

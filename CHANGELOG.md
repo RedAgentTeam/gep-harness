@@ -1,21 +1,23 @@
 # CHANGELOG — gep-harness
 
 > 自动生成（git log 提取）
-> 总 commit 数：212
+> 总 commit 数：214
 
-- 🧪 `79dab9282` — gep-harness v40.0: 覆盖率 88%→89% + 第三轮测试补全 (511 tests)
-- 📦 `d2e0db7ac` — gep-harness v39.0: 覆盖率 70%→86% + verify_assets 重构 + 第二轮测试补全
-- 📦 `18c688469` — gep-harness v38.0: 5 库 v13 trust_score + 覆盖率补全第一轮
-- 🐛 `8ab92096e` — v37.0: fix 16 PLACEHOLDER_LLM_TO_FILL asset_ids
-- 📦 `ccf007ce4` — gep-harness solidify: 35 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_read,gene_candidate_write,gene_candidate_process,gene_candidate_read,gene_candidate_write,gene_candidate_edit,gene_candidate_read,gene_candidate_write,gene_candidate_edit,gene_candidate_write,gene_candidate_message,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_subagents,gene_candidate_memory_recall,gene_candidate_memory_recall,gene_candidate_cron,gene_candidate_sessions_history,gene_candidate_sessions_history,gene_candidate_subagents,gene_candidate_write_file,gene_candidate_browser,gene_candidate_sessions_history,gene_candidate_update_plan,gene_candidate_write_file,gene_candidate_apply_patch,gene_candidate_subagents,gene_candidate_write_file,gene_candidate_sessions_history,gene_candidate_write_file,gene_candidate_apply_patch)
-- 📦 `31ebca15c` — gep-harness v36.6: ROADMAP 更新（凌晨闭环 5 commit 总账）
-- 📦 `94198ce67` — gep-harness solidify: 32 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_read,gene_candidate_write,gene_candidate_process,gene_candidate_write,gene_candidate_edit,gene_candidate_read,gene_candidate_write,gene_candidate_edit,gene_candidate_write,gene_candidate_message,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_subagents,gene_candidate_memory_recall,gene_candidate_memory_recall,gene_candidate_cron,gene_candidate_sessions_history,gene_candidate_sessions_history,gene_candidate_subagents,gene_candidate_write_file,gene_candidate_browser,gene_candidate_sessions_history,gene_candidate_write_file,gene_candidate_apply_patch,gene_candidate_subagents,gene_candidate_sessions_history,gene_candidate_write_file,gene_candidate_apply_patch)
-- 📦 `e501bf40c` — gep-harness v36.5: events.jsonl +16 (cron cycle)
-- 🐛 `b475ccc82` — gep-harness v36.4: fix llm_fill_gene.py + filled 32 candidates + cleanup legacy
-- 📦 `6ea6cd2f7` — gep-harness v36.3: clean legacy hotpath genes (v13-v40, 122 files)
-- 📦 `d65726d5b` — gep-harness v36.2: C3+C4 闭环（第二轮复查收尾）
-- 🧪 `4e8521ded` — gep-harness v36.1.1: 补 test_canonicalize_solidify.py（C1 回归测试）
-- 📦 `997abba06` — gep-harness v36.1: C1+C2 真闭环（第二轮复查修复）
+- 📦 `954ff412c` — gep-harness v41.1: Phase 3 GitHub-standard publish prep
+- 📦 `7f6bb9ad6` — gep-harness v41.0: Phase 3 pre-push cleanup
+- 🧪 `34ae7ca04` — gep-harness v40.0: 覆盖率 88%→89% + 第三轮测试补全 (511 tests)
+- 📦 `e8891a529` — gep-harness v39.0: 覆盖率 70%→86% + verify_assets 重构 + 第二轮测试补全
+- 📦 `d5abbc922` — gep-harness v38.0: 5 库 v13 trust_score + 覆盖率补全第一轮
+- 🐛 `ed0bdc7d8` — v37.0: fix 16 PLACEHOLDER_LLM_TO_FILL asset_ids
+- 📦 `6c810f154` — gep-harness solidify: 35 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_read,gene_candidate_write,gene_candidate_process,gene_candidate_read,gene_candidate_write,gene_candidate_edit,gene_candidate_read,gene_candidate_write,gene_candidate_edit,gene_candidate_write,gene_candidate_message,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_subagents,gene_candidate_memory_recall,gene_candidate_memory_recall,gene_candidate_cron,gene_candidate_sessions_history,gene_candidate_sessions_history,gene_candidate_subagents,gene_candidate_write_file,gene_candidate_browser,gene_candidate_sessions_history,gene_candidate_update_plan,gene_candidate_write_file,gene_candidate_apply_patch,gene_candidate_subagents,gene_candidate_write_file,gene_candidate_sessions_history,gene_candidate_write_file,gene_candidate_apply_patch)
+- 📦 `1a75a578c` — gep-harness v36.6: ROADMAP 更新（凌晨闭环 5 commit 总账）
+- 📦 `674f14a93` — gep-harness solidify: 32 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_read,gene_candidate_write,gene_candidate_process,gene_candidate_write,gene_candidate_edit,gene_candidate_read,gene_candidate_write,gene_candidate_edit,gene_candidate_write,gene_candidate_message,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_subagents,gene_candidate_memory_recall,gene_candidate_memory_recall,gene_candidate_cron,gene_candidate_sessions_history,gene_candidate_sessions_history,gene_candidate_subagents,gene_candidate_write_file,gene_candidate_browser,gene_candidate_sessions_history,gene_candidate_write_file,gene_candidate_apply_patch,gene_candidate_subagents,gene_candidate_sessions_history,gene_candidate_write_file,gene_candidate_apply_patch)
+- 📦 `654cf7c15` — gep-harness v36.5: events.jsonl +16 (cron cycle)
+- 🐛 `d45a4c264` — gep-harness v36.4: fix llm_fill_gene.py + filled 32 candidates + cleanup legacy
+- 📦 `8a1da5541` — gep-harness v36.3: clean legacy hotpath genes (v13-v40, 122 files)
+- 📦 `83e4192a2` — gep-harness v36.1: C1+C2 真闭环（第二轮复查修复）
+- 📦 `8ab393022` — gep-harness v36.2: C3+C4 闭环（第二轮复查收尾）
+- 🧪 `0a1d41bc6` — gep-harness v36.1.1: 补 test_canonicalize_solidify.py（C1 回归测试）
 - 📦 `fbe028dc0` — gep-harness v36.0: P0/P1 全部闭环（10 项安全/架构修复）
 - 📦 `5876654cc` — gep-harness v35.6: 方法论.md 全具象化（不提 5 库跨学科映射）
 - 📦 `778845c21` — gep-harness v35.5: 补漏（IP 脱敏残留文件）
@@ -216,4 +218,4 @@
 - 📦 `087a50d16` — gep-harness v0.5: A2A broadcast + node discovery (45/45 passed)
 - 📦 `68be0200e` — gep-harness: bootstrap independent repo (exclude parent /data/disk/)
 
-> 最后生成：2026-08-17 23:16 UTC
+> 最后生成：2026-08-19 17:29 UTC

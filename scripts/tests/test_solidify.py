@@ -144,11 +144,12 @@ def test_make_solidify_event_rejected():
 
 def test_make_solidify_event_id_pattern():
     """make_solidify_event() 生成 evt_solidify_{id}_{date} ID。"""
+    import re
     from solidify import make_solidify_event
     evt = make_solidify_event("z.json", "g3", "approved")
     assert evt["id"].startswith("evt_solidify_g3_")
-    # 2026-08-17 日期后缀
-    assert "2026_08_17" in evt["id"] or "2026_08_1" in evt["id"]
+    # evt_solidify_<id>_YYYY_MM_DD 日期后缀（不硬编码 8/17）
+    assert re.search(r"_\d{4}_\d{2}_\d{2}$", evt["id"]), f"date suffix missing: {evt['id']}"
 
 
 def test_main_list_mode():
