@@ -1,8 +1,9 @@
 # CHANGELOG — gep-harness
 
 > 自动生成（git log 提取）
-> 总 commit 数：230
+> 总 commit 数：231
 
+- 📦 `6d032b727` — auto: cron 6h workflow
 - 📦 `4ee651c06` — auto: cron 6h workflow
 - 📦 `476834084` — auto: cron 6h workflow
 - 📦 `343fb7504` — gep-harness v47.0: 5 库 v21.0 - cross_lib auto-evolve + cron 4 步联动
