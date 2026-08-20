@@ -38,11 +38,12 @@ def test_get_persist_path_returns_path():
 
 
 def test_save_active_edges():
-    """save_active_edges 写文件 + 内容正确。"""
+    """save_active_edges 写文件 + 内容正确（v23.0= v1 schema / v24.0= v2 schema）。"""
     path = tp.save_active_edges(SAMPLE_EDGES, source="test")
     assert path.exists()
     data = json.loads(path.read_text())
-    assert data["version"] == "v1"
+    # 兼容 v1（v23.0）和 v2（v24.0）
+    assert data["version"] in ("v1", "v2")
     assert data["source"] == "test"
     assert data["libraries"] == 2
     assert data["dynamic_edges"] == SAMPLE_EDGES
@@ -148,9 +149,10 @@ def test_cron_workflow_includes_persist_load():
 
 
 def test_cron_workflow_6_steps_message():
-    """cron_hourly_workflow 末尾打印 "6 步全部 OK"。"""
+    """cron_hourly_workflow 末尾打印 "6/7 步全部 OK"。"""
     src = open(REPO / "scripts" / "cron_hourly_workflow.py").read()
-    assert "6 步全部 OK" in src
+    # 兼容 v23.0 (6 步) 和 v24.0 (7 步)
+    assert "6 步全部 OK" in src or "7 步全部 OK" in src
 
 
 def test_persist_path_xdg_priority():
