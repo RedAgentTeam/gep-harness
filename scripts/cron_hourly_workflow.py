@@ -1,6 +1,7 @@
-"""cron 6h 联动 — gep-harness v19.0 B。
+"""cron 6h 联动 — gep-harness v21.0（v19.0 B 升级）。
 
-聚合 3 个自动任务到一个脚本，由 cron 6h 调用：
+聚合 4 个自动任务到一个脚本，由 cron 6h 调用：
+0. cross_lib_auto_evolve.py: 重算 dynamic edges + 重新生成图谱 5 格式（v21.0 新增）
 1. check_5lib_assets.py --fix: 6 格式产物检查 + 自动补
 2. generate_changelog.py: CHANGELOG 自动生成
 3. auto_changelog_commit.py: CHANGELOG 自动 commit
@@ -8,6 +9,7 @@
 跑法：
     python3 scripts/cron_hourly_workflow.py
     python3 scripts/cron_hourly_workflow.py --skip-commit  # 仅生成不 commit
+    python3 scripts/cron_hourly_workflow.py --skip-evolve  # 跳过 cross_lib auto-evolve
 """
 
 import argparse
@@ -50,9 +52,23 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip-commit", action="store_true", help="跳过 auto commit")
     parser.add_argument("--skip-5lib", action="store_true", help="跳过 5 库产物检查")
+    parser.add_argument("--skip-evolve", action="store_true", help="跳过 cross_lib auto-evolve")
     args = parser.parse_args()
 
     log_to_file(f"\n--- {REPO.name} cron_hourly_workflow start ---")
+
+    # Step 0: v21.0 cross_lib auto-evolve（重算 dynamic edges + 重生成图谱）
+    if not args.skip_evolve:
+        ok = run_step(
+            "cross_lib_auto_evolve",
+            ["scripts/cross_lib_auto_evolve.py"],
+        )
+        if not ok:
+            log_to_file("cross_lib_auto_evolve FAILED")
+            return 1
+        log_to_file("cross_lib_auto_evolve OK")
+    else:
+        print("⏭️ 跳过 cross_lib auto-evolve")
 
     # Step 1: 5 库产物检查 + 自动补
     if not args.skip_5lib:
@@ -91,7 +107,7 @@ def main() -> int:
         print("⏭️ 跳过 commit")
 
     log_to_file("--- cron_hourly_workflow DONE ---\n")
-    print("\n✅ cron 6h 联动 3 步全部 OK")
+    print("\n✅ cron 6h 联动 4 步全部 OK")
     return 0
 
 
