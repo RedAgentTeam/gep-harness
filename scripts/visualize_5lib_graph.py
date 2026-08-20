@@ -1,15 +1,17 @@
-"""5 库关联强度图谱可视化 — v23.0 v9.0 升级。
+"""5 库关联强度图谱可视化 — v23.0 v9.0 升级 + v19.0 dynamic edges。
 
-输入：LIBRARY_GRAPH_EDGE（cross_library_auto.py）
+输入：LIBRARY_GRAPH_EDGE（cross_library_auto.py）或 dynamic_edges JSON（dynamic_edge_compute.py）
 输出：ASCII + Markdown + DOT + PNG + SVG + PDF（6 种格式）
 + 自动嵌入 ROADMAP_INDEX.md
 
 跑法：
     python3 scripts/visualize_5lib_graph.py
     python3 scripts/visualize_5lib_graph.py --png --svg --pdf
+    python3 scripts/visualize_5lib_graph.py --dynamic-edges staging/dynamic_edges_v19.json
 """
 
 import argparse
+import json
 import shutil
 import subprocess
 import sys
@@ -21,6 +23,26 @@ from cross_library_auto import LIBRARY_GRAPH_EDGE, LIBRARY_CHAPTER
 
 LIBS = ["BeautifulMathematics", "cell-biology", "CognitivePsychology", "OpenStaxBiology", "evomap"]
 
+# 当前使用的边权重（默认 = 静态基线，可被 --dynamic-edges 覆盖）
+_CURRENT_EDGES: dict = LIBRARY_GRAPH_EDGE
+
+
+def load_dynamic_edges(json_path: Path) -> dict | None:
+    """从 dynamic_edge_compute.py 输出的 JSON 读取 dynamic_edges。"""
+    if not json_path.exists():
+        print(f"⚠️ {json_path} 不存在，使用静态基线")
+        return None
+    try:
+        data = json.loads(json_path.read_text())
+        edges = data.get("dynamic_edges")
+        if not edges:
+            print(f"⚠️ {json_path} 无 dynamic_edges 字段，使用静态基线")
+            return None
+        return edges
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"⚠️ {json_path} 解析失败: {e}，使用静态基线")
+        return None
+
 
 def render_ascii_matrix() -> str:
     lines = ["5 库关联强度矩阵 (v5.0)\n"]
@@ -30,7 +52,7 @@ def render_ascii_matrix() -> str:
     for src in LIBS:
         row = src[:18].ljust(20)
         for tgt in LIBS:
-            weight = LIBRARY_GRAPH_EDGE.get(src, {}).get(tgt, 0.0)
+            weight = _CURRENT_EDGES.get(src, {}).get(tgt, 0.0)
             row += f"{weight:.2f}".ljust(8)
         lines.append(row)
     return "\n".join(lines)
@@ -43,7 +65,7 @@ def render_markdown_table() -> str:
     for src in LIBS:
         row = [src]
         for tgt in LIBS:
-            weight = LIBRARY_GRAPH_EDGE.get(src, {}).get(tgt, 0.0)
+            weight = _CURRENT_EDGES.get(src, {}).get(tgt, 0.0)
             row.append(f"{weight:.2f}")
         lines.append("| " + " | ".join(row) + " |")
     lines.append("\n## 章节号映射\n")
@@ -53,7 +75,7 @@ def render_markdown_table() -> str:
         lines.append(f"| {lib} | {ch} |")
     lines.append("\n## 强关联（≥0.85）路径\n")
     for src in LIBS:
-        for tgt, w in LIBRARY_GRAPH_EDGE.get(src, {}).items():
+        for tgt, w in _CURRENT_EDGES.get(src, {}).items():
             if w >= 0.85 and src != tgt:
                 lines.append(f"- {src} → {tgt}: {w:.2f}")
     return "\n".join(lines)
@@ -65,7 +87,7 @@ def render_dot_format() -> str:
         label = f"{lib}\\n{LIBRARY_CHAPTER.get(lib, '')}"
         lines.append(f'  "{lib}" [label="{label}"];')
     for src in LIBS:
-        for tgt, w in LIBRARY_GRAPH_EDGE.get(src, {}).items():
+        for tgt, w in _CURRENT_EDGES.get(src, {}).items():
             if w >= 0.7 and src != tgt:
                 lines.append(f'  "{src}" -> "{tgt}" [label="{w:.2f}", penwidth={w * 3}];')
     lines.append("}")
@@ -109,6 +131,7 @@ def embed_into_roadmap_index(repo: Path) -> bool:
 
 
 def main() -> None:
+    global _CURRENT_EDGES
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=str, help="输出 Markdown 文件路径")
     parser.add_argument("--png", action="store_true", help="生成 PNG（需 graphviz）")
@@ -116,7 +139,15 @@ def main() -> None:
     parser.add_argument("--pdf", action="store_true", help="生成 PDF（需 graphviz）")
     parser.add_argument("--embed-index", action="store_true", help="嵌入到 ROADMAP_INDEX.md")
     parser.add_argument("--format", type=str, default="ascii", choices=["ascii", "markdown", "dot"])
+    parser.add_argument("--dynamic-edges", type=str, help="使用 dynamic_edge_compute.py 输出的 JSON（默认静态基线）")
     args = parser.parse_args()
+
+    # v19.0：dynamic edges 切换
+    if args.dynamic_edges:
+        dyn = load_dynamic_edges(Path(args.dynamic_edges))
+        if dyn is not None:
+            _CURRENT_EDGES = dyn
+            print(f"✅ 使用 dynamic edges: {args.dynamic_edges}")
 
     if args.format == "ascii":
         print(render_ascii_matrix())
