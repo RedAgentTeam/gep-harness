@@ -32,6 +32,7 @@ import hashlib
 import argparse
 import json
 import hashlib
+from cross_library_auto import LIBRARY_GRAPH_EDGE  # v20.0: trust 报告 baseline 识别
 import subprocess
 import sys
 from pathlib import Path
@@ -224,6 +225,34 @@ def main():
     # 执行批准
     print(f'\n{"="*60}')
     print(f'📋 审批摘要: {len(approved)} approved, {len(rejected)} rejected')
+
+    # v20.0：输出 5 库 dynamic edge 贡献（仅在 approved 存在时）
+    if approved:
+        from cross_library_auto import get_active_edges
+        active = get_active_edges()
+        if active is not LIBRARY_GRAPH_EDGE:
+            source = 'dynamic_edges (live)'
+        else:
+            source = 'static baseline (LIBRARY_GRAPH_EDGE)'
+        print(f'   📊 信任度贡献: 5 库出度均值 × match_evidence confidence')
+        print(f'   ⚙️  当前边权源: {source}')
+        print(f'   ┌─────────────┬─────────┐')
+        print(f'   │ 库名        │ trust   │')
+        print(f'   ├─────────────┼─────────┤')
+        try:
+            # 拿首个 approved gene 算 trust_score
+            sample_cand = approved[0][1]
+            sample_gene = json.load(open(sample_cand))
+            from cross_library_auto import trust_score
+            signals = sample_gene.get('signals_match', []) or sample_gene.get('signals', []) or []
+            summary = sample_gene.get('summary', '')
+            for lib in ['BeautifulMathematics', 'cell-biology', 'CognitivePsychology', 'OpenStaxBiology', 'evomap']:
+                ts = trust_score(lib, signals, summary)
+                print(f'   │ {lib[:13]:13s}│ {ts:.3f}   │')
+        except Exception as e:
+            print(f'   │ (trust unavailable: {e})            │')
+        print(f'   └─────────────┴─────────┘')
+
     for gid, cand in approved:
         dest = PLAN_GENES / cand.name
         json.dump(json.load(open(cand)), open(dest, 'w'), ensure_ascii=False, indent=2)

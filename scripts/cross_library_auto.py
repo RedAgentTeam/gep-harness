@@ -191,22 +191,43 @@ def match_evidence(library: str, signals: List[str], summary: str) -> Tuple[str,
     return best_text, round(best_conf, 2)
 
 
-def trust_score(library: str, signals: List[str], summary: str) -> float:
-    """v13.0: 计算证据 trust_score（基于 LIBRARY_GRAPH_EDGE 关联强度）。
+# v20.0：trust_score 接入 dynamic edges（Phase 4 启动）
+# 默认静态基线 LIBRARY_GRAPH_EDGE；可被 set_active_edges() 覆盖
+_ACTIVE_EDGES: Dict[str, Dict[str, float]] = LIBRARY_GRAPH_EDGE
 
-    trust_score = match_evidence confidence × LIBRARY_GRAPH_EDGE 出度均值
+
+def set_active_edges(edges: Dict[str, Dict[str, float]] | None) -> None:
+    """覆盖 trust_score 使用的边权（仅影响后续调用）。
+
+    None 或 空 → 恢复静态基线。
+    """
+    global _ACTIVE_EDGES
+    _ACTIVE_EDGES = edges if edges else LIBRARY_GRAPH_EDGE
+
+
+def get_active_edges() -> Dict[str, Dict[str, float]]:
+    """获取当前激活的边权（仅供查询/报告）。"""
+    return _ACTIVE_EDGES
+
+
+def trust_score(library: str, signals: List[str], summary: str, edges: Dict[str, Dict[str, float]] | None = None) -> float:
+    """v20.0: 计算证据 trust_score（默认静态基线，可传 dynamic edges）。
+
+    trust_score = match_evidence confidence × 边权出度均值
 
     含义：
     - match confidence（0.3~1.0）= 当前库能命中具体模板的程度
-    - LIBRARY_GRAPH_EDGE 出度均值（0~1）= 该库与其他 4 库的关联强度
+    - 边权出度均值（0~1）= 该库与其他 4 库的关联强度
+      （默认从 _ACTIVE_EDGES 读，可显式传入 dynamic edges 覆盖）
 
-    返回 0~1，越高表示该库的证据可信度越高。
+    返回 0~1，越高表示该证据可信度越高。
     """
     _, conf = match_evidence(library, signals, summary)
-    edges = LIBRARY_GRAPH_EDGE.get(library, {})
-    if not edges:
+    src_edges = edges if edges is not None else _ACTIVE_EDGES
+    edges_row = src_edges.get(library, {})
+    if not edges_row:
         return round(conf * 0.5, 3)
-    out_avg = sum(edges.values()) / len(edges)
+    out_avg = sum(edges_row.values()) / len(edges_row)
     return round(conf * out_avg, 3)
 
 
