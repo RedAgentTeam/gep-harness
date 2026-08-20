@@ -56,6 +56,15 @@ def restore_static() -> int:
     """恢复 trust_score 默认静态基线。"""
     from cross_library_auto import set_active_edges, get_active_edges, LIBRARY_GRAPH_EDGE
     set_active_edges(None)
+
+    # v23.0：清除持久化标记
+    try:
+        from trust_persist import clear_active_edges, get_persist_path
+        if clear_active_edges():
+            print(f"💾 已清除持久化文件: {get_persist_path()}")
+    except Exception as e:
+        print(f"⚠️ 清除持久化失败: {e}")
+
     if get_active_edges() is LIBRARY_GRAPH_EDGE:
         print("✅ trust_score 已恢复静态基线")
         return 0
@@ -92,6 +101,15 @@ def flip(edges_path: Path, dry_run: bool = False) -> int:
     print(f"✅ set_active_edges(dynamic_edges) 已应用")
     print(f"   source: {edges_path}")
     print(f"   libraries: {len(edges)}")
+
+    # v23.0：持久化到 active_edges.json
+    try:
+        from trust_persist import save_active_edges, get_persist_path
+        persist_path = save_active_edges(edges, source=str(edges_path))
+        print(f"💾 已持久化 → {persist_path}")
+    except Exception as e:
+        print(f"⚠️ 持久化失败: {e}")
+
     if verify_flip():
         return 0
     return 1

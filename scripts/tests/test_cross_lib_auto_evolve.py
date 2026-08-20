@@ -75,11 +75,12 @@ def test_cron_workflow_4_steps_order():
 
 
 def test_docstring_updated():
-    """cron_hourly_workflow docstring 提到 v21.0/v22.0 + 多步。"""
+    """cron_hourly_workflow docstring 提到 v21.0/v22.0/v23.0 + 多步。"""
     doc = chw.__doc__ or ""
-    # 兼容 v21.0 (4 步) 和 v22.0 (5 步) 两个版本
-    assert "v21.0" in doc or "v22.0" in doc
-    assert any(s in doc for s in ("4 步", "4 个", "5 步", "5 个"))
+    # 兼容 v21.0/v22.0/v23.0 三个版本
+    assert any(v in doc for v in ("v21.0", "v22.0", "v23.0"))
+    # "4 步 / 5 步 / 6 步" 或 "4 个 / 5 个 / 6 个"
+    assert any(s in doc for s in ("4 步", "4 个", "5 步", "5 个", "6 步", "6 个"))
 
 
 def test_cross_lib_does_not_modify_active_edges():

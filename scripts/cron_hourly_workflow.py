@@ -1,8 +1,9 @@
-"""cron 6h 联动 — gep-harness v22.0（v21.0 升级）。
+"""cron 6h 联动 — gep-harness v23.0（v22.0 升级）。
 
-聚合 5 个自动任务到一个脚本，由 cron 6h 调用：
+聚合 6 个自动任务到一个脚本，由 cron 6h 调用：
 0. cross_lib_auto_evolve.py: 重算 dynamic edges + 重新生成图谱 5 格式（v21.0）
 1. trust_auto_flip.py: set_active_edges(dynamic_edges) 让 trust_score 用 dynamic 值（v22.0）
+1.5. trust_persist.py load: 验证持久化标记完整（v23.0）
 2. check_5lib_assets.py --fix: 6 格式产物检查 + 自动补
 3. generate_changelog.py: CHANGELOG 自动生成
 4. auto_changelog_commit.py: CHANGELOG 自动 commit
@@ -96,6 +97,16 @@ def main() -> int:
     else:
         print("⏭️ 跳过 trust_auto_flip")
 
+    # Step 1.5: v23.0 trust_persist auto-load（保证下个进程启动也是 dynamic）
+    ok = run_step(
+        "trust_persist load",
+        ["scripts/trust_persist.py", "load"],
+    )
+    if not ok:
+        log_to_file("trust_persist load FAILED")
+        return 1
+    log_to_file("trust_persist load OK")
+
     # Step 2: 5 库产物检查 + 自动补
     if not args.skip_5lib:
         ok = run_step(
@@ -133,7 +144,7 @@ def main() -> int:
         print("⏭️ 跳过 commit")
 
     log_to_file("--- cron_hourly_workflow DONE ---\n")
-    print("\n✅ cron 6h 联动 5 步全部 OK")
+    print("\n✅ cron 6h 联动 6 步全部 OK")
     return 0
 
 

@@ -179,8 +179,9 @@ def test_cron_workflow_has_restore_static_flag():
 
 
 def test_cron_workflow_docstring_v22():
-    """cron_hourly_workflow docstring 提到 v22.0 + 5 步。"""
+    """cron_workflow docstring 提到 v22.0/v23.0 + 多步。"""
     chw = __import__("cron_hourly_workflow")
     doc = chw.__doc__ or ""
-    assert "v22.0" in doc
-    assert "5 步" in doc or "5 个" in doc
+    # 兼容 v22.0 (5 步) 和 v23.0 (6 步) 两个版本
+    assert any(v in doc for v in ("v22.0", "v23.0"))
+    assert any(s in doc for s in ("5 步", "5 个", "6 步", "6 个"))
