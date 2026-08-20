@@ -1,15 +1,18 @@
-"""cron 6h 联动 — gep-harness v21.0（v19.0 B 升级）。
+"""cron 6h 联动 — gep-harness v22.0（v21.0 升级）。
 
-聚合 4 个自动任务到一个脚本，由 cron 6h 调用：
-0. cross_lib_auto_evolve.py: 重算 dynamic edges + 重新生成图谱 5 格式（v21.0 新增）
-1. check_5lib_assets.py --fix: 6 格式产物检查 + 自动补
-2. generate_changelog.py: CHANGELOG 自动生成
-3. auto_changelog_commit.py: CHANGELOG 自动 commit
+聚合 5 个自动任务到一个脚本，由 cron 6h 调用：
+0. cross_lib_auto_evolve.py: 重算 dynamic edges + 重新生成图谱 5 格式（v21.0）
+1. trust_auto_flip.py: set_active_edges(dynamic_edges) 让 trust_score 用 dynamic 值（v22.0）
+2. check_5lib_assets.py --fix: 6 格式产物检查 + 自动补
+3. generate_changelog.py: CHANGELOG 自动生成
+4. auto_changelog_commit.py: CHANGELOG 自动 commit
 
 跑法：
     python3 scripts/cron_hourly_workflow.py
     python3 scripts/cron_hourly_workflow.py --skip-commit  # 仅生成不 commit
     python3 scripts/cron_hourly_workflow.py --skip-evolve  # 跳过 cross_lib auto-evolve
+    python3 scripts/cron_hourly_workflow.py --skip-flip    # 跳过 trust_auto_flip
+    python3 scripts/cron_hourly_workflow.py --restore-static  # 紧急回退 trust 静态
 """
 
 import argparse
@@ -53,9 +56,19 @@ def main() -> int:
     parser.add_argument("--skip-commit", action="store_true", help="跳过 auto commit")
     parser.add_argument("--skip-5lib", action="store_true", help="跳过 5 库产物检查")
     parser.add_argument("--skip-evolve", action="store_true", help="跳过 cross_lib auto-evolve")
+    parser.add_argument("--skip-flip", action="store_true", help="跳过 trust_auto_flip")
+    parser.add_argument("--restore-static", action="store_true", help="紧急回退：trust_score 恢复静态基线后退出")
     args = parser.parse_args()
 
     log_to_file(f"\n--- {REPO.name} cron_hourly_workflow start ---")
+
+    # --restore-static：紧急回退，跳过所有自动任务，仅恢复静态基线
+    if args.restore_static:
+        print("⚠️ 紧急回退模式：跳过所有自动任务，仅恢复静态")
+        return run_step(
+            "trust_auto_flip --restore-static",
+            ["scripts/trust_auto_flip.py", "--restore-static"],
+        )
 
     # Step 0: v21.0 cross_lib auto-evolve（重算 dynamic edges + 重生成图谱）
     if not args.skip_evolve:
@@ -70,7 +83,20 @@ def main() -> int:
     else:
         print("⏭️ 跳过 cross_lib auto-evolve")
 
-    # Step 1: 5 库产物检查 + 自动补
+    # Step 1: v22.0 trust_auto_flip（set_active_edges 让 trust_score 用 dynamic）
+    if not args.skip_flip:
+        ok = run_step(
+            "trust_auto_flip",
+            ["scripts/trust_auto_flip.py"],
+        )
+        if not ok:
+            log_to_file("trust_auto_flip FAILED")
+            return 1
+        log_to_file("trust_auto_flip OK")
+    else:
+        print("⏭️ 跳过 trust_auto_flip")
+
+    # Step 2: 5 库产物检查 + 自动补
     if not args.skip_5lib:
         ok = run_step(
             "check_5lib_assets --fix",
@@ -83,7 +109,7 @@ def main() -> int:
     else:
         print("⏭️ 跳过 5 库检查")
 
-    # Step 2: CHANGELOG 自动生成
+    # Step 3: CHANGELOG 自动生成
     ok = run_step(
         "generate_changelog",
         ["scripts/generate_changelog.py"],
@@ -93,7 +119,7 @@ def main() -> int:
         return 1
     log_to_file("generate_changelog OK")
 
-    # Step 3: CHANGELOG 自动 commit
+    # Step 4: CHANGELOG 自动 commit
     if not args.skip_commit:
         ok = run_step(
             "auto_changelog_commit",
@@ -107,7 +133,7 @@ def main() -> int:
         print("⏭️ 跳过 commit")
 
     log_to_file("--- cron_hourly_workflow DONE ---\n")
-    print("\n✅ cron 6h 联动 4 步全部 OK")
+    print("\n✅ cron 6h 联动 5 步全部 OK")
     return 0
 
 
