@@ -1,6 +1,6 @@
 # 5 库关联强度图谱（v5.0）
 
-| From \\ To | BeautifulMathematics | cell-biology | CognitivePsychology | OpenStaxBiology | evomap |
+| From \ To | BeautifulMathematics | cell-biology | CognitivePsychology | OpenStaxBiology | evomap |
 |---|---|---|---|---|---|
 | BeautifulMathematics | 0.50 | 0.85 | 0.90 | 0.70 | 0.90 |
 | cell-biology | 0.85 | 0.50 | 0.70 | 0.90 | 0.70 |
@@ -34,10 +34,3 @@
 - evomap → BeautifulMathematics: 0.90
 - evomap → CognitivePsychology: 0.85
 - evomap → OpenStaxBiology: 0.90
-## 5 库关联图谱（PNG 自动生成）
-
-![5 库关联强度图谱](5LIB_GRAPH.png)
-
-## 5 库关联图谱（SVG 矢量化）
-
-![5 库关联强度图谱 SVG](5LIB_GRAPH.svg)

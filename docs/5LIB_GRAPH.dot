@@ -1,0 +1,29 @@
+digraph G {
+  rankdir=LR;
+  node [shape=box, style=filled, fillcolor=lightblue];
+  "BeautifulMathematics" [label="BeautifulMathematics\nCh12 算法"];
+  "cell-biology" [label="cell-biology\nCh15 信号传导"];
+  "CognitivePsychology" [label="CognitivePsychology\nCh6 长时记忆"];
+  "OpenStaxBiology" [label="OpenStaxBiology\nCh01 进化"];
+  "evomap" [label="evomap\nGEP v1.12.1 §2.3 EvolutionEvent"];
+  "BeautifulMathematics" -> "cell-biology" [label="0.85", penwidth=2.55];
+  "BeautifulMathematics" -> "CognitivePsychology" [label="0.90", penwidth=2.7];
+  "BeautifulMathematics" -> "OpenStaxBiology" [label="0.70", penwidth=2.0999999999999996];
+  "BeautifulMathematics" -> "evomap" [label="0.90", penwidth=2.7];
+  "cell-biology" -> "BeautifulMathematics" [label="0.85", penwidth=2.55];
+  "cell-biology" -> "CognitivePsychology" [label="0.70", penwidth=2.0999999999999996];
+  "cell-biology" -> "OpenStaxBiology" [label="0.90", penwidth=2.7];
+  "cell-biology" -> "evomap" [label="0.70", penwidth=2.0999999999999996];
+  "CognitivePsychology" -> "BeautifulMathematics" [label="0.90", penwidth=2.7];
+  "CognitivePsychology" -> "cell-biology" [label="0.70", penwidth=2.0999999999999996];
+  "CognitivePsychology" -> "OpenStaxBiology" [label="0.90", penwidth=2.7];
+  "CognitivePsychology" -> "evomap" [label="0.85", penwidth=2.55];
+  "OpenStaxBiology" -> "BeautifulMathematics" [label="0.70", penwidth=2.0999999999999996];
+  "OpenStaxBiology" -> "cell-biology" [label="0.90", penwidth=2.7];
+  "OpenStaxBiology" -> "CognitivePsychology" [label="0.90", penwidth=2.7];
+  "OpenStaxBiology" -> "evomap" [label="0.90", penwidth=2.7];
+  "evomap" -> "BeautifulMathematics" [label="0.90", penwidth=2.7];
+  "evomap" -> "cell-biology" [label="0.70", penwidth=2.0999999999999996];
+  "evomap" -> "CognitivePsychology" [label="0.85", penwidth=2.55];
+  "evomap" -> "OpenStaxBiology" [label="0.90", penwidth=2.7];
+}

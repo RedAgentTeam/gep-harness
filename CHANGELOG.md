@@ -1,8 +1,9 @@
 # CHANGELOG — gep-harness
 
 > 自动生成（git log 提取）
-> 总 commit 数：214
+> 总 commit 数：215
 
+- 📦 `fb38f42e5` — gep-harness v42.0: Phase 3 publish prep complete (examples/08 + ROADMAP v37-v41 + CONTRIBUTING + RELEASE_NOTES)
 - 📦 `954ff412c` — gep-harness v41.1: Phase 3 GitHub-standard publish prep
 - 📦 `7f6bb9ad6` — gep-harness v41.0: Phase 3 pre-push cleanup
 - 🧪 `34ae7ca04` — gep-harness v40.0: 覆盖率 88%→89% + 第三轮测试补全 (511 tests)
@@ -218,4 +219,4 @@
 - 📦 `087a50d16` — gep-harness v0.5: A2A broadcast + node discovery (45/45 passed)
 - 📦 `68be0200e` — gep-harness: bootstrap independent repo (exclude parent /data/disk/)
 
-> 最后生成：2026-08-19 17:29 UTC
+> 最后生成：2026-08-20 00:12 UTC
