@@ -76,13 +76,63 @@ def get_audit_log_path() -> Path:
     return edges_path.parent / "audit_trust.log"
 
 
+# v25.0 audit log 轮转阈值
+MAX_AUDIT_LOG_SIZE = 1024 * 1024  # 1MB
+AUDIT_KEEP_ROTATED = 5  # 保留最近 5 个轮转文件
+
+
+def _rotate_audit_log_if_needed(log_path: Path) -> None:
+    """检查 audit log 大小，超阈值则轮转。
+
+    轮转机制：
+    - 当前 audit_trust.log → audit_trust.log.YYYYMMDD_HHMMSS
+    - 旧轮转文件保留 AUDIT_KEEP_ROTATED 个，超出的删除
+    """
+    if not log_path.exists():
+        return
+    size = log_path.stat().st_size
+    if size < MAX_AUDIT_LOG_SIZE:
+        return
+
+    # 轮转：当前文件重命名为带时间戳
+    ts_str = datetime.now(timezone.utc).astimezone().strftime("%Y%m%d_%H%M%S")
+    rotated = log_path.with_suffix(f".log.{ts_str}")
+    # 避免重名覆盖（极端情况下1秒内多次 rotate）
+    counter = 1
+    while rotated.exists():
+        rotated = log_path.with_suffix(f".log.{ts_str}.{counter}")
+        counter += 1
+    log_path.rename(rotated)
+
+    # 清理老轮转文件，保留最近 N 个
+    rotated_logs = sorted(
+        log_path.parent.glob(f"{log_path.name}.*"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    for old in rotated_logs[AUDIT_KEEP_ROTATED:]:
+        try:
+            old.unlink()
+        except OSError:
+            pass
+
+
 def write_audit_log(event: str, **fields) -> None:
-    """追加一条 JSONL audit 记录。
+    """追加一条 JSONL audit 记录（v25.0 加 size-based rotate）。
 
     event: 操作名（"save"/"load"/"clear"/"verify_ok"/"verify_fail"/"auto_load"）
     fields: 额外字段（如 checksum_sha256、source、libraries 等）
+
+    轮转：
+    - 当前 log > MAX_AUDIT_LOG_SIZE (1MB) 时自动轮转
+    - 轮转文件名：audit_trust.log.YYYYMMDD_HHMMSS
+    - 保留最近 AUDIT_KEEP_ROTATED (5) 个轮转文件
     """
     log_path = get_audit_log_path()
+
+    # v25.0：轮转检查（写之前）
+    _rotate_audit_log_if_needed(log_path)
+
     record = {
         "ts": datetime.now(timezone.utc).astimezone().isoformat(),
         "event": event,
@@ -236,16 +286,134 @@ def verify_active_edges() -> tuple[bool, str]:
     return True, f"✅ integrity OK (libraries={len(edges)}, checksum={actual_checksum[:16]}...)"
 
 
+# v25.0：audit log 查询接口
+
+def _iter_audit_records(include_rotated: bool = True):
+    """生成器：返回所有 audit log 记录的 dict（包含 rotated 文件）。
+
+    读取顺序：当前 → rotated（最新→最旧）
+    """
+    log_path = get_audit_log_path()
+    paths = []
+    if log_path.exists():
+        paths.append(log_path)
+    if include_rotated:
+        # 轮转文件按 mtime 倒序（最新优先）
+        rotated = sorted(
+            log_path.parent.glob(f"{log_path.name}.*"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+        paths.extend(rotated)
+    for p in paths:
+        try:
+            with p.open() as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        yield json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+        except OSError:
+            continue
+
+
+def query_audit_log(
+    event: str | None = None,
+    since: str | None = None,
+    until: str | None = None,
+    limit: int = 100,
+) -> list[dict]:
+    """查询 audit log。
+
+    参数：
+    - event: 只返回指定事件（None = 全部）
+    - since: 起始时间（ISO 8601，如 "2026-08-20T00:00:00"），None = 不限
+    - until: 结束时间（ISO 8601），None = 不限
+    - limit: 最多返回多少条
+
+    返回 list[dict]，按时间倒序（最新优先）。
+    """
+    results = []
+    for rec in _iter_audit_records():
+        if event and rec.get("event") != event:
+            continue
+        ts = rec.get("ts", "")
+        if since and ts < since:
+            continue
+        if until and ts > until:
+            continue
+        results.append(rec)
+    # 倒序（最新优先）
+    results.reverse()
+    return results[:limit]
+
+
+def audit_stats() -> dict:
+    """统计 audit log 概览。
+
+    返回：
+    {
+      "total": int,           # 总记录数
+      "by_event": dict,       # {event: count}
+      "by_day": dict,         # {YYYY-MM-DD: count}
+      "first_ts": str,        # 最早记录时间
+      "last_ts": str,         # 最晚记录时间
+      "files": int,           # 当前 + rotated 文件数
+    }
+    """
+    log_path = get_audit_log_path()
+    by_event: dict = {}
+    by_day: dict = {}
+    first_ts = None
+    last_ts = None
+    total = 0
+
+    for rec in _iter_audit_records():
+        total += 1
+        ev = rec.get("event", "unknown")
+        by_event[ev] = by_event.get(ev, 0) + 1
+        ts = rec.get("ts", "")
+        if ts:
+            day = ts[:10]  # YYYY-MM-DD
+            by_day[day] = by_day.get(day, 0) + 1
+            if first_ts is None or ts < first_ts:
+                first_ts = ts
+            if last_ts is None or ts > last_ts:
+                last_ts = ts
+
+    # 文件数：当前 + rotated
+    files = 1 if log_path.exists() else 0
+    files += len(list(log_path.parent.glob(f"{log_path.name}.*")))
+
+    return {
+        "total": total,
+        "by_event": by_event,
+        "by_day": by_day,
+        "first_ts": first_ts,
+        "last_ts": last_ts,
+        "files": files,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("load", help="读取并打印当前持久化的 active_edges")
     sub.add_parser("clear", help="删除持久化文件")
     sub.add_parser("verify", help="验证持久化文件 integrity（checksum + version）")
+    sub.add_parser("audit-stats", help="audit log 统计概览（事件/日期分布）")
     p_save = sub.add_parser("save", help="保存当前 staging dynamic_edges 为 active_edges")
     p_save.add_argument("--source", default="staging/dynamic_edges_v19.json",
                         help="dynamic_edges JSON 路径")
     p_auto = sub.add_parser("auto-load", help="自动加载到 cross_library_auto 默认基线")
+    p_query = sub.add_parser("audit-query", help="查询 audit log（支持 event/since/limit）")
+    p_query.add_argument("--event", help="只返回指定事件")
+    p_query.add_argument("--since", help="起始时间（ISO 8601）")
+    p_query.add_argument("--until", help="结束时间（ISO 8601）")
+    p_query.add_argument("--limit", type=int, default=20, help="最多返回条数")
     args = parser.parse_args()
 
     if args.cmd == "load":
@@ -286,6 +454,48 @@ def main() -> int:
         ok, msg = verify_active_edges()
         print(msg)
         return 0 if ok else 1
+
+    if args.cmd == "audit-query":
+        records = query_audit_log(
+            event=args.event,
+            since=args.since,
+            until=args.until,
+            limit=args.limit,
+        )
+        print(f"✅ 查询结果：{len(records)} 条")
+        for rec in records:
+            ts = rec.get("ts", "?")
+            ev = rec.get("event", "?")
+            extras = {k: v for k, v in rec.items() if k not in ("ts", "event")}
+            extra_str = ""
+            if extras:
+                # 截短长字段
+                items = []
+                for k, v in extras.items():
+                    s = str(v)
+                    if len(s) > 30:
+                        s = s[:27] + "..."
+                    items.append(f"{k}={s}")
+                extra_str = " | " + ", ".join(items)
+            print(f"   {ts} [{ev}]{extra_str}")
+        return 0
+
+    if args.cmd == "audit-stats":
+        stats = audit_stats()
+        print(f"📊 audit log 统计")
+        print(f"   总记录数: {stats['total']}")
+        print(f"   文件数: {stats['files']}（含 rotated）")
+        print(f"   最早记录: {stats['first_ts'] or 'N/A'}")
+        print(f"   最晚记录: {stats['last_ts'] or 'N/A'}")
+        if stats['by_event']:
+            print(f"   按事件分布:")
+            for ev, c in sorted(stats['by_event'].items(), key=lambda x: -x[1]):
+                print(f"      {ev}: {c}")
+        if stats['by_day']:
+            print(f"   按日期分布:")
+            for day, c in sorted(stats['by_day'].items()):
+                print(f"      {day}: {c}")
+        return 0
 
     return 1
 
