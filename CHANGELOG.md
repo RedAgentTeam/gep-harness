@@ -1,8 +1,9 @@
 # CHANGELOG — gep-harness
 
 > 自动生成（git log 提取）
-> 总 commit 数：222
+> 总 commit 数：223
 
+- 📦 `b2195800a` — gep-harness v46.0: 5 库 v20.0 Phase 4 - trust_score 接入 dynamic edges
 - 📦 `ea71b05ed` — auto: cron 6h workflow
 - 📦 `17f75064d` — gep-harness v45.0: 5 库 v19.0 C - dynamic edge compute + visualize 集成
 - 📦 `f80452708` — auto: cron 6h workflow
@@ -226,4 +227,4 @@
 - 📦 `087a50d16` — gep-harness v0.5: A2A broadcast + node discovery (45/45 passed)
 - 📦 `68be0200e` — gep-harness: bootstrap independent repo (exclude parent /data/disk/)
 
-> 最后生成：2026-08-20 00:22 UTC
+> 最后生成：2026-08-20 00:24 UTC
