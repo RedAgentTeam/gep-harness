@@ -1,8 +1,9 @@
 # CHANGELOG — gep-harness
 
 > 自动生成（git log 提取）
-> 总 commit 数：250
+> 总 commit 数：251
 
+- 📦 `e54b43575` — auto: cron 6h workflow
 - 📦 `8b983145f` — auto: cron 6h workflow
 - 🧪 `c4421afd8` — gep-harness v52.0: 5 库 v26.0 - trust audit 可视化（CLI + Web + 10 pytest）
 - 📦 `d02d97cc3` — auto: cron 6h workflow
@@ -254,4 +255,4 @@
 - 📦 `087a50d16` — gep-harness v0.5: A2A broadcast + node discovery (45/45 passed)
 - 📦 `68be0200e` — gep-harness: bootstrap independent repo (exclude parent /data/disk/)
 
-> 最后生成：2026-09-01 08:44 UTC
+> 最后生成：2026-09-01 08:45 UTC
