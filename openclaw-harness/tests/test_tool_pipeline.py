@@ -229,6 +229,25 @@ console.log("HOOKS:" + Object.keys(handlers).sort().join(","));
     assert "after_tool_call" in r.stdout
 
 
+def test_outside_default_tool_asks_human_to_continue():
+    """Tools outside read/write/edit/shell are not hard-blocked."""
+    script = """
+import { approvalForTool, shellReport } from '%s';
+const decision = approvalForTool("web_fetch");
+const shell = shellReport("exec", 99999, 30000);
+const ok = shellReport("exec", 10, 30000);
+console.log("APPROVAL_OUT:" + JSON.stringify({ decision, shell, ok }));
+""" % str(PLUGIN_ENTRY)
+    r = run_node(script)
+    assert r.returncode == 0, f"node error: {r.stderr}"
+    line = [l for l in r.stdout.splitlines() if l.startswith("APPROVAL_OUT:")][-1]
+    obj = json.loads(line[len("APPROVAL_OUT:"):])
+    assert obj["decision"]["block"] is False
+    assert obj["decision"]["requireApproval"]["allowContinue"] is True
+    assert obj["shell"] == "timeout"
+    assert obj["ok"] == "exit"
+
+
 if __name__ == "__main__":
     test_permission_check()
     print("✅ test_permission_check")

@@ -174,6 +174,35 @@ function policyFromConfig(cfg) {
   };
 }
 
+// Unattended tools. Anything else asks a person, and that person can continue.
+export const DEFAULT_TOOLS = new Set([
+  "read",
+  "write",
+  "edit",
+  "write_file",
+  "exec",
+  "process",
+  "shell",
+]);
+
+const SHELL_TOOLS = new Set(["exec", "process", "shell"]);
+
+export function approvalForTool(toolName) {
+  if (DEFAULT_TOOLS.has(toolName)) return null;
+  return {
+    block: false,
+    requireApproval: {
+      reason: `outside_default_tools:${toolName}`,
+      allowContinue: true,
+    },
+  };
+}
+
+export function shellReport(toolName, durationMs, timeoutMs) {
+  if (!SHELL_TOOLS.has(toolName)) return null;
+  return durationMs > timeoutMs ? "timeout" : "exit";
+}
+
 export default {
   id: "harness-tool-pipeline",
   name: "Harness Tool Pipeline",
@@ -221,9 +250,14 @@ export default {
           return {
             block: true,
             reason: perm.reason,
-            // OpenClaw before_tool_call result shape per docs:
-            //   { block?: boolean, requireApproval?: {...}, ... }
           };
+        }
+
+        // Outside the default read/write/edit/shell set: do not hard-stop.
+        // The person in the session decides whether the call continues.
+        const approval = approvalForTool(toolName);
+        if (approval) {
+          return approval;
         }
 
         // C3 fix: before_tool_call emit is handled by event-stream (priority 1).
@@ -243,7 +277,8 @@ export default {
           typeof event?.durationMs === "number" ? event.durationMs : 0;
 
         // 3. Timeout enforcement (informational; OpenClaw core enforces)
-        if (duration > policy.defaultTimeoutMs) {
+        const shellStatus = shellReport(toolName, duration, policy.defaultTimeoutMs);
+        if (shellStatus === "timeout") {
           console.warn(
             `[harness-tool-pipeline] TIMEOUT ${toolName}: ${duration}ms > ${policy.defaultTimeoutMs}ms`
           );
@@ -277,7 +312,11 @@ export default {
             "--result",
             JSON.stringify({
               ...redacted,
-              _pipeline_meta: { duration_ms: duration, redact_count: redactCount },
+              _pipeline_meta: {
+                duration_ms: duration,
+                redact_count: redactCount,
+                shell_status: shellStatus,
+              },
             }),
             "--duration",
             String(duration),

@@ -37,7 +37,27 @@ MINIMAX_MODEL = os.environ.get("MINIMAX_MODEL", "MiniMax-M3")
 # 替代方案: 本地 Python 生成 strategy + sha256(asset_id)，见 scripts/local_fill_gene.py
 # 或: 换非 reasoning 模型（需先查 /v1/models 确认可用 id）
 
+def _load_local_env() -> None:
+    """Load KEY=value lines from a gitignored .env. Does not override the process env."""
+    env_path = Path(__file__).resolve().parent.parent / ".env"
+    if not env_path.is_file():
+        return
+    for raw in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("'").strip('"')
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+_load_local_env()
+
 SCHEMA_VERSION = "1.12.1"
+STRATEGY_STEP_MAX = 120
+SIGNAL_MAX = 64
 
 FILL_PROMPT_TEMPLATE = """You are a GEP v{ver} Gene author.
 
@@ -153,8 +173,14 @@ def fill_gene(gene: dict, provider: str = "stepfun") -> dict:
     for k, v in filled.items():
         if k not in PROTECTED:
             gene[k] = v
-    # _llm_filled removed: it's an internal marker that polluted asset_id hash.
-    # Use llm_filled_at.json sidecar (see main()) to track which genes were LLM-filled.
+    if isinstance(gene.get("strategy"), list):
+        gene["strategy"] = [
+            str(step)[:STRATEGY_STEP_MAX] for step in gene["strategy"][:3]
+        ]
+    if isinstance(gene.get("signals_match"), list):
+        gene["signals_match"] = [
+            str(sig)[:SIGNAL_MAX] for sig in gene["signals_match"][:8]
+        ]
     return gene
 
 

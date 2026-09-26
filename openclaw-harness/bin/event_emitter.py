@@ -34,6 +34,61 @@ DEFAULT_PATH = Path(
     )
 )
 
+# Session logs are append-only across format upgrades. A pre-v2 file is
+# left untouched; new events go to a sibling "<name>.v2.jsonl".
+SESSION_FORMAT = 2
+
+
+def _stamp_path(log_path: Path) -> Path:
+    return log_path.with_name(log_path.name + ".format")
+
+
+def _read_format(log_path: Path) -> int | None:
+    stamp = _stamp_path(log_path)
+    if not stamp.exists():
+        return None
+    try:
+        return int(json.loads(stamp.read_text(encoding="utf-8")).get("session_format") or 0)
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return None
+
+
+def _write_stamp(log_path: Path) -> None:
+    stamp = _stamp_path(log_path)
+    if stamp.exists():
+        return
+    stamp.parent.mkdir(parents=True, exist_ok=True)
+    stamp.write_text(
+        json.dumps({"session_format": SESSION_FORMAT}) + "\n",
+        encoding="utf-8",
+    )
+
+
+def resolve_log_path(path: Path) -> Path:
+    """Return the file new events may append to.
+
+    A log that already exists without the current format stamp is preserved
+    byte-for-byte. Callers keep reading it; writers use the sibling v2 file.
+    """
+    if _read_format(path) == SESSION_FORMAT:
+        return path
+    if not path.exists():
+        _write_stamp(path)
+        return path
+    upgraded = path.with_name(path.stem + ".v2" + path.suffix)
+    if _read_format(upgraded) != SESSION_FORMAT:
+        _write_stamp(upgraded)
+    return upgraded
+
+
+def _log_paths(path: Path) -> list[Path]:
+    """Original log, then the v2 sibling when one was opened beside it."""
+    paths = [path]
+    upgraded = path.with_name(path.stem + ".v2" + path.suffix)
+    if upgraded != path and upgraded.exists():
+        paths.append(upgraded)
+    return paths
+
 
 def _now_iso():
     return datetime.now(timezone.utc).astimezone().isoformat()
@@ -51,6 +106,7 @@ def emit(
     """Construct, hash, append, return event dict."""
     if path is None:
         path = DEFAULT_PATH
+    path = resolve_log_path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
     event = {
@@ -86,14 +142,15 @@ def replay(session_id: str, path: Path | None = None) -> list[dict]:
     if path is None:
         path = DEFAULT_PATH
     events = []
-    if not path.exists():
-        return events
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
+    for log_path in _log_paths(path):
+        if not log_path.exists():
             continue
-        ev = json.loads(line)
-        if ev.get("session_id") == session_id:
-            events.append(ev)
+        for line in log_path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            ev = json.loads(line)
+            if ev.get("session_id") == session_id:
+                events.append(ev)
     return events
 
 
@@ -102,16 +159,17 @@ def verify_all(path: Path | None = None) -> tuple[int, int]:
     if path is None:
         path = DEFAULT_PATH
     ok = fail = 0
-    if not path.exists():
-        return ok, fail
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
+    for log_path in _log_paths(path):
+        if not log_path.exists():
             continue
-        ev = json.loads(line)
-        if verify_asset_id(ev):
-            ok += 1
-        else:
-            fail += 1
+        for line in log_path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            ev = json.loads(line)
+            if verify_asset_id(ev):
+                ok += 1
+            else:
+                fail += 1
     return ok, fail
 
 

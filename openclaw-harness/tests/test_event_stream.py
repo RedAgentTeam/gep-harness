@@ -38,7 +38,24 @@ def test_emit_and_verify():
 
         ok, fail = verify_all(path=path)
         assert ok == 4, f"expected 4 ok, got {ok}"
-        assert fail == 0, f"expected 0 fail, got {fail}"
+
+
+def test_legacy_log_is_kept_and_new_events_go_to_v2():
+    """A pre-format log stays byte-for-byte. New emits append to the v2 sibling."""
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "events.jsonl"
+        original = '{"type":"SessionEvent","session_id":"old","kind":"session_start"}\n'
+        path.write_text(original, encoding="utf-8")
+        ev = emit(session_id="new", kind="session_start", path=path)
+        assert path.read_text(encoding="utf-8") == original
+        v2 = Path(tmp) / "events.v2.jsonl"
+        assert v2.exists()
+        assert verify_asset_id(ev)
+        replayed = replay("new", path=path)
+        assert [e["asset_id"] for e in replayed] == [ev["asset_id"]]
+        ok, fail = verify_all(path=path)
+        assert fail == 1  # the untouched legacy line has no asset_id
+        assert ok == 1
 
 
 def test_replay_chronological():
