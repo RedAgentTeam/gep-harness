@@ -1,8 +1,9 @@
 # CHANGELOG — gep-harness
 
 > 自动生成（git log 提取）
-> 总 commit 数：259
+> 总 commit 数：260
 
+- 📦 `57e5b2ceb` — auto: cron 6h workflow
 - 📦 `538be4ce3` — gep-harness v54.0: publish the current master as a GitHub release.
 - 📦 `a3597ed37` — gep-harness: keep upgraded session logs intact and record shell start and finish.
 - 📦 `efb4fb7f6` — gep-harness v53.0: record trust flips in the event stream and drop hardcoded API keys.
