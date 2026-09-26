@@ -124,7 +124,7 @@ cat 方法论.md
 
 | 维度 | 数据 |
 |------|------|
-| commit 数 | 696 |
+| commit 数 | 697 |
 | ROADMAP 期数 | 75（迭代轮次 #1 ~ #75，历史文档） |
 | Gene 总数 | 64 |
 | Capsule 总数 | 2 |
@@ -180,7 +180,7 @@ GEP 标准 7 阶段 = `Detect → Select → Mutate → Hypothesize → Execute 
 
 **版本说明**：
 - 仓库内部提交说明里出现过 v36 到 v53，那是开发过程中的序号。
-- GitHub Release 以 tag 为准。本仓库已有 `v33.0`、`v41.1`。当前 `master` 的发布版本是 **v54.0**。
+- GitHub Release 以 tag 为准。GitHub 上的标签是 `v33.0` 和 `v54.0`。`v41.1` 只在本机，没有推上去。当前发布版本是 **v54.0**。
 
 ## 启发式联想辅助方法论
 

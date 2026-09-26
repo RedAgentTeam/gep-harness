@@ -81,13 +81,27 @@ def parse_commit_log(raw: str) -> list[dict]:
     return commits
 
 
-def build_changelog(commits: list[dict], total_commits: int) -> str:
+def repo_version() -> str | None:
+    """Closest tag on HEAD, so docs_lint sees a stable version before commit subjects."""
+    try:
+        desc = run_git("describe", "--tags", "--abbrev=0")
+    except RuntimeError:
+        return None
+    match = re.search(r"(\d+\.\d+(?:\.\d+)?)", desc)
+    return match.group(1) if match else None
+
+
+def build_changelog(commits: list[dict], total_commits: int, version: str | None = None) -> str:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     lines = [
         "# CHANGELOG — gep-harness",
         "",
         "> 自动生成（git log 提取）",
+    ]
+    if version:
+        lines.append(f"> 版本：v{version}")
+    lines += [
         f"> 总 commit 数：{total_commits}",
         "",
     ]
@@ -123,7 +137,7 @@ def main():
     raw = run_git(*git_args)
     commits = parse_commit_log(raw)
     total = int(run_git("rev-list", "--count", "HEAD"))
-    changelog = build_changelog(commits, total)
+    changelog = build_changelog(commits, total, version=repo_version())
 
     if dry_run:
         print(changelog)

@@ -68,6 +68,35 @@ def test_main_commits_changelog(tmp_path, monkeypatch, capsys):
     assert "auto-commit" in captured.out or "跳过" in captured.out or "commit failed" in captured.out
 
 
+def test_main_skips_cron_listing_when_count_matches(tmp_path, monkeypatch, capsys):
+    """commit 数已与 HEAD 一致时，cron 自己的新行不再提交。"""
+    import auto_changelog_commit as acc
+    _init_tmp_repo(tmp_path)
+    monkeypatch.setattr(acc, "REPO", tmp_path)
+    body = (
+        "# CHANGELOG — gep-harness\n\n"
+        "> 自动生成（git log 提取）\n"
+        "> 总 commit 数：2\n\n"
+        "- 📦 `abcdef123` — init\n\n"
+        "> 最后生成：2020-01-01 00:00 UTC\n"
+    )
+    (tmp_path / "CHANGELOG.md").write_text(body)
+    subprocess.run(["git", "add", "CHANGELOG.md"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-q", "-m", "changelog"], cwd=tmp_path, check=True)
+    newer = body.replace("2020-01-01 00:00 UTC", "2026-01-01 00:00 UTC")
+    newer = newer.replace(
+        "- 📦 `abcdef123` — init\n",
+        "- 📦 `abcdef123` — init\n- 📦 `111111111` — auto: cron 6h workflow\n",
+    )
+    (tmp_path / "CHANGELOG.md").write_text(newer)
+    before = subprocess.check_output(["git", "rev-list", "--count", "HEAD"], cwd=tmp_path, text=True)
+    monkeypatch.setattr("sys.argv", ["auto_changelog_commit.py"])
+    acc.main()
+    after = subprocess.check_output(["git", "rev-list", "--count", "HEAD"], cwd=tmp_path, text=True)
+    assert before == after
+    assert "跳过" in capsys.readouterr().out
+
+
 def test_main_cli_help():
     """main() --help 可跑。"""
     result = subprocess.run(
