@@ -2,7 +2,7 @@
 
 > 自动生成（git log 提取）
 > 版本：v54.0
-> 总 commit 数：704
+> 总 commit 数：705
 - 🔧 `2f9a84e14` — Fetch full history in CI so the docs check can see every commit.
 - 📦 `e282d50b2` — auto: cron 6h workflow
 - 📦 `4a4b0b10e` — auto: cron 6h workflow
