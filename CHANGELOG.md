@@ -3,6 +3,8 @@
 > 自动生成（git log 提取）
 > 总 commit 数：447
 
+- 📚 `e6e084100` — Add the GitHub community files and align the docs check with v54.0.
+- 📦 `81978d5d8` — auto: cron 6h workflow
 - 📦 `6c4394462` — auto: cron 6h workflow
 - 📦 `40523b738` — auto: cron 6h workflow
 - 📦 `ec8b9df01` — auto: cron 6h workflow
