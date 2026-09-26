@@ -1,4 +1,9 @@
-"""trust auto-flip — gep-harness v22.0。
+"""trust auto-flip — gep-harness v53.0。
+
+成功切换或恢复静态基线后，向 openclaw-harness/events/events.jsonl
+追加一条 kind=trust_audit 的 append-only 事件。dry-run 不写事件。
+
+v22.0 行为保留：
 
 cron 6h 联动：在 cross_lib_auto_evolve 之后，自动让 trust_score 用 dynamic_edges。
 
@@ -115,6 +120,39 @@ def flip(edges_path: Path, dry_run: bool = False) -> int:
     return 1
 
 
+def emit_trust_audit(
+    action: str,
+    *,
+    ok: bool,
+    library_count: int = 0,
+    source: str | None = None,
+    path: Path | None = None,
+) -> dict:
+    """Append one trust-flip audit line to the append-only event stream.
+
+    v53: auto-flip must leave a trace in events.jsonl, not only in the process
+    and the persist file. Dry-run callers should not call this.
+    """
+    bin_dir = REPO / "openclaw-harness" / "bin"
+    if str(bin_dir) not in sys.path:
+        sys.path.insert(0, str(bin_dir))
+    from event_emitter import emit
+
+    stream = path or (REPO / "openclaw-harness" / "events" / "events.jsonl")
+    return emit(
+        session_id="trust-audit",
+        kind="trust_audit",
+        tool_name="trust_auto_flip",
+        result={
+            "action": action,
+            "ok": ok,
+            "libraries": library_count,
+            "source": source,
+        },
+        path=stream,
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--edges-path", type=str, default=str(DEFAULT_EDGES_PATH),
@@ -126,9 +164,22 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.restore_static:
-        return restore_static()
+        rc = restore_static()
+        if rc == 0:
+            emit_trust_audit("restore_static", ok=True, library_count=0, source="static")
+        return rc
 
-    return flip(Path(args.edges_path), dry_run=args.dry_run)
+    edges_path = Path(args.edges_path)
+    rc = flip(edges_path, dry_run=args.dry_run)
+    if rc == 0 and not args.dry_run:
+        edges = load_dynamic_edges(edges_path) or {}
+        emit_trust_audit(
+            "flip_dynamic",
+            ok=True,
+            library_count=len(edges),
+            source=edges_path.name,
+        )
+    return rc
 
 
 if __name__ == "__main__":

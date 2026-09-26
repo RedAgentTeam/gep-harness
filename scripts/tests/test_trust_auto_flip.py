@@ -118,6 +118,29 @@ def test_flip_real_uses_staging_file():
     assert cla.get_active_edges() is not cla.LIBRARY_GRAPH_EDGE
 
 
+def test_emit_trust_audit_appends_verified_line(tmp_path):
+    """v53: flip audit is one append-only SessionEvent with a matching asset_id."""
+    stream = tmp_path / "events.jsonl"
+    ev = taf.emit_trust_audit(
+        "flip_dynamic",
+        ok=True,
+        library_count=5,
+        source="dynamic_edges_v19.json",
+        path=stream,
+    )
+    lines = stream.read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 1
+    loaded = json.loads(lines[0])
+    assert loaded["kind"] == "trust_audit"
+    assert loaded["session_id"] == "trust-audit"
+    assert loaded["result"]["action"] == "flip_dynamic"
+    assert loaded["result"]["libraries"] == 5
+    assert loaded["asset_id"] == ev["asset_id"]
+    sys.path.insert(0, str(REPO / "openclaw-harness" / "bin"))
+    from canonicalize import verify_asset_id
+    assert verify_asset_id(loaded)
+
+
 def test_flip_missing_returns_1(tmp_path):
     """flip 文件不存在 → 返回 1。"""
     rc = taf.flip(tmp_path / "nonexistent.json")

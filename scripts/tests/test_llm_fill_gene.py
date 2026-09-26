@@ -4,10 +4,14 @@ StepFun API mock 用 monkeypatch urllib.request.urlopen。
 """
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 from unittest.mock import patch, MagicMock
+
+os.environ.setdefault("STEPFUN_API_KEY", "test_key_for_testing")
+os.environ.setdefault("MINIMAX_API_KEY", "test_key_for_testing")
 
 REPO = Path("/data/disk/gep-harness")
 sys.path.insert(0, str(REPO / "scripts"))

@@ -17,12 +17,18 @@ import os
 import sys
 from pathlib import Path
 
-STEPFUN_API_KEY = os.environ.get(
-    "STEPFUN_API_KEY",
-    "CJahJE5zpT4Gl3tCR2Q9Ang2nlJR6CSkhS8yakQnBWShoWzp4QJND7Ig3QRX0cRH",
-)
+def _require_key(name: str) -> str:
+    """Read an API key from the environment. Never fall back to a literal."""
+    val = os.environ.get(name, "").strip()
+    if not val:
+        raise RuntimeError(f"{name} is not set; export it before calling the provider")
+    return val
+
+
 STEPFUN_BASE_URL = os.environ.get("STEPFUN_BASE_URL", "https://api.stepfun.com/step_plan/v1")
 STEPFUN_MODEL = os.environ.get("STEPFUN_MODEL", "step-3.5-flash")
+MINIMAX_BASE_URL = os.environ.get("MINIMAX_BASE_URL", "https://api.minimaxi.com/anthropic")
+MINIMAX_MODEL = os.environ.get("MINIMAX_MODEL", "MiniMax-M3")
 
 # ⚠️ 2026-08-15 WARNING:
 # StepFun reasoning model (step-3.5-flash / step-3.7-flash) 不适合此任务
@@ -62,7 +68,7 @@ def call_stepfun(prompt: str, model: str = STEPFUN_MODEL) -> str:
         data=body,
         headers={
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {STEPFUN_API_KEY}",
+            "Authorization": f"Bearer {_require_key('STEPFUN_API_KEY')}",
         },
     )
     with urllib.request.urlopen(req, timeout=30) as resp:
@@ -81,12 +87,48 @@ def call_stepfun(prompt: str, model: str = STEPFUN_MODEL) -> str:
     return content
 
 
-def fill_gene(gene: dict) -> dict:
+def call_minimax(prompt: str, model: str = MINIMAX_MODEL) -> str:
+    """MiniMax (Anthropic-compatible) provider。"""
+    import urllib.request
+    body = json.dumps({
+        "model": model,
+        "max_tokens": 4096,
+        "messages": [{"role": "user", "content": [{"type": "text", "text": prompt}]}],
+        "temperature": 0.1,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        f"{MINIMAX_BASE_URL}/v1/messages",
+        data=body,
+        headers={
+            "Content-Type": "application/json",
+            "x-api-key": _require_key("MINIMAX_API_KEY"),
+            "anthropic-version": "2023-06-01",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+    # Anthropic format: content is a list of blocks
+    blocks = data.get("content", [])
+    parts = []
+    for blk in blocks:
+        if blk.get("type") == "text":
+            parts.append(blk.get("text", ""))
+    return "\n".join(parts).strip()
+
+
+def call_llm(prompt: str, provider: str = "stepfun") -> str:
+    """统一 LLM 调用入口。provider: 'minimax' | 'stepfun'。"""
+    if provider == "stepfun":
+        return call_stepfun(prompt)
+    return call_minimax(prompt)
+
+
+def fill_gene(gene: dict, provider: str = "stepfun") -> dict:
     prompt = FILL_PROMPT_TEMPLATE.format(
         ver=SCHEMA_VERSION,
         input_json=json.dumps(gene, indent=2, ensure_ascii=False),
     )
-    raw = call_stepfun(prompt)
+    raw = call_llm(prompt, provider=provider)
     # Strip markdown fences if present (handle ```json, ```, or no fence at all)
     raw = raw.strip()
     if raw.startswith("```"):
@@ -128,6 +170,8 @@ def main():
     p.add_argument("--output", help="Output directory (default: --staging directory)")
     p.add_argument("--dry-run", action="store_true", help="Show what would be filled without calling API")
     p.add_argument("--model", default=STEPFUN_MODEL, help="Model to use")
+    p.add_argument("--provider", choices=["minimax", "stepfun"], default="stepfun",
+                   help="LLM provider (default: stepfun; set MINIMAX_API_KEY and pass minimax)")
     args = p.parse_args()
 
     if not args.candidate and not args.staging:
@@ -143,7 +187,7 @@ def main():
         if args.dry_run:
             print("  [dry-run] Would call LLM here")
             return
-        filled = fill_gene(gene)
+        filled = fill_gene(gene, provider=args.provider)
         print(f"  After:  category={filled.get('category')}  "
               f"strategy={filled.get('strategy')}  "
               f"evidence={filled.get('cross_library_evidence')}")
@@ -174,7 +218,7 @@ def main():
                 print(f"  [dry-run] Would fill category={gene.get('category')}")
                 continue
             try:
-                filled = fill_gene(gene)
+                filled = fill_gene(gene, provider=args.provider)
                 out_path = output_dir / cand.name
                 json.dump(filled, open(out_path, "w"), ensure_ascii=False, indent=2)
                 print(f"  ✅ category={filled.get('category')}  "
