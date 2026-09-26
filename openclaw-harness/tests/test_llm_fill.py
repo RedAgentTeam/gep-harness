@@ -3,10 +3,14 @@
 Uses mock API response so tests never hit the real Stepfun endpoint.
 """
 import json
+import os
 import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
+
+os.environ.setdefault("STEPFUN_API_KEY", "test_key_for_testing")
+os.environ.setdefault("MINIMAX_API_KEY", "test_key_for_testing")
 
 HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE.parent.parent / "scripts"))
@@ -85,7 +89,7 @@ def test_fill_gene_preserves_protected_fields():
     assert result["category"] == "optimize"
     assert result["strategy"] == ["s1", "s2", "s3"]
     assert result["cross_library_evidence"] == ["a", "b", "c", "d", "e"]
-    assert result["_llm_filled"] is True
+    assert "_llm_filled" not in result
 
 
 def test_fill_gene_evidence_count():

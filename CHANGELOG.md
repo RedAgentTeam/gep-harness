@@ -1,8 +1,13 @@
 # CHANGELOG — gep-harness
 
 > 自动生成（git log 提取）
-> 总 commit 数：254
+> 版本：v54.0
+> 总 commit 数：259
 
+- 📦 `a3597ed37` — gep-harness: keep upgraded session logs intact and record shell start and finish.
+- 📦 `efb4fb7f6` — gep-harness v53.0: record trust flips in the event stream and drop hardcoded API keys.
+- 📦 `1bb8601b8` — gep-harness solidify: 7 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_message,gene_candidate_write,gene_candidate_read,gene_candidate_update_plan,gene_candidate_edit)
+- 📦 `84140797c` — auto: cron 6h workflow
 - 📦 `d8a8ac1d8` — auto: cron 6h workflow
 - 📦 `2cb732a56` — auto: cron 6h workflow
 - 📦 `fb04b4289` — auto: cron 6h workflow
@@ -258,4 +263,4 @@
 - 📦 `087a50d16` — gep-harness v0.5: A2A broadcast + node discovery (45/45 passed)
 - 📦 `68be0200e` — gep-harness: bootstrap independent repo (exclude parent /data/disk/)
 
-> 最后生成：2026-09-01 10:12 UTC
+> 最后生成：2026-09-26 07:14 UTC

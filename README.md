@@ -5,8 +5,8 @@
 [![GitHub release](https://img.shields.io/github/v/release/RedAgentTeam/gep-harness)](https://github.com/RedAgentTeam/gep-harness/releases)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org)
 
-> **版本：** v36.1.1（自动同步）  
-> **日期：** 2026-08-14  
+> **版本：** v54.0（自动同步）  
+> **日期：** 2026-09-26  
 > **作者：** RedAgentTeam（@胡老师 / Red Ho）  
 > **协议：** GEP v1.12.1 (strict)  — 跨协议/项目不变字段  
 > **许可：** MIT（见 [LICENSE](./LICENSE)）
@@ -118,19 +118,18 @@ cat 方法论.md
 详见 `docs/ROADMAP_v0.5.md`（待写）。
 ---
 
-## 现状（2026-08-15 v36.1.1 收尾）
+## 现状（2026-09-26 v54.0）
 
 > **数字口径说明**：以下数字均为单一事实源，由 `scripts/docs_lint.py --check` 实时校对（不依赖历史叙述）。若 README 与实际 drift，请跑 `python3 scripts/docs_lint.py --update` 同步。
 
 | 维度 | 数据 |
 |------|------|
-| commit 数 | 202 |
-| ROADMAP 期数 | 75（迭代轮次 #1 ~ #75） |
-| Gene 总数 | 152¹ |
+| commit 数 | 259 |
+| ROADMAP 期数 | 75（迭代轮次 #1 ~ #75，历史文档） |
+| Gene 总数 | 64 |
 | Capsule 总数 | 2 |
-| Event 总数 | 19（EvolutionEvent） |
-| pytest | 220/220
-| GEP strict | 7/7 |
+| Event 总数 | 28（EvolutionEvent） |
+| GitHub Release | v54.0（此前最新 Release 为 v41.1，v33.0 为更早标签） |
 | 安全 | 本机运行 / 生产部署未启动 |
 
 ### 协议裁剪说明（P1-4 闭环）
@@ -175,20 +174,13 @@ GEP 标准 7 阶段 = `Detect → Select → Mutate → Hypothesize → Execute 
 
 ---
 
-## 资产分类说明（脚注）
+## 资产计数（2026-09-26）
 
-¹ **Gene 总数 152 = 外部知识库导入 Gene (145) + Evolver 候选 Gene (7)**
+`plan/genes/` 当前 64 个文件，`plan/capsules/` 2 个，`plan/events/` 28 个。更早文档里的 152、149、7 等数字是当时的统计，不代表现在仓库里的文件数。
 
-| 类别 | 数量 | 来源 | 变化性 |
-|------|------|------|--------|
-| **外部知识库导入 Gene** | 145 | 技术参考文档（启发式联想辅助） | 相对固定 |
-| **Evolver 候选 Gene** | 7 | cron 6h 从 `events.jsonl` 挖掘高频工具调用模式 | **每次 cron 周期动态变化** |
-
-> **口径说明**：旧文档中出现的 "149 / 154 / 132 / 494" 等数字 = 不同时间点 Evolver 累积候选数（包含已被 reject 或已被 Solidify 覆盖的版本）。**当前可见候选数 = 7**（清理后）。如需"全期累积数"，看 `docs/ROADMAP_INDEX.md` 历史。
-
-**SemVer vs 迭代轮次说明**：
-- **迭代轮次 #1 ~ #75**：gep-harness 内部版本（commit 序号，文档用）
-- **SemVer v0.1.0 / v1.0.0**：仅在 GitHub Release tag 使用（如 v33.0）
+**版本说明**：
+- 仓库内部提交说明里出现过 v36 到 v53，那是开发过程中的序号。
+- GitHub Release 以 tag 为准。本仓库已有 `v33.0`、`v41.1`。当前 `master` 的发布版本是 **v54.0**。
 
 ## 启发式联想辅助方法论
 
