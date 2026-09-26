@@ -16,12 +16,16 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).parent
-PLUGIN_ENTRY = Path("/data/disk/gep-harness/openclaw-harness-tool-pipeline-plugin/index.js")
+PLUGIN_ENTRY = HERE.parent.parent / "openclaw-harness-tool-pipeline-plugin" / "index.js"
 NODE_BIN = "node"
 
 
 def run_node(test_script):
     """Run a small node ESM script that imports the plugin and exercises handlers."""
+    import shutil
+    import pytest
+    if shutil.which(NODE_BIN) is None:
+        pytest.skip("node is not installed")
     full = (
         f"import plugin from '{PLUGIN_ENTRY}';\n"
         f"{test_script}"

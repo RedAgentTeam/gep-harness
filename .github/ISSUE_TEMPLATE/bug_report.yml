@@ -1,0 +1,24 @@
+name: 缺陷
+description: 报告可复现的错误
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么
+      description: 实际结果和你期望的结果。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 命令、输入和版本（当前 Release 是 v54.0）。
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充
+      description: 日志片段。不要粘贴密钥、令牌或生产地址。

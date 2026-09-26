@@ -76,7 +76,7 @@
 | 阶段 1（事件流） | ✅ DONE — 2 个 plugin runtime registered |
 | events.jsonl 行数 | 1146+（持续增长）|
 | GEP strict 校验 | ✅ 11/11 通过 |
-| pytest | ✅ 21/21 PASSED（3.2s）|
+| pytest | 见下方现状；以 `make test` 为准 |
 | E2E 双节点 | A↔B 双向 accepted=1，score=1.0，verified=True |
 
 ---
@@ -124,7 +124,7 @@ cat 方法论.md
 
 | 维度 | 数据 |
 |------|------|
-| commit 数 | 259 |
+| commit 数 | 439 |
 | ROADMAP 期数 | 75（迭代轮次 #1 ~ #75，历史文档） |
 | Gene 总数 | 64 |
 | Capsule 总数 | 2 |

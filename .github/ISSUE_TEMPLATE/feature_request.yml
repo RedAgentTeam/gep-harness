@@ -1,0 +1,18 @@
+name: 需求
+description: 建议一项改动
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的问题
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议做法
+      description: 说明它是否需要人工 Solidify，以及会不会改动事件流或 Gene 库。
+    validations:
+      required: true

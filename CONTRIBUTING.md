@@ -1,7 +1,6 @@
 # Contributing to gep-harness
 
-> **Date:** 2026-08-19
-> **Status:** v41.1 active development (GitHub Phase 3 prep complete)
+> **Status:** v54.0
 > **License:** MIT
 
 ## Quick Start
@@ -9,8 +8,8 @@
 ```bash
 git clone https://github.com/RedAgentTeam/gep-harness.git
 cd gep-harness
-make verify        # GEP strict validation (90/90 verified)
-make test          # pytest 557/557 (openclaw-harness + scripts + openclaw-a2a)
+make verify
+make test
 ```
 
 ## Development Workflow

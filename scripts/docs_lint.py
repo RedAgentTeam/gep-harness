@@ -64,7 +64,7 @@ def get_actual_pytest() -> str:
     """跑 make test 获取真实 pytest 总数。"""
     result = subprocess.run(
         ["make", "test"],
-        cwd=REPO, capture_output=True, text=True, timeout=120,
+        cwd=REPO, capture_output=True, text=True, timeout=600,
     )
     # 匹配多行 "N passed"，取总数
     matches = re.findall(r"(\d+)\s+passed", result.stdout)

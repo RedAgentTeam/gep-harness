@@ -14,14 +14,19 @@ These tests pin the fix down so future refactors don't reintroduce the bug.
   3. Forbidden path appearing as a SUBSTRING inside a longer safe path does NOT block
 """
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
+
 HERE = Path(__file__).parent
-PLUGIN_ENTRY = Path("/data/disk/gep-harness/openclaw-harness-tool-pipeline-plugin/index.js")
+PLUGIN_ENTRY = HERE.parent.parent / "openclaw-harness-tool-pipeline-plugin" / "index.js"
 
 
 def run_node(test_script):
+    if shutil.which("node") is None:
+        pytest.skip("node is not installed")
     full = (
         f"import plugin from '{PLUGIN_ENTRY}';\n"
         f"{test_script}"

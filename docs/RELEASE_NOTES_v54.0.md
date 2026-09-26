@@ -7,7 +7,7 @@
 > **Protocol:** GEP v1.12.1 (strict)
 > **License:** MIT
 
-这个 Release 把 GitHub 上的最新发布从 `v41.1` 对齐到当前 `master`。`v33.0` 和 `v41.1` 仍保留为历史 Release。
+这个 Release 把 GitHub 上的最新发布对齐到当前 `master`。历史 Release `v33.0` 仍然保留。
 
 ## 自 v41.1 以来
 
@@ -22,7 +22,7 @@
 
 | 项 | 数 |
 |---|---|
-| commits | 259 |
+| commits | 439 |
 | plan/genes | 64 |
 | plan/capsules | 2 |
 | plan/events | 28 |
