@@ -1,0 +1,40 @@
+{
+  "category": "repair",
+  "strategy": [
+    "Profile message usage patterns to identify frequency, payload size, and caller distribution",
+    "Add an in-memory LRU cache for repeated message payloads with a short TTL (e.g., 60s) keyed by content hash",
+    "Log every message invocation to events.jsonl including timestamp, latency_ms, cache_hit, and caller_id"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics: frequency analysis and caching use hashing and probability to bound repeat-call rates",
+    "cell-biology: signal transduction pathways are optimized via feedback loops analogous to TTL cache eviction",
+    "CognitivePsychology: chunking and priming explain why repeated near-identical message calls benefit from a short-term memory cache",
+    "OpenStaxBiology: homeostasis illustrates dynamic equilibrium, mirroring TTL-based cache freshness control",
+    "evomap: GEP repair genes specifically target hot-path tools via profiling + caching + telemetry patterns"
+  ],
+  "asset_id": "sha256:461c0fe7aace46f04e47de02094dde6b29603651042b749a8e254f4e39301f4c",
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "id": "gene_candidate_message",
+  "preconditions": [
+    "tool 'message' has been called 18+ times in 24h"
+  ],
+  "schema_version": "1.12.1",
+  "signals_match": [
+    "high_freq:18_calls",
+    "tool_frequent:message",
+    "hot_path:message",
+    "message"
+  ],
+  "summary": "Hot-path optimization for message (18 calls in 24h, 3 strategies)",
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "type": "Gene"
+}

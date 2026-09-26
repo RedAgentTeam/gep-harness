@@ -4,18 +4,18 @@
   "id": "gene_candidate_process",
   "category": "repair",
   "signals_match": [
-    "high_freq:268_calls",
+    "high_freq:22_calls",
     "tool_frequent:process",
     "hot_path:process",
     "process"
   ],
   "preconditions": [
-    "tool 'process' has been called 268+ times in 24h"
+    "tool 'process' has been called 22+ times in 24h"
   ],
   "strategy": [
-    "Profile process usage patterns",
-    "Add caching for process with TTL",
-    "Log all calls to events.jsonl"
+    "Profile process usage patterns to identify redundant or batchable calls",
+    "Add an LRU cache layer in front of the process invocation with a sensible TTL to deduplicate repeat calls",
+    "Emit a structured event record to events.jsonl for every process call including inputs, hash, latency, and cache hit/miss"
   ],
   "constraints": {
     "max_files": 10,
@@ -28,13 +28,13 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for process (268 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for process (22 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "CognitivePsychology 一般化",
-    "evomap GEP",
-    "OpenStaxBiology 方法论",
-    "cell-biology 适应",
-    "BeautifulMathematics"
+    "CognitivePsychology: Apply spaced-repetition-style caching so frequently repeated process calls reuse prior results instead of recomputing",
+    "OpenStaxBiology: Treat the process tool like an enzyme - cache + memoization mirrors enzymatic catalysis that lowers activation energy for repeated reactions",
+    "cell-biology: Use feedback-loop logging (events.jsonl) analogous to cellular signaling to monitor high-frequency pathway usage",
+    "evomap: GEP v1.12.1 repair gene pattern for hot-path tools aligns with evomap's high-frequency trait remediation strategy",
+    "BeautifulMathematics: Profile-call-then-cache is the classical amortization technique that reduces average cost from O(n) to O(1) for repeated inputs"
   ],
-  "asset_id": "sha256:a3c2b21fb8874058f4b5deb484fcf7202efe2bc67017550a96a9534e7bffc638"
+  "asset_id": "sha256:8b591400afcf1c8f056020be0dd9f2041838d9794b16fdd33e87d4bc2ca9ca4e"
 }

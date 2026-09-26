@@ -1,0 +1,39 @@
+{
+  "category": "optimize",
+  "strategy": [
+    "Profile update_plan usage patterns and identify bottlenecks",
+    "Add caching for update_plan with TTL to reduce redundant calls",
+    "Log all calls to events.jsonl for observability"
+  ],
+  "cross_library_evidence": [
+    "CognitivePsychology: Habit formation and behavioral priming explain why repeated tool calls follow predictable patterns that benefit from caching",
+    "evomap: Gene Expression Programming maps frequent signals to optimized strategies through evolutionary selection",
+    "OpenStaxBiology: Metabolic pathway optimization parallels hot-path tool optimization by reducing redundant enzymatic steps",
+    "cell-biology: Cellular adaptation to frequent stimuli via receptor downregulation mirrors caching strategies for hot tools",
+    "BeautifulMathematics: Hot-path optimization is a form of frequency-weighted resource allocation following Pareto distribution principles"
+  ],
+  "asset_id": "sha256:e0ecb545a4f9b4b63a50182fbe5b456f539ebfd6c89185964110785b8d31545c",
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "id": "gene_candidate_update_plan",
+  "preconditions": [
+    "tool 'update_plan' has been called 4+ times in 24h"
+  ],
+  "schema_version": "1.12.1",
+  "signals_match": [
+    "tool_frequent:update_plan",
+    "hot_path:update_plan",
+    "update_plan"
+  ],
+  "summary": "Hot-path optimization for update_plan (4 calls in 24h, 3 strategies)",
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "type": "Gene"
+}

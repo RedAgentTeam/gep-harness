@@ -1,0 +1,39 @@
+{
+  "category": "optimize",
+  "strategy": [
+    "Verify oldText uniqueness before replace",
+    "Log oldText + newText diff for audit",
+    "Keep edit atomic (one edit = one concern)"
+  ],
+  "cross_library_evidence": [
+    "BeautifulMathematics: Precision and uniqueness constraints in set-theoretic replacement operations",
+    "cell-biology: Targeted nucleotide substitution mirrors precise single-edit text replacement",
+    "CognitivePsychology: Confirmation bias mitigated by verifying oldText matches user intent before replacing",
+    "OpenStaxBiology: DNA repair proofreading mechanisms validate changes before committing the edit",
+    "evomap: Local optimization mutation with fitness-preserving constraint to avoid breaking the codebase"
+  ],
+  "asset_id": "sha256:881526a8f129f143c0bb1bcd36a6846fad4673ea5e9e1a22acb7dd246a160ae1",
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "id": "gene_candidate_edit",
+  "preconditions": [
+    "tool 'edit' has been called 4+ times in 24h"
+  ],
+  "schema_version": "1.12.1",
+  "signals_match": [
+    "tool_frequent:edit",
+    "hot_path:edit",
+    "edit"
+  ],
+  "summary": "Hot-path optimization for edit (4 calls in 24h, 3 strategies)",
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "type": "Gene"
+}

@@ -1,0 +1,39 @@
+{
+  "type": "Gene",
+  "schema_version": "1.12.1",
+  "id": "gene_candidate_read",
+  "category": "optimize",
+  "signals_match": [
+    "tool_frequent:read",
+    "hot_path:read",
+    "read"
+  ],
+  "preconditions": [
+    "tool 'read' has been called 6+ times in 24h"
+  ],
+  "strategy": [
+    "Cache frequently read files (path, size > 1MB)",
+    "Add offset/limit for large file reads",
+    "Log file path + offset for replay"
+  ],
+  "constraints": {
+    "max_files": 10,
+    "forbidden_paths": [
+      ".git",
+      "node_modules",
+      "/opt/goapi"
+    ]
+  },
+  "validation": [
+    "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
+  ],
+  "summary": "Hot-path optimization for read (6 calls in 24h, 3 strategies)",
+  "cross_library_evidence": [
+    "BeautifulMathematics: Information entropy quantifies redundancy gain from caching frequently read content",
+    "cell-biology: Signal transduction maps repeated read stimuli to downstream caching responses",
+    "CognitivePsychology: Spaced repetition and memory anchoring reduce redundant file reads in agent working memory",
+    "OpenStaxBiology: Genetic regulatory caching stores commonly accessed data analogous to gene expression memory",
+    "evomap: Event stream analysis identifies read hot-paths for evolutionary optimization pressure"
+  ],
+  "asset_id": "sha256:a8afb3e5e7d96aacc45667a25cfda1f0dc7cb27147a50a34c5230360bd585fa5"
+}

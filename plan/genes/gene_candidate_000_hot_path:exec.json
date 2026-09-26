@@ -4,13 +4,13 @@
   "id": "gene_candidate_exec",
   "category": "repair",
   "signals_match": [
-    "high_freq:3266_calls",
+    "high_freq:234_calls",
     "tool_frequent:exec",
     "hot_path:exec",
     "exec"
   ],
   "preconditions": [
-    "tool 'exec' has been called 3266+ times in 24h"
+    "tool 'exec' has been called 234+ times in 24h"
   ],
   "strategy": [
     "Check exit code before reading stdout",
@@ -28,13 +28,13 @@
   "validation": [
     "python3 -c \"assert 'GEP strict' in open('README.md').read()\""
   ],
-  "summary": "Hot-path optimization for exec (3266 calls in 24h, 3 strategies)",
+  "summary": "Hot-path optimization for exec (234 calls in 24h, 3 strategies)",
   "cross_library_evidence": [
-    "BeautifulMathematics 幂等性",
-    "cell-biology 反馈回路",
-    "CognitivePsychology 确认偏误",
-    "OpenStaxBiology Ch01",
-    "evomap GEP"
+    "BeautifulMathematics: Idempotency ensures repeated exec calls produce identical, safe results",
+    "cell-biology: Negative feedback loops regulate process output similar to exit-code-based control",
+    "CognitivePsychology: Confirmation bias warns against trusting stdout without verifying exit status",
+    "OpenStaxBiology: Cellular signal transduction illustrates input→processing→response logging pipeline",
+    "evomap: GEP repair genes target high-frequency hot-path tools like exec"
   ],
-  "asset_id": "sha256:4fdfc2e3f48b3906e257253097fd0f991286011c6c4998d84a13c8ee03270b7b"
+  "asset_id": "sha256:cf8460b731daac732fa3aad790e3be776ca328713de5a41364239ca52f40de98"
 }
