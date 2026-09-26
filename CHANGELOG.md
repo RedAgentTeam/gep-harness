@@ -2,7 +2,9 @@
 
 > 自动生成（git log 提取）
 > 版本：v54.0
-> 总 commit 数：703
+> 总 commit 数：704
+- 🔧 `2f9a84e14` — Fetch full history in CI so the docs check can see every commit.
+- 📦 `e282d50b2` — auto: cron 6h workflow
 - 📦 `4a4b0b10e` — auto: cron 6h workflow
 - 📦 `d3156a7bf` — auto: cron 6h workflow
 - 📦 `e7fc38b77` — auto: cron 6h workflow
@@ -705,4 +707,4 @@
 - 📦 `087a50d16` — gep-harness v0.5: A2A broadcast + node discovery (45/45 passed)
 - 📦 `68be0200e` — gep-harness: bootstrap independent repo (exclude parent /data/disk/)
 
-> 最后生成：2026-09-26 14:44 UTC
+> 最后生成：2026-09-26 14:49 UTC
