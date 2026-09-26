@@ -1,0 +1,548 @@
+# CHANGELOG — gep-harness
+
+> 自动生成（git log 提取）
+> 总 commit 数：541
+
+- 📦 `99be7ce58` — auto: cron 6h workflow
+- 📦 `5cdae63c5` — auto: cron 6h workflow
+- 📦 `c36a0b12f` — auto: cron 6h workflow
+- 📦 `c2b06f3ac` — auto: cron 6h workflow
+- 📦 `40940af81` — auto: cron 6h workflow
+- 📦 `99044450e` — auto: cron 6h workflow
+- 📦 `c6807d5a7` — auto: cron 6h workflow
+- 📦 `69ec321d8` — auto: cron 6h workflow
+- 📦 `9520321b7` — auto: cron 6h workflow
+- 📦 `d395c73d4` — auto: cron 6h workflow
+- 📦 `3753873d1` — auto: cron 6h workflow
+- 📦 `c0b94c128` — auto: cron 6h workflow
+- 📦 `733fada19` — auto: cron 6h workflow
+- 📦 `75ccf12ce` — auto: cron 6h workflow
+- 📦 `787a68183` — auto: cron 6h workflow
+- 📦 `6833261eb` — auto: cron 6h workflow
+- 📦 `963a656ea` — auto: cron 6h workflow
+- 📦 `0935d84c2` — auto: cron 6h workflow
+- 📦 `d51eb7ea3` — auto: cron 6h workflow
+- 📦 `12255dfce` — auto: cron 6h workflow
+- 📦 `e31fb3d0d` — auto: cron 6h workflow
+- 📦 `6dad0162a` — auto: cron 6h workflow
+- 📦 `ed7b2c2f9` — auto: cron 6h workflow
+- 📦 `da6f61ef6` — auto: cron 6h workflow
+- 📦 `de88d1cca` — auto: cron 6h workflow
+- 📦 `e7bca81e2` — auto: cron 6h workflow
+- 📦 `71142f123` — auto: cron 6h workflow
+- 📦 `6cf3ecd6f` — auto: cron 6h workflow
+- 📦 `809d9ae16` — auto: cron 6h workflow
+- 📦 `103ebee70` — auto: cron 6h workflow
+- 📦 `79b7e0b76` — auto: cron 6h workflow
+- 📦 `6c32d0146` — auto: cron 6h workflow
+- 📦 `2f5c13041` — auto: cron 6h workflow
+- 📦 `e48127bca` — auto: cron 6h workflow
+- 📦 `205e37a0c` — auto: cron 6h workflow
+- 📦 `722e1a2ad` — auto: cron 6h workflow
+- 📦 `68e3f000c` — auto: cron 6h workflow
+- 📦 `55c356e68` — auto: cron 6h workflow
+- 📦 `ce86cd254` — auto: cron 6h workflow
+- 📦 `623e596dc` — auto: cron 6h workflow
+- 📦 `dc6c91171` — auto: cron 6h workflow
+- 📦 `6ce9aceb9` — auto: cron 6h workflow
+- 📦 `5608ecd3a` — auto: cron 6h workflow
+- 📦 `674cba80c` — auto: cron 6h workflow
+- 📦 `a2745c5f1` — auto: cron 6h workflow
+- 📦 `0a92efaf4` — auto: cron 6h workflow
+- 📦 `02beb7f40` — auto: cron 6h workflow
+- 📦 `dd3c840aa` — auto: cron 6h workflow
+- 📦 `1a373e5a0` — auto: cron 6h workflow
+- 📦 `69d6a72b4` — auto: cron 6h workflow
+- 📦 `4ae45c766` — auto: cron 6h workflow
+- 📦 `04ddb85d9` — auto: cron 6h workflow
+- 📦 `db05f0398` — auto: cron 6h workflow
+- 📦 `c3f093c69` — auto: cron 6h workflow
+- 📦 `f37c1f568` — auto: cron 6h workflow
+- 📦 `12c834c55` — auto: cron 6h workflow
+- 📦 `9d357a204` — auto: cron 6h workflow
+- 📦 `26d0b9198` — auto: cron 6h workflow
+- 📦 `4b90e32f2` — auto: cron 6h workflow
+- 📦 `a4e895d86` — auto: cron 6h workflow
+- 📦 `7450ad4f3` — auto: cron 6h workflow
+- 📦 `780bdebb3` — auto: cron 6h workflow
+- 📦 `bc53b5636` — auto: cron 6h workflow
+- 📦 `59e844662` — auto: cron 6h workflow
+- 📚 `01a3cf22b` — Sync the documented commit count with HEAD for the docs check.
+- 📦 `d20bc93e0` — auto: cron 6h workflow
+- 📦 `dfa8b97e2` — auto: cron 6h workflow
+- 📦 `74a2af7ea` — auto: cron 6h workflow
+- 📦 `311c82f19` — auto: cron 6h workflow
+- 📦 `c0d3cd51c` — auto: cron 6h workflow
+- 📦 `f8772f8fd` — auto: cron 6h workflow
+- 📦 `861470104` — auto: cron 6h workflow
+- 📦 `153b65d13` — auto: cron 6h workflow
+- 📦 `80a3b9418` — auto: cron 6h workflow
+- 📦 `25f5dc1f5` — auto: cron 6h workflow
+- 📦 `d72f0da21` — auto: cron 6h workflow
+- 📦 `40b9b0b55` — auto: cron 6h workflow
+- 📦 `01db00988` — auto: cron 6h workflow
+- 📦 `d327c0781` — auto: cron 6h workflow
+- 📦 `538d2ee40` — auto: cron 6h workflow
+- 📦 `0dda71b48` — auto: cron 6h workflow
+- 📦 `535dc3fdb` — auto: cron 6h workflow
+- 📦 `2d6fc5444` — auto: cron 6h workflow
+- 📦 `e3ebebaee` — auto: cron 6h workflow
+- 📦 `0182cc7fa` — auto: cron 6h workflow
+- 📦 `bcea219d5` — auto: cron 6h workflow
+- 📦 `3f86b268c` — auto: cron 6h workflow
+- 📦 `1094a4c65` — auto: cron 6h workflow
+- 📦 `6010db9ba` — auto: cron 6h workflow
+- 📦 `4f2f96696` — auto: cron 6h workflow
+- 📦 `00d567e83` — auto: cron 6h workflow
+- 📦 `c261b22a2` — auto: cron 6h workflow
+- 📦 `abd9abc60` — auto: cron 6h workflow
+- 📦 `094104c3a` — auto: cron 6h workflow
+- 📚 `e6e084100` — Add the GitHub community files and align the docs check with v54.0.
+- 📦 `81978d5d8` — auto: cron 6h workflow
+- 📦 `6c4394462` — auto: cron 6h workflow
+- 📦 `40523b738` — auto: cron 6h workflow
+- 📦 `ec8b9df01` — auto: cron 6h workflow
+- 📦 `e04c3970d` — auto: cron 6h workflow
+- 📦 `9a9a42069` — auto: cron 6h workflow
+- 📦 `c2bea20b1` — auto: cron 6h workflow
+- 📦 `46a5fc8d5` — auto: cron 6h workflow
+- 📦 `a03d2c487` — auto: cron 6h workflow
+- 📦 `dceb04369` — auto: cron 6h workflow
+- 📦 `3033cacc5` — auto: cron 6h workflow
+- 📦 `1eaa79abe` — auto: cron 6h workflow
+- 📦 `58ff189c1` — auto: cron 6h workflow
+- 📦 `1e90b4024` — auto: cron 6h workflow
+- 📦 `58005095f` — auto: cron 6h workflow
+- 📦 `a9ceb74b8` — auto: cron 6h workflow
+- 📦 `a0a3da720` — auto: cron 6h workflow
+- 📦 `9aff2dd52` — auto: cron 6h workflow
+- 📦 `140ba14a0` — auto: cron 6h workflow
+- 📦 `ce96d0f36` — auto: cron 6h workflow
+- 📦 `c6503cb6a` — auto: cron 6h workflow
+- 📦 `db0bddbf0` — auto: cron 6h workflow
+- 📦 `e5e87f1e1` — auto: cron 6h workflow
+- 📦 `8a3f1cdb3` — auto: cron 6h workflow
+- 📦 `bcb8a3622` — auto: cron 6h workflow
+- 📦 `70d17fcc1` — auto: cron 6h workflow
+- 📦 `042c84c33` — auto: cron 6h workflow
+- 📦 `0b1bdb59f` — auto: cron 6h workflow
+- 📦 `fc9bee77b` — auto: cron 6h workflow
+- 📦 `f48313788` — auto: cron 6h workflow
+- 📦 `1eb1471c7` — auto: cron 6h workflow
+- 📦 `63ae7bda5` — auto: cron 6h workflow
+- 📦 `1ba0561ce` — auto: cron 6h workflow
+- 📦 `bdcda77c5` — auto: cron 6h workflow
+- 📦 `c80c3da8b` — auto: cron 6h workflow
+- 📦 `ebdd8016b` — auto: cron 6h workflow
+- 📦 `f859c8fa6` — auto: cron 6h workflow
+- 📦 `0afe6a033` — auto: cron 6h workflow
+- 📦 `9c26055d3` — auto: cron 6h workflow
+- 📦 `345389704` — auto: cron 6h workflow
+- 📦 `ae176c005` — auto: cron 6h workflow
+- 📦 `905793035` — auto: cron 6h workflow
+- 📦 `1084d8016` — auto: cron 6h workflow
+- 📦 `31534e1b3` — auto: cron 6h workflow
+- 📦 `ca466bae3` — auto: cron 6h workflow
+- 📦 `b0576773d` — auto: cron 6h workflow
+- 📦 `e1b4fe489` — auto: cron 6h workflow
+- 📦 `b6c5eab88` — auto: cron 6h workflow
+- 📦 `395f6b191` — auto: cron 6h workflow
+- 📦 `82194bb8c` — auto: cron 6h workflow
+- 📦 `c196341ce` — auto: cron 6h workflow
+- 📦 `1d2cee07f` — auto: cron 6h workflow
+- 📦 `a5a600858` — auto: cron 6h workflow
+- 📦 `bcfd5b6a9` — auto: cron 6h workflow
+- 📦 `f22133c12` — auto: cron 6h workflow
+- 📦 `f23440936` — auto: cron 6h workflow
+- 📦 `5dbe039e0` — auto: cron 6h workflow
+- 📦 `57e22dca9` — auto: cron 6h workflow
+- 📦 `31896565b` — auto: cron 6h workflow
+- 📦 `63e16e6a6` — auto: cron 6h workflow
+- 📦 `937f76d52` — auto: cron 6h workflow
+- 📦 `d5babf299` — auto: cron 6h workflow
+- 📦 `d6ca7cecf` — auto: cron 6h workflow
+- 📦 `dba17ddf8` — auto: cron 6h workflow
+- 📦 `c5f51741b` — auto: cron 6h workflow
+- 📦 `124d8b11c` — auto: cron 6h workflow
+- 📦 `8f897fe75` — auto: cron 6h workflow
+- 📦 `aaffd4e01` — auto: cron 6h workflow
+- 📦 `137f38b07` — auto: cron 6h workflow
+- 📦 `4f00ef600` — auto: cron 6h workflow
+- 📦 `f08ef8641` — auto: cron 6h workflow
+- 📦 `bb341d5c3` — auto: cron 6h workflow
+- 📦 `43bc23f60` — auto: cron 6h workflow
+- 📦 `cf9251d2d` — auto: cron 6h workflow
+- 📦 `d64b83fe0` — auto: cron 6h workflow
+- 📦 `adea94650` — auto: cron 6h workflow
+- 📦 `ebee532e1` — auto: cron 6h workflow
+- 📦 `ad9557e35` — auto: cron 6h workflow
+- 📦 `dae13d6cc` — auto: cron 6h workflow
+- 📦 `587851714` — auto: cron 6h workflow
+- 📦 `1f39e822a` — auto: cron 6h workflow
+- 📦 `f7cdc94ca` — auto: cron 6h workflow
+- 📦 `aaa0ab96f` — auto: cron 6h workflow
+- 📦 `856825af8` — auto: cron 6h workflow
+- 📦 `1c448375c` — auto: cron 6h workflow
+- 📦 `854d58ec9` — auto: cron 6h workflow
+- 📦 `3c06597ad` — auto: cron 6h workflow
+- 📦 `221d2c072` — auto: cron 6h workflow
+- 📦 `697d2d521` — auto: cron 6h workflow
+- 📦 `113fe1c23` — auto: cron 6h workflow
+- 📦 `1ba10422f` — auto: cron 6h workflow
+- 📦 `cc700585e` — auto: cron 6h workflow
+- 📦 `7439336c6` — auto: cron 6h workflow
+- 📦 `301dbb423` — auto: cron 6h workflow
+- 📦 `b10523c98` — auto: cron 6h workflow
+- 📦 `8f092137f` — auto: cron 6h workflow
+- 📦 `ec96b66c9` — auto: cron 6h workflow
+- 📦 `76abff107` — auto: cron 6h workflow
+- 📦 `bf605ebe3` — auto: cron 6h workflow
+- 📦 `59c528748` — auto: cron 6h workflow
+- 📦 `0142bfec4` — auto: cron 6h workflow
+- 📦 `5c0fc9366` — auto: cron 6h workflow
+- 📦 `fabe780dc` — auto: cron 6h workflow
+- 📦 `79de8750b` — auto: cron 6h workflow
+- 📦 `2949eaeda` — auto: cron 6h workflow
+- 📦 `a164a8995` — auto: cron 6h workflow
+- 📦 `41bf24924` — auto: cron 6h workflow
+- 📦 `f9cbfc512` — auto: cron 6h workflow
+- 📦 `99081f43c` — auto: cron 6h workflow
+- 📦 `60a2f50a7` — auto: cron 6h workflow
+- 📦 `b44274e9d` — auto: cron 6h workflow
+- 📦 `0695f0c81` — auto: cron 6h workflow
+- 📦 `173255fc2` — auto: cron 6h workflow
+- 📦 `11e1b59ab` — auto: cron 6h workflow
+- 📦 `5f163b643` — auto: cron 6h workflow
+- 📦 `c711864d6` — auto: cron 6h workflow
+- 📦 `9b5c1c66c` — auto: cron 6h workflow
+- 📦 `e19712bcd` — auto: cron 6h workflow
+- 📦 `a0fe868f6` — auto: cron 6h workflow
+- 📦 `d1a1e15c3` — auto: cron 6h workflow
+- 📦 `8cec3d2f8` — auto: cron 6h workflow
+- 📦 `8a40a1e58` — auto: cron 6h workflow
+- 📦 `585ec4b20` — auto: cron 6h workflow
+- 📦 `49e69e6ef` — auto: cron 6h workflow
+- 📦 `badf08133` — auto: cron 6h workflow
+- 📦 `784bbda48` — auto: cron 6h workflow
+- 📦 `bb7609b34` — auto: cron 6h workflow
+- 📦 `6aa96aa1e` — auto: cron 6h workflow
+- 📦 `683afe75b` — auto: cron 6h workflow
+- 📦 `1795464a8` — auto: cron 6h workflow
+- 📦 `c142ce884` — auto: cron 6h workflow
+- 📦 `6a492580e` — auto: cron 6h workflow
+- 📦 `0e396c05c` — auto: cron 6h workflow
+- 📦 `b727df73a` — auto: cron 6h workflow
+- 📦 `d17da36fc` — auto: cron 6h workflow
+- 📦 `22e3abb9f` — auto: cron 6h workflow
+- 📦 `1710107f8` — auto: cron 6h workflow
+- 📦 `983a6ee42` — auto: cron 6h workflow
+- 📦 `8be1af41b` — auto: cron 6h workflow
+- 📦 `c24048dc9` — auto: cron 6h workflow
+- 📦 `86cb469b2` — auto: cron 6h workflow
+- 📦 `039f8d133` — auto: cron 6h workflow
+- 📦 `e521270e1` — auto: cron 6h workflow
+- 📦 `551c30914` — auto: cron 6h workflow
+- 📦 `4b321f832` — auto: cron 6h workflow
+- 📦 `9d502ec49` — auto: cron 6h workflow
+- 📦 `fb7d2bdac` — auto: cron 6h workflow
+- 📦 `5eb729a14` — auto: cron 6h workflow
+- 📦 `774a2619f` — auto: cron 6h workflow
+- 📦 `06743d871` — auto: cron 6h workflow
+- 📦 `8f33a61b9` — auto: cron 6h workflow
+- 📦 `4f302e85d` — auto: cron 6h workflow
+- 📦 `bdf5cd82e` — auto: cron 6h workflow
+- 📦 `e7d9819ac` — auto: cron 6h workflow
+- 📦 `bb136e23c` — auto: cron 6h workflow
+- 📦 `6b5b1b90b` — auto: cron 6h workflow
+- 📦 `5b48ae9f2` — auto: cron 6h workflow
+- 📦 `1401c3041` — auto: cron 6h workflow
+- 📦 `f70309f8c` — auto: cron 6h workflow
+- 📦 `d0c6d6a5a` — auto: cron 6h workflow
+- 📦 `afd6c825f` — auto: cron 6h workflow
+- 📦 `3a1de9407` — auto: cron 6h workflow
+- 📦 `777f02665` — auto: cron 6h workflow
+- 📦 `9169969ab` — auto: cron 6h workflow
+- 📦 `7cf407ad6` — auto: cron 6h workflow
+- 📦 `66c13f0b5` — auto: cron 6h workflow
+- 📦 `8a582526a` — auto: cron 6h workflow
+- 📦 `37e3c4909` — auto: cron 6h workflow
+- 📦 `a5b392367` — auto: cron 6h workflow
+- 📦 `f73996867` — auto: cron 6h workflow
+- 📦 `c3d24fcc8` — auto: cron 6h workflow
+- 📦 `28c654e4a` — auto: cron 6h workflow
+- 📦 `d3952ab32` — auto: cron 6h workflow
+- 📦 `80ca426ce` — auto: cron 6h workflow
+- 📦 `3a5f89182` — auto: cron 6h workflow
+- 📦 `c8a1ffb0a` — auto: cron 6h workflow
+- 📦 `21ab3146e` — auto: cron 6h workflow
+- 📦 `ffbf23c4c` — auto: cron 6h workflow
+- 📦 `2a71acabe` — auto: cron 6h workflow
+- 📦 `91d9c2906` — auto: cron 6h workflow
+- 📦 `0d2dbc9ae` — auto: cron 6h workflow
+- 📦 `e736c9eb3` — auto: cron 6h workflow
+- 📦 `90ecf2828` — auto: cron 6h workflow
+- 📦 `f0b9ee8d7` — auto: cron 6h workflow
+- 📦 `9e548c6a6` — auto: cron 6h workflow
+- 📦 `216cc37e6` — auto: cron 6h workflow
+- 📦 `57e5b2ceb` — auto: cron 6h workflow
+- 📦 `538be4ce3` — gep-harness v54.0: publish the current master as a GitHub release.
+- 📦 `a3597ed37` — gep-harness: keep upgraded session logs intact and record shell start and finish.
+- 📦 `efb4fb7f6` — gep-harness v53.0: record trust flips in the event stream and drop hardcoded API keys.
+- 📦 `1bb8601b8` — gep-harness solidify: 7 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_message,gene_candidate_write,gene_candidate_read,gene_candidate_update_plan,gene_candidate_edit)
+- 📦 `84140797c` — auto: cron 6h workflow
+- 📦 `d8a8ac1d8` — auto: cron 6h workflow
+- 📦 `2cb732a56` — auto: cron 6h workflow
+- 📦 `fb04b4289` — auto: cron 6h workflow
+- 📦 `e54b43575` — auto: cron 6h workflow
+- 📦 `8b983145f` — auto: cron 6h workflow
+- 🧪 `c4421afd8` — gep-harness v52.0: 5 库 v26.0 - trust audit 可视化（CLI + Web + 10 pytest）
+- 📦 `d02d97cc3` — auto: cron 6h workflow
+- 📦 `6313d7aea` — auto: cron 6h workflow
+- 📦 `b28f16b2a` — gep-harness v51.0: 5 库 v25.0 - trust audit 轮转 + 查询 + 统计
+- 📦 `59ee50fe6` — auto: cron 6h workflow
+- 📦 `6975f25c1` — auto: cron 6h workflow
+- 📦 `b1c58280a` — gep-harness v50.0: 5 库 v24.0 - trust audit（integrity + verify + audit log）
+- 📦 `08e0fd692` — auto: cron 6h workflow
+- 📦 `8578be052` — auto: cron 6h workflow
+- 📦 `621fd8162` — auto: cron 6h workflow
+- 📦 `c205bb7d4` — auto: cron 6h workflow
+- 📦 `4c1f13d5a` — gep-harness v49.0: 5 库 v23.0 - trust_score 持久化（active_edges.json）
+- 📦 `a11e5cb97` — auto: cron 6h workflow
+- 📦 `a74abdfff` — auto: cron 6h workflow
+- 📦 `f90f310e0` — auto: cron 6h workflow
+- 📦 `bc6561db2` — auto: cron 6h workflow
+- 📦 `7d6c28538` — gep-harness v48.0: 5 库 v22.0 - trust auto-flip + cron 5 步联动
+- 📦 `cb4547608` — auto: cron 6h workflow
+- 📦 `6d032b727` — auto: cron 6h workflow
+- 📦 `4ee651c06` — auto: cron 6h workflow
+- 📦 `476834084` — auto: cron 6h workflow
+- 📦 `343fb7504` — gep-harness v47.0: 5 库 v21.0 - cross_lib auto-evolve + cron 4 步联动
+- 📦 `0e5f58ae3` — auto: cron 6h workflow
+- 📦 `46f7df51a` — auto: cron 6h workflow
+- 📦 `a10874a14` — auto: cron 6h workflow
+- 📦 `99bc6c06d` — auto: cron 6h workflow
+- 📦 `b2195800a` — gep-harness v46.0: 5 库 v20.0 Phase 4 - trust_score 接入 dynamic edges
+- 📦 `ea71b05ed` — auto: cron 6h workflow
+- 📦 `17f75064d` — gep-harness v45.0: 5 库 v19.0 C - dynamic edge compute + visualize 集成
+- 📦 `f80452708` — auto: cron 6h workflow
+- 📦 `6b5a48a4c` — gep-harness v44.0: 5 库 v19.0 B - cron 6h 联动 (5 库检查 + CHANGELOG + auto-commit)
+- 📦 `15b5a545a` — auto: cron 6h workflow
+- 📦 `bcffdb606` — auto: cron 6h workflow
+- 🧪 `597b72c74` — gep-harness v43.0: 5 库 v19.0 - 6 格式产物自动检查 + pytest 10/10
+- 📦 `fb38f42e5` — gep-harness v42.0: Phase 3 publish prep complete (examples/08 + ROADMAP v37-v41 + CONTRIBUTING + RELEASE_NOTES)
+- 📦 `954ff412c` — gep-harness v41.1: Phase 3 GitHub-standard publish prep
+- 📦 `7f6bb9ad6` — gep-harness v41.0: Phase 3 pre-push cleanup
+- 🧪 `34ae7ca04` — gep-harness v40.0: 覆盖率 88%→89% + 第三轮测试补全 (511 tests)
+- 📦 `e8891a529` — gep-harness v39.0: 覆盖率 70%→86% + verify_assets 重构 + 第二轮测试补全
+- 📦 `d5abbc922` — gep-harness v38.0: 5 库 v13 trust_score + 覆盖率补全第一轮
+- 🐛 `ed0bdc7d8` — v37.0: fix 16 PLACEHOLDER_LLM_TO_FILL asset_ids
+- 📦 `6c810f154` — gep-harness solidify: 35 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_read,gene_candidate_write,gene_candidate_process,gene_candidate_read,gene_candidate_write,gene_candidate_edit,gene_candidate_read,gene_candidate_write,gene_candidate_edit,gene_candidate_write,gene_candidate_message,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_subagents,gene_candidate_memory_recall,gene_candidate_memory_recall,gene_candidate_cron,gene_candidate_sessions_history,gene_candidate_sessions_history,gene_candidate_subagents,gene_candidate_write_file,gene_candidate_browser,gene_candidate_sessions_history,gene_candidate_update_plan,gene_candidate_write_file,gene_candidate_apply_patch,gene_candidate_subagents,gene_candidate_write_file,gene_candidate_sessions_history,gene_candidate_write_file,gene_candidate_apply_patch)
+- 📦 `1a75a578c` — gep-harness v36.6: ROADMAP 更新（凌晨闭环 5 commit 总账）
+- 📦 `674f14a93` — gep-harness solidify: 32 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_read,gene_candidate_write,gene_candidate_process,gene_candidate_write,gene_candidate_edit,gene_candidate_read,gene_candidate_write,gene_candidate_edit,gene_candidate_write,gene_candidate_message,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_web_fetch,gene_candidate_wiki_search,gene_candidate_subagents,gene_candidate_memory_recall,gene_candidate_memory_recall,gene_candidate_cron,gene_candidate_sessions_history,gene_candidate_sessions_history,gene_candidate_subagents,gene_candidate_write_file,gene_candidate_browser,gene_candidate_sessions_history,gene_candidate_write_file,gene_candidate_apply_patch,gene_candidate_subagents,gene_candidate_sessions_history,gene_candidate_write_file,gene_candidate_apply_patch)
+- 📦 `654cf7c15` — gep-harness v36.5: events.jsonl +16 (cron cycle)
+- 🐛 `d45a4c264` — gep-harness v36.4: fix llm_fill_gene.py + filled 32 candidates + cleanup legacy
+- 📦 `8a1da5541` — gep-harness v36.3: clean legacy hotpath genes (v13-v40, 122 files)
+- 📦 `83e4192a2` — gep-harness v36.1: C1+C2 真闭环（第二轮复查修复）
+- 📦 `8ab393022` — gep-harness v36.2: C3+C4 闭环（第二轮复查收尾）
+- 🧪 `0a1d41bc6` — gep-harness v36.1.1: 补 test_canonicalize_solidify.py（C1 回归测试）
+- 📦 `fbe028dc0` — gep-harness v36.0: P0/P1 全部闭环（10 项安全/架构修复）
+- 📦 `5876654cc` — gep-harness v35.6: 方法论.md 全具象化（不提 5 库跨学科映射）
+- 📦 `778845c21` — gep-harness v35.5: 补漏（IP 脱敏残留文件）
+- 📦 `1c7108cf6` — gep-harness v35.4: 抽象名词 → 具象描述（不提 5 库跨学科映射）
+- 📦 `02a899164` — gep-harness v35.3: 修 IP 泄漏 + 张玉新致谢段清理
+- 📦 `7c2498975` — gep-harness v35.2: 任务 1+3+4 闭环
+- 📦 `74a28552d` — gep-harness v35.1: README 作者改 RedAgentTeam + 致谢段
+- 📦 `38510189f` — gep-harness v35.0: 今晚 7 个修改问题闭环 + 复盘
+- 📦 `e4e97a31d` — gep-harness v34.0: GitHub 发布准备（5 步指南 + .gitignore）
+- 📦 `d15ad5741` — gep-harness: runtime learning - gep-harness 完整复盘（v0.4 → v33.0）
+- 📦 `8ad7bd11e` — gep-harness v33.0: 今晚最后一搏收尾
+- 📦 `ac47773d8` — gep-harness v32.0: 5 库 v18.0 CHANGELOG 自动 commit
+- 📦 `3178cd2c9` — gep-harness v31.0: 5 库 v17.0 CHANGELOG 嵌入 ROADMAP
+- 📦 `683c01bdb` — gep-harness v30.0: 5 库 v16.0 CHANGELOG 自动生成
+- 🔧 `8cfc22e8c` — gep-harness v29.0: 5 库 v15.0 CI 完整矩阵 + 覆盖率报告
+- 🔧 `f9fd3b339` — gep-harness v28.0: 5 库 v14.0 CI 多 OS 矩阵
+- 🔧 `f87063712` — gep-harness v27.0: 5 库 v13.0 CI 矩阵多 Python 版本
+- 🔧 `6090f3f05` — gep-harness v26.0: 5 库 v12.0 GitHub Actions CI 集成
+- 📦 `b6c411d5d` — gep-harness v25.0: 5 库 v11.0 五格式自动嵌入 ROADMAP_INDEX
+- 📦 `3017c6b71` — gep-harness v24.0: 5 库 v10.0 多格式（PNG+SVG+PDF+EPS）
+- 📦 `f35a6fe05` — gep-harness v23.0: 5 库 v9.0 多格式可视化（PNG+SVG+PDF）
+- 📦 `c26433e45` — gep-harness v22.0: 5 库 v8.0 双格式可视化 + examples 07
+- 📦 `8fcaa4960` — gep-harness v21.0: 5 库 v7.0 - DOT → SVG 矢量化
+- 📦 `a42237692` — gep-harness v20.0: examples 05/06 + v20.0 ROADMAP
+- 📦 `5cab5504f` — gep-harness v19.0: 5 库 v6.0 - DOT → PNG 自动生成
+- 📦 `e27b3bae1` — gep-harness v18.0: 内部验证未跟踪文件归档（9 个核心文件）
+- 📦 `1ad6833f1` — gep-harness v17.0: 5 库 v5.0 图谱可视化
+- 📦 `685b30f87` — gep-harness v16.0: 5 库 v4.0 + A2A 真跑 + examples 扩展
+- 🧪 `fea1f4448` — gep-harness v15.0: 开源准备收尾 + pytest 覆盖率升级
+- 📦 `f56273028` — v14.0: 开源准备 C - 3 个 examples
+- 📦 `62891c0e1` — v14.0: 开源准备 B - 跨节点 A2A 文档 + CONTRIBUTING.md
+- 📦 `e5c25b6d5` — v14.0: 开源准备 A - LICENSE (MIT) + README.en.md
+- 📦 `35ff8e79d` — gep-harness v14.0: README 更新 + OPEN_SOURCE_PLAN
+- 📦 `d1c5413a7` — v14.0 收尾: 7 候选 evidence v3.0 重生成 + ROADMAP 历史索引
+- 📦 `1ddb9eaf9` — gep-harness: runtime learning - 完整复盘 (4 阶段闭环)
+- 📦 `9afc310d0` — gep-harness v14.0: ROADMAP - 跨 5 库 evidence 神经元网络（闭环互引）
+- 📦 `fdcb48ee7` — gep-harness v14.0: 跨 5 库 evidence 神经元网络（闭环互引）
+- 📦 `8a6a86d3b` — gep-harness v13.0: 5 库 evidence v2.0 自动生成（章节号 + 字段关联）
+- 📦 `789276929` — gep-harness v12.0: 5 库 evidence v2.0 接入 - 7 候选升级章节号格式
+- 📦 `c332664f9` — gep-harness v11.0: ROADMAP - Plan B 收尾 + safe reject 验证
+- 📦 `4514f6a85` — gep-harness v10.2: Plan B 落地 - 修 7 个候选字段 + 8 审计事件
+- 🧪 `bebb6c6a9` — gep-harness v10.1: pytest + cron full-cycle (auto-fill + non-interactive Solidify safe reject)
+- 📦 `ef94cd716` — gep-harness v10.0: ROADMAP + cross_library_auto + cron 6h cycle 模拟 (5 库匹配→157 evidence 自动生成)
+- 🐛 `ecbb11145` — gep-harness a2a: standalone mock_peer.py + pytest fixture (157/157 verified end-to-end)
+- 🐛 `11aacdffc` — gep-harness: fix asset_id mismatch in 7 EvolutionEvent + 4 Gene (canonicalize exclude asset_id field)
+- 📦 `889f88ec7` — gep-harness solidify: 7 genes approved (gene_candidate_exec,gene_candidate_process,gene_candidate_read,gene_candidate_edit,gene_candidate_write_file,gene_candidate_message,gene_candidate_write)
+- 📦 `53305d2bb` — gep-harness: Makefile evolve target 补全 (remove dry-run, add solidify/llm_fill hints)
+- 📦 `b89961aab` — gep-harness solidify: 7 genes approved (gene_candidate_exec,gene_candidate_read,gene_candidate_process,gene_candidate_write_file,gene_candidate_edit,gene_candidate_message,gene_candidate_write)
+- 📦 `787f560bd` — gep-harness v9.0: ROADMAP final (149 genes, 154/154 assets, 12008 events, 47% UNIQUE下降, cron 6h, LLM fill pending 402)
+- 📦 `9f204e73a` — gep-harness v9.0: Evolver scan (11988 events) + 5-tool hotpath拆解验证 (47% UNIQUE下降 11391→5959) + cron 6h + LLM fill pending (402 quota)
+- 📦 `fc2b11e3a` — gep-harness v8: ROADMAP final (149 genes, 154/154 assets, 11708 events, 5-tool hotpath fully拆解)
+- 📦 `961cc54bf` — gep-harness v8.4: 3 write拆解 (small 101c/98% + medium 2c/2% + multi_path 18c/72%) — write hotpath solve
+- 📦 `ff2b6198d` — gep-harness v8.3: 2 read拆解 (sequential 267c/66% + paginated 139c/34%) — read hotpath solve
+- 📦 `5df985f44` — gep-harness v8.2: 2 message拆解 (batch 124c/99% + single) — message hotpath solve
+- 📦 `ee3d0ea26` — gep-harness v8.1: 3 process拆解 (long_run 12c/3% + quick_run 358c/96% + failure handling) — process hotpath solve
+- 🐛 `ede225dbd` — gep-harness v8.0: 7 exec args prefix拆解 (cd 4493/python3 70/ls 56/sudo 34/cat+curl 36/misc 76/bracket 184) — exec hotpath solve
+- 📦 `c297c2ff6` — gep-harness v7.5: ROADMAP final (132 genes, 137/137 assets, 11358 events, exec 63/63 UNIQUE)
+- 📦 `783b0f30b` — gep-harness v7.5: 1 new hotpath gene (exec) total 132 genes - 6 DUPLICATE (exec 63/63 UNIQUE)
+- 📦 `7bad80bcd` — gep-harness v7.4: ROADMAP final (131 genes, 136/136 assets, 11314 events, exec 62/62 + process 22/62)
+- 📦 `0cccd19e2` — gep-harness v7.4: 2 new hotpath genes (exec/process) total 131 genes - 5 DUPLICATE (process 22nd UNIQUE since v3.6, exec 62/62)
+- 📦 `5d6579b8b` — gep-harness v7.3: ROADMAP final (129 genes, 134/134 assets, 11242 events, exec 61/61 + process 21/61)
+- 📦 `967f0ad8b` — gep-harness v7.3: 2 new hotpath genes (exec/process) total 129 genes - 5 DUPLICATE (process 21st UNIQUE since v3.6, exec 61/61)
+- 📦 `1baf85342` — gep-harness v7.2: ROADMAP final (127 genes, 132/132 assets, 11150 events, exec 60/60 + read 13 + process 20/60)
+- 📦 `5f2269f51` — gep-harness v7.2: 3 new hotpath genes (exec/read/process) total 127 genes - 4 DUPLICATE (read+process rebound, exec 60/60)
+- 📦 `686c74796` — gep-harness v7.1: ROADMAP final (124 genes, 129/129 assets, 10970 events, exec 59/59 UNIQUE)
+- 📦 `03c5efc54` — gep-harness v7.1: 1 new hotpath gene (exec) total 124 genes - 6 DUPLICATE (exec 59/59 UNIQUE)
+- 📦 `bb3ebc7eb` — gep-harness v7.0: ROADMAP final (123 genes, 128/128 assets, 10906 events, exec 58/58 UNIQUE)
+- 📦 `3ca012dbf` — gep-harness v7.0: 1 new hotpath gene (exec) total 123 genes - 6 DUPLICATE (exec 58/58 UNIQUE)
+- 📦 `b58d70dbb` — gep-harness v6.9: ROADMAP final (122 genes, 127/127 assets, 10882 events, exec 57/57 + process 19/57)
+- 📦 `4db867890` — gep-harness v6.9: 2 new hotpath genes (exec/process) total 122 genes - 5 DUPLICATE (process 19th UNIQUE since v3.6, exec 57/57)
+- 📦 `273c824ad` — gep-harness v6.8: ROADMAP final (120 genes, 125/125 assets, 10806 events, exec 56/56 UNIQUE) 🎯 120 genes milestone
+- 📦 `b0d5a18e3` — gep-harness v6.8: 1 new hotpath gene (exec) total 120 genes - 6 DUPLICATE (exec 56/56 UNIQUE) 🎯 120 genes milestone
+- 📦 `aacbb4c5f` — gep-harness v6.7: ROADMAP final (119 genes, 124/124 assets, 10688 events, exec 55/55 UNIQUE)
+- 📦 `05fda4fe6` — gep-harness v6.7: 1 new hotpath gene (exec) total 119 genes - 6 DUPLICATE (exec 55/55 UNIQUE)
+- 📦 `6a497e1c4` — gep-harness v6.6: ROADMAP final (118 genes, 123/123 assets, 10628 events, exec 54/54 UNIQUE)
+- 📦 `e3f07b12a` — gep-harness v6.6: 1 new hotpath gene (exec) total 118 genes - 6 DUPLICATE (exec 54/54 UNIQUE)
+- 📦 `de96060e3` — gep-harness v6.5: ROADMAP final (117 genes, 122/122 assets, 10472 events, exec 53/53 + message 13/53)
+- 📦 `41f92bb39` — gep-harness v6.5: 2 new hotpath genes (exec/message) total 117 genes - 5 DUPLICATE (message 13th UNIQUE since v3.8, exec 53/53)
+- 📦 `a293005a1` — gep-harness v6.4: ROADMAP final (115 genes, 120/120 assets, 10436 events, exec 52/52 UNIQUE)
+- 📦 `2d5e1904f` — gep-harness v6.4: 1 new hotpath gene (exec) total 115 genes - 6 DUPLICATE (exec 52/52 UNIQUE)
+- 📦 `ef14b8533` — gep-harness v6.3: ROADMAP final (114 genes, 119/119 assets, 10412 events, exec 51/51 UNIQUE)
+- 📦 `9eb58c58d` — gep-harness v6.3: 1 new hotpath gene (exec) total 114 genes - 6 DUPLICATE (exec 51/51 UNIQUE)
+- 📦 `249792256` — gep-harness v6.2: ROADMAP final (113 genes, 118/118 assets, 10388 events, exec 50/50 + process 18/50)
+- 📦 `4d982c5b6` — gep-harness v6.2: 2 new hotpath genes (exec/process) total 113 genes - 5 DUPLICATE (process 18th UNIQUE since v3.6, exec 50/50)
+- 📦 `f61a7698c` — gep-harness v6.1: ROADMAP final (111 genes, 116/116 assets, 10226 events, exec 49/49 + write 5 rebound)
+- 📦 `296717880` — gep-harness v6.1: 2 new hotpath genes (exec/write) total 111 genes - 5 DUPLICATE (write 5th UNIQUE since v1.5, exec 49/49)
+- 📦 `66ec60efe` — gep-harness v6.0: ROADMAP final (109 genes, 114/114 assets, 10076 events, exec 48/48 + read 12 + process 17/48)
+- 📦 `45d1bd9b2` — gep-harness v6.0: 2 new hotpath genes (exec/read) total 109 genes - 5 DUPLICATE (read 12th UNIQUE, exec 48/48)
+- 📦 `374cd355d` — gep-harness v5.9: ROADMAP final (107 genes, 112/112 assets, 10012 events, exec 47/47 + read 11) 🎯 10000 events milestone
+- 📦 `3655a5f69` — gep-harness v5.9: 2 new hotpath genes (exec/read) total 107 genes - 5 DUPLICATE (read +26 calls spike)
+- 📦 `b86d36300` — gep-harness v5.8: ROADMAP final (105 genes, 110/110 assets, 9870 events, exec 46/46 + read 10 + process 17/46)
+- 📦 `4a24490a4` — gep-harness v5.8: 3 new hotpath genes (exec/read/process) total 105 genes - 4 DUPLICATE (read+process rebound)
+- 📦 `aa64401c4` — gep-harness v5.7: ROADMAP final (102 genes, 107/107 assets, 9732 events, exec 45/45 UNIQUE)
+- 📦 `bf9eca054` — gep-harness v5.7: 1 new hotpath gene (exec) total 102 genes - 6 DUPLICATE (exec 45/45 UNIQUE)
+- 📦 `66d373da8` — gep-harness v5.6: ROADMAP final (101 genes, 106/106 assets, 9708 events, exec 44/44 UNIQUE)
+- 📦 `3d7e76e0b` — gep-harness v5.6: 1 new hotpath gene (exec) total 101 genes - 6 DUPLICATE (exec 44/44 UNIQUE)
+- 📦 `1411c0f66` — gep-harness v5.5: ROADMAP final (100 genes, 105/105 assets, 9684 events, exec 43/43 UNIQUE) 🎯 100 genes milestone
+- 📦 `b601c11c8` — gep-harness v5.5: 1 new hotpath gene (exec) total 100 genes - 6 DUPLICATE (exec 43/43 UNIQUE)
+- 📦 `6d014679d` — gep-harness v5.4: ROADMAP final (99 genes, 104/104 assets, 9660 events, exec 42/42 UNIQUE)
+- 📦 `1ea38e151` — gep-harness v5.4: 1 new hotpath gene (exec) total 99 genes - 6 DUPLICATE (exec 42/42 UNIQUE)
+- 📦 `4958ac0f6` — gep-harness v5.3: ROADMAP final (98 genes, 103/103 assets, 9636 events, exec 41/41 UNIQUE)
+- 📦 `88dda88a5` — gep-harness v5.3: 1 new hotpath gene (exec) total 98 genes - 6 DUPLICATE (exec 41/41 UNIQUE)
+- 📦 `76fd6ba1e` — gep-harness v5.2: ROADMAP final (97 genes, 102/102 assets, 9612 events, exec 40/40 + 4 hotpath rebound)
+- 📦 `72b004cab` — gep-harness v5.2: 4 new hotpath genes (exec/read/process/message) total 97 genes - 3 DUPLICATE (quadruple rebound, exec 4121+ calls)
+- 📦 `a98b278d7` — gep-harness v5.1: ROADMAP final (93 genes, 98/98 assets, 9408 events, exec 39/39 UNIQUE)
+- 📦 `ecbf65776` — gep-harness v5.1: 1 new hotpath gene (exec) total 93 genes - 6 DUPLICATE (exec 39/39 UNIQUE)
+- 📦 `4a1af0889` — gep-harness v5.0: ROADMAP final (92 genes, 97/97 assets, 9380 events, exec 38/38 + 4 hotpath rebound)
+- 📦 `beda9a077` — gep-harness v5.0: 4 new hotpath genes (exec/read/process/message) total 92 genes - 3 DUPLICATE (quadruple rebound)
+- 📦 `5313e6e5e` — gep-harness v4.9: ROADMAP final (88 genes, 93/93 assets, 9224 events, exec 37/37 + read 7 + message 10)
+- 📦 `f687a8dba` — gep-harness v4.9: 3 new hotpath genes (exec/read/message) total 88 genes - 4 DUPLICATE (read 7th UNIQUE, message 10th UNIQUE)
+- 📦 `d3534d592` — gep-harness v4.8: ROADMAP final (85 genes, 90/90 assets, 9148 events, exec 36/36 + process 14/36 + message 9/36)
+- 📦 `ee113e7bf` — gep-harness v4.8: 3 new hotpath genes (exec/process/message) total 85 genes - 4 DUPLICATE (rebound after long stable)
+- 📦 `a85206cb1` — gep-harness v4.7: ROADMAP final (82 genes, 87/87 assets, 9044 events, exec 35/35 UNIQUE)
+- 📦 `fe2a4e542` — gep-harness v4.7: 1 new hotpath gene (exec) total 82 genes - 6 DUPLICATE (exec 35/35 UNIQUE)
+- 📦 `d1e728354` — gep-harness v4.6: ROADMAP final (81 genes, 86/86 assets, 9020 events, exec 34/34 UNIQUE)
+- 📦 `6beaabc96` — gep-harness v4.6: 1 new hotpath gene (exec) total 81 genes - 6 DUPLICATE (exec 34/34 UNIQUE)
+- 📦 `77477ea9e` — gep-harness v4.5: ROADMAP final (80 genes, 85/85 assets, 8996 events, exec 33/33 UNIQUE)
+- 📦 `580276901` — gep-harness v4.5: 1 new hotpath gene (exec) total 80 genes - 6 DUPLICATE (exec 33/33 UNIQUE)
+- 📦 `a8ad7e6cd` — gep-harness v4.4: ROADMAP final (79 genes, 84/84 assets, 8972 events, exec 32/32 UNIQUE)
+- 📦 `4f144b72c` — gep-harness v4.4: 1 new hotpath gene (exec) total 79 genes - 6 DUPLICATE (exec 32/32 UNIQUE)
+- 📦 `875c57733` — gep-harness v4.3: ROADMAP final (78 genes, 83/83 assets, 8948 events, exec 31/31 UNIQUE)
+- 📦 `7589ddeb7` — gep-harness v4.3: 1 new hotpath gene (exec) total 78 genes - 6 DUPLICATE (exec 31/31 UNIQUE)
+- 📦 `05f1dd801` — gep-harness v4.2: ROADMAP final (77 genes, 82/82 assets, 8924 events, exec 30/30 + read 6 + message 8)
+- 📦 `e8a207c19` — gep-harness v4.2: 3 new hotpath genes (exec/read/message) total 77 genes - 4 DUPLICATE (read 6th UNIQUE, message 8th UNIQUE)
+- 📦 `a6773c388` — gep-harness v4.1: ROADMAP final (74 genes, 79/79 assets, 8812 events, exec 29/29 UNIQUE)
+- 📦 `f647f6f77` — gep-harness v4.1: 1 new hotpath gene (exec) total 74 genes - 6 DUPLICATE (exec 29/29 UNIQUE)
+- 📦 `24efeb746` — gep-harness v4.0: ROADMAP final (73 genes, 78/78 assets, 8788 events, exec 28/28 + process 13/28 + message 7/28)
+- 📦 `040f2c002` — gep-harness v4.0: 3 new hotpath genes (exec/process/message) total 73 genes - 4 DUPLICATE (triple rebound again)
+- 📦 `9464aab08` — gep-harness v3.9: ROADMAP final (70 genes, 75/75 assets, 8608 events, exec 27/27 UNIQUE)
+- 📦 `43bdb5794` — gep-harness v3.9: 1 new hotpath gene (exec) total 70 genes - 6 DUPLICATE (exec 27/27 UNIQUE)
+- 📦 `23acf0fea` — gep-harness v3.8: ROADMAP final (69 genes, 74/74 assets, 8584 events, exec 26/26 + read+message rebound)
+- 📦 `112b5011e` — gep-harness v3.8: 3 new hotpath genes (exec/read/message) total 69 genes - 4 DUPLICATE (read 5th UNIQUE since v1.8, message 6th UNIQUE since v2.6)
+- 📦 `a0fa9edd2` — gep-harness v3.7: ROADMAP final (66 genes, 71/71 assets, 8384 events, exec 25/25 + process 12/25)
+- 📦 `87951ceab` — gep-harness v3.7: 2 new hotpath genes (exec/process) total 66 genes - 5 DUPLICATE (exec 25/25 UNIQUE, process 12/25)
+- 📦 `def607a2e` — gep-harness v3.6: ROADMAP final (64 genes, 69/69 assets, 8276 events, exec 24/24 + process 11/24)
+- 📦 `2ae8a4465` — gep-harness v3.6: 2 new hotpath genes (exec/process) total 64 genes - 5 DUPLICATE (exec 24/24 UNIQUE, process 11/24)
+- 📦 `2d0463c92` — gep-harness v3.5: ROADMAP final (62 genes, 67/67 assets, 8156 events, exec 23/23 UNIQUE)
+- 📦 `6c2a4f071` — gep-harness v3.5: 1 new hotpath gene (exec) total 62 genes - 6 DUPLICATE (exec 23/23 UNIQUE)
+- 📦 `6dfb66b20` — gep-harness v3.4: ROADMAP final (61 genes, 66/66 assets, 8072 events, exec 22/22 UNIQUE)
+- 📦 `98c788f71` — gep-harness v3.4: 1 new hotpath gene (exec) total 61 genes - 6 DUPLICATE (exec 22/22 UNIQUE)
+- 📦 `ad634e0b5` — gep-harness v3.3: ROADMAP final (60 genes, 65/65 assets, 7880 events, exec 21/21 + process 10/21)
+- 📦 `fae388454` — gep-harness v3.3: 2 new hotpath genes (exec/process) total 60 genes - 5 DUPLICATE (exec 21/21 UNIQUE, process 10/21)
+- 📦 `382c95ef0` — gep-harness v3.2: ROADMAP final (58 genes, 63/63 assets, 7828 events, exec 20/20 UNIQUE)
+- 📦 `8e65fe5ee` — gep-harness v3.2: 1 new hotpath gene (exec) total 58 genes - 6 DUPLICATE (exec 20/20 UNIQUE)
+- 📦 `13c932598` — gep-harness v3.1: ROADMAP final (57 genes, 62/62 assets, 7628 events, triple rebound)
+- 📦 `a5456a571` — gep-harness v3.1: 3 new hotpath genes (exec/process/edit) total 57 genes - 4 DUPLICATE (triple rebound)
+- 📦 `c44ab0eaa` — gep-harness v3.0: ROADMAP final (54 genes, 59/59 assets, 7532 events, exec 18/18 + edit 2nd rebound)
+- 📦 `73da24d55` — gep-harness v3.0: 2 new hotpath genes (exec/edit) total 54 genes - 5 DUPLICATE (exec 18/18 UNIQUE, edit rebound 2nd)
+- 📦 `842cf59a7` — gep-harness v2.9: ROADMAP final (52 genes, 57/57 assets, 7416 events, exec 17/17 UNIQUE)
+- 📦 `e021b9dbf` — gep-harness v2.9: 1 new hotpath gene (exec) total 52 genes - 6 DUPLICATE (exec 17/17 UNIQUE)
+- 📦 `24357f905` — gep-harness v2.8: ROADMAP final (51 genes, 56/56 assets, 7296 events, exec 16/16 + process 8/16)
+- 📦 `93f90295f` — gep-harness v2.8: 2 new hotpath genes (exec/process) total 51 genes - 5 DUPLICATE (exec 16/16 UNIQUE, process 8/16)
+- 📦 `55c8e651b` — gep-harness v2.7: ROADMAP final (49 genes, 54/54 assets, 7124 events, exec 15/15 UNIQUE)
+- 📦 `70f9cf5aa` — gep-harness v2.7: 1 new hotpath gene (exec) total 49 genes - 6 DUPLICATE (exec 15/15 UNIQUE)
+- 📦 `1366e3e11` — gep-harness v2.6: ROADMAP final (48 genes, 53/53 assets, 7080 events, exec 14/14 + message rebound)
+- 📦 `4dee38a86` — gep-harness v2.6: 2 new hotpath genes (exec/message) total 48 genes - 5 DUPLICATE (exec 14/14 UNIQUE, message rebound)
+- 📦 `4f913901a` — gep-harness v2.5: ROADMAP final (46 genes, 51/51 assets, 7048 events, exec 13/13 + process 7/13)
+- 📦 `93829ad00` — gep-harness v2.5: 2 new hotpath genes (exec/process) total 46 genes - 5 DUPLICATE (exec 13/13 UNIQUE, process 7/13)
+- 📦 `c5b710d9b` — gep-harness v2.4: ROADMAP final (44 genes, 49/49 assets, 6944 events, exec 12/12 + process rebound)
+- 📦 `ae7b6fb7a` — gep-harness v2.4: 2 new hotpath genes (exec/process) total 44 genes - 5 DUPLICATE (exec 12/12 UNIQUE, process rebound)
+- 📦 `9056fa5d8` — gep-harness v2.3: ROADMAP final (42 genes, 47/47 assets, 6870 events, exec 11/11 UNIQUE)
+- 📦 `51020cff4` — gep-harness v2.3: 1 new hotpath gene (exec) total 42 genes - 6 DUPLICATE (exec 11/11 UNIQUE)
+- 📦 `e98389cd1` — gep-harness v2.2: ROADMAP final (41 genes, 46/46 assets, 6804 events, exec 10/10 UNIQUE)
+- 📦 `bd38a6c44` — gep-harness v2.2: 1 new hotpath gene (exec) total 41 genes - 6 DUPLICATE (exec 10/10 UNIQUE)
+- 📦 `25adc0147` — gep-harness v2.1: ROADMAP final (40 genes, 45/45 assets, 6656 events, continuous stable)
+- 📦 `af05b489a` — gep-harness v2.1: 1 new hotpath gene (exec) total 40 genes - 6 DUPLICATE
+- 📦 `093d15e8a` — gep-harness v2.0: ROADMAP final (39 genes, 44/44 assets, 6608 events, stable)
+- 📦 `17fa1005a` — gep-harness v2.0: 2 new hotpath genes (exec/edit) total 39 genes - 5 DUPLICATE
+- 📦 `286eeaef7` — gep-harness v1.9: ROADMAP final (37 genes, 42/42 assets, 6524 events, exec persistent)
+- 📦 `7e0a30ac4` — gep-harness v1.9: 1 new hotpath gene (exec) total 37 genes - 6 DUPLICATE
+- 📦 `8a57857f2` — gep-harness v1.8: ROADMAP final (36 genes, 41/41 assets, 6398 events, exec bounce)
+- 📦 `137bd1780` — gep-harness v1.8: 5 new hotpath genes (exec/read/process/write_file/message) total 36 genes
+- 📦 `1460a6067` — gep-harness v1.7: ROADMAP final (31 genes, 36/36 assets, 5948 events, high decay)
+- 📦 `2cdd04b62` — gep-harness v1.7: 1 new hotpath gene (exec) total 31 genes - 6 DUPLICATE (high decay)
+- 📦 `bcdd07b96` — gep-harness v1.6: ROADMAP final (30 genes, 35/35 assets, 5896 events)
+- 📦 `999507052` — gep-harness v1.6: 4 new hotpath genes (exec/process/write_file/message) total 30 genes
+- 🐛 `62cf57587` — gep-harness v1.5: ROADMAP final (26 genes, 31/31 assets, 5532 events, Makefile fix)
+- 🐛 `560828153` — gep-harness v1.5: 6 new hotpath genes (exec/read/write_file/edit/process/write) + Makefile fix + 2 verify scripts + events (5504 lines)
+- 📦 `8ca82e622` — gep-harness v1.4: ROADMAP final (20 genes, 25/25 assets, 5254 events)
+- 🐛 `078ae325b` — gep-harness v1.4: 3 new hotpath genes (exec/write_file/process) + a2a_protocol type fix + events (5254 lines)
+- 📦 `7786d7de0` — gep-harness v1.3 final: 7 hotpath genes + events (5062 lines) + CHANGELOG v0.5-v1.3
+- 📦 `50f3e995e` — gep-harness v1.3b: events append (4976 lines, +20 since v1.3)
+- 📦 `225b3ee4a` — gep-harness v1.3: 7 hotpath candidate genes (exec/read/edit/write_file/process/write/message)
+- 📦 `f1bd42ab9` — gep-harness v1.2d: events append (4410 lines, +28 since v1.2c)
+- 📦 `4474e29fd` — gep-harness v1.2c: events append (4382 lines, +72 since v1.2b)
+- 📦 `d04b47508` — gep-harness v1.2b: events append (4310 lines, +266 since v1.2)
+- 📦 `e4b3917f0` — gep-harness v1.2: Evolver cycle with goAPI dashboard session (4048 events, re-scan)
+- 📦 `ae7ea280e` — gep-harness v1.1: Evolver semi-auto loop with decay strategy (3368 events, 7/7 candidates)
+- 📦 `1aa6ce124` — gep-harness v1.0: Evolver semi-auto loop verified (3318 events, 7/7 candidates)
+- 📦 `ceebce75a` — gep-harness: restore missing ROADMAP v0.7/v0.8/v0.9
+- 📦 `6ce7aecb7` — gep-harness v0.10: HEARTBEAT.md updated, all pipelines green (45/45 passed, 10/10 genes, 2/2 capsules)
+- 📦 `42b833361` — gep-harness v0.10: ROADMAP final, all pipelines green (45/45 passed, 10/10 genes verified)
+- 📦 `1407f5783` — gep-harness v0.9-final: Solidify complete, 10 genes in plan/genes/ (all unique asset_id)
+- 📦 `5091ef11f` — gep-harness v0.9: Evolver Solidify - 7 genes landed in plan/genes/
+- 📦 `9c6b8f677` — gep-harness v0.8: Evolver full workflow verified with real data (2896 events, 6/6 candidates)
+- 📦 `1844278d6` — gep-harness v0.7: Evolver full workflow verified (45/45 passed)
+- 📦 `4692f04c0` — gep-harness v0.6: tool pipeline plugin + evolver scripts (45/45 passed)
+- 📦 `087a50d16` — gep-harness v0.5: A2A broadcast + node discovery (45/45 passed)
+- 📦 `68be0200e` — gep-harness: bootstrap independent repo (exclude parent /data/disk/)
+
+> 最后生成：2026-09-26 14:28 UTC
