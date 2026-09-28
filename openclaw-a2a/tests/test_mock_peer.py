@@ -14,7 +14,16 @@ import pytest
 REPO = Path(__file__).resolve().parent.parent.parent
 MOCK_PEER = REPO / "openclaw-a2a" / "src" / "mock_peer.py"
 GENE_SYNC = REPO / "openclaw-a2a" / "src" / "gene_sync.py"
-POOL_DIR = "/root/.openclaw/gene-pool"
+
+
+def _pool_with_one_gene(tmp_path: Path) -> Path:
+    """A Gene Pool the test can read on any machine, including GitHub Actions."""
+    pool = tmp_path / "gene-pool"
+    local = pool / "local"
+    local.mkdir(parents=True)
+    src = next((REPO / "plan" / "genes").glob("*.json"))
+    (local / src.name).write_bytes(src.read_bytes())
+    return pool
 
 
 def _wait_for_port(host: str, port: int, timeout: float = 5.0):
@@ -54,14 +63,15 @@ def mock_peer():
         proc.kill()
 
 
-def test_gene_sync_accepted_with_mock_peer(mock_peer):
-    """End-to-end: gene_sync POSTs 157 envelopes, mock_peer accepts all."""
+def test_gene_sync_accepted_with_mock_peer(mock_peer, tmp_path):
+    """End-to-end: gene_sync POSTs the temp pool, mock_peer accepts all."""
     port = mock_peer
+    pool = _pool_with_one_gene(tmp_path)
     result = subprocess.run(
         [
             sys.executable, "-u", str(GENE_SYNC),
             f"--peer=http://127.0.0.1:{port}/a2a/receive",
-            f"--pool-dir={POOL_DIR}",
+            f"--pool-dir={pool}",
             "--min-gdi=0.7",
         ],
         capture_output=True,
@@ -107,8 +117,9 @@ def test_mock_peer_returns_decision_accepted(mock_peer):
     assert "ack-test-env-1" == ack["envelope_id"]
 
 
-def test_mock_peer_rejected_decision():
+def test_mock_peer_rejected_decision(tmp_path):
     """Mock peer with --decision=rejected returns 'rejected' to gene_sync."""
+    pool = _pool_with_one_gene(tmp_path)
     import socket
     sock = socket.socket()
     sock.bind(("127.0.0.1", 0))
@@ -127,7 +138,7 @@ def test_mock_peer_rejected_decision():
             [
                 sys.executable, str(GENE_SYNC),
                 f"--peer=http://127.0.0.1:{port}/a2a/receive",
-                f"--pool-dir={POOL_DIR}",
+                f"--pool-dir={pool}",
                 "--min-gdi=0.7",
             ],
             capture_output=True,
