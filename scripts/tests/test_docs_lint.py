@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO = Path("/data/disk/gep-harness")
+REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "scripts"))
 
 
@@ -78,18 +78,29 @@ def test_parse_readme_status_partial(tmp_path, monkeypatch):
     assert "pytest" not in s
 
 
-def test_get_actual_pytest_runs():
-    """get_actual_pytest() 跑 make test 并解析 passed 数。"""
-    from docs_lint import get_actual_pytest
-    # 不强求 N，仅确保返回 string
-    result = get_actual_pytest()
-    assert isinstance(result, str)
+def test_get_actual_pytest_runs(monkeypatch):
+    """get_actual_pytest() 解析 make test 的 passed 行，不真正启动测试。"""
+    import docs_lint as dl
+
+    def fake_run(cmd, **kwargs):
+        assert cmd == ["make", "test"]
+
+        class Result:
+            stdout = "10 passed\n33 passed\n"
+            stderr = ""
+            returncode = 0
+
+        return Result()
+
+    monkeypatch.setattr(dl.subprocess, "run", fake_run)
+    assert dl.get_actual_pytest() == "43/43"
 
 
-def test_lint_clean_state(capsys):
+def test_lint_clean_state(capsys, monkeypatch):
     """lint() 在真 repo 上跑（可能 pass 或 fail，取决于状态）。"""
-    from docs_lint import lint
-    rc = lint()
+    import docs_lint as dl
+    monkeypatch.setattr(dl, "get_actual_pytest", lambda: "1/1")
+    rc = dl.lint()
     assert rc in (0, 1)
     captured = capsys.readouterr()
     assert "文档口径" in captured.out or "❌" in captured.out

@@ -12,7 +12,7 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).parent
-SCRIPTS_DIR = Path("/data/disk/gep-harness/scripts")
+SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "scripts"
 
 
 def test_scan_events():

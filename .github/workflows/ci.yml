@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip install pytest pytest-cov
+          pip install pytest pytest-cov flask cryptography
 
       - name: Run GEP strict validation
         run: make verify

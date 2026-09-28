@@ -11,7 +11,7 @@ import runpy
 import sys
 from pathlib import Path
 
-REPO = Path("/data/disk/gep-harness")
+REPO = Path(__file__).resolve().parents[2]
 VERIFY = REPO / "scripts" / "verify_assets.py"
 
 

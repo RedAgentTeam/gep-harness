@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
-REPO = Path("/data/disk/gep-harness")
+REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "scripts"))
 sys.path.insert(0, str(REPO / "openclaw-harness/bin"))
 

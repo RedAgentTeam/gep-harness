@@ -10,7 +10,7 @@ import subprocess
 import importlib.util
 from pathlib import Path
 
-REPO = Path("/data/disk/gep-harness")
+REPO = Path(__file__).resolve().parents[2]
 
 
 def _import_module(name, path):

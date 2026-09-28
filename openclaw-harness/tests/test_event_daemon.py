@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).parent
-EMITTER = Path("/data/disk/gep-harness/openclaw-harness/bin/event_emitter.py")
+EMITTER = Path(__file__).resolve().parents[1] / "bin" / "event_emitter.py"
 
 
 def _spawn_daemon(path: Path | None = None):
