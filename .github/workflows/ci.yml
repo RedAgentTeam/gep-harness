@@ -34,7 +34,19 @@ jobs:
         run: python3 scripts/docs_lint.py
 
       - name: Run pytest
-        run: make test
+        run: |
+          set +e
+          make test > pytest-out.txt 2>&1
+          code=$?
+          tail -n 120 pytest-out.txt
+          if [ "$code" -ne 0 ]; then
+            tail -n 40 pytest-out.txt | while IFS= read -r line; do
+              safe=$(printf '%s' "$line" | tr '\r' ' ' | cut -c1-180)
+              [ -n "$safe" ] || continue
+              echo "::error title=pytest::${safe}"
+            done
+            exit "$code"
+          fi
 
       - name: Generate 5-format graph (PNG+SVG+PDF+EPS)
         run: |
