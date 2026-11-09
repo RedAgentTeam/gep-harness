@@ -6,6 +6,11 @@
   python3 solidify.py --gene=gene_exec_cd_v80.json      # 审批单个 Gene
   python3 solidify.py --list                              # 列出待审批 candidates
 
+--yes、-y、--assume-yes、--auto-approve 都不是自动批准开关。
+传入其中任一开关会立即拒绝并退出（非 0），
+不会写入 Gene/Capsule/Event，也不会调用 git。审批必须逐条交互确认（y/N）。
+非交互环境用 --non-interactive，遇到无 stdin / EOF 时安全拒绝。
+
 流程:
   1. scan plan/genes/ 现有 Gene → 建 DUPLICATE 检测表
   2. 提取 candidates → 逐条检查 DUPLICATE
@@ -116,14 +121,39 @@ def make_solidify_event(gene_file, gene_id, outcome, score=0.85, notes=''):
     return evt
 
 
+# --yes 曾跳过人工确认（含校验失败后的确认）并继续写资产、git commit。
+# 该开关不再批准任何东西：见到就拒绝，且必须发生在写盘与 git 之前。
+AUTO_APPROVE_EXIT_CODE = 2
+
+
+def refuse_auto_approve(args):
+    """拒绝 --yes 及同等自动批准开关。在写 Gene/Capsule/Event 与调用 git 之前退出。"""
+    if getattr(args, 'yes', False):
+        print(
+            '❌ 拒绝自动批准（--yes / -y / --assume-yes / --auto-approve）：'
+            'Solidify 人工审批不可通过命令行自动批准跳过。\n'
+            '   请去掉该开关，在每条候选的提示中交互确认（y/N）。\n'
+            '   非交互环境请使用 --non-interactive：安全拒绝，不写入 Gene/Capsule/Event，不调用 git。',
+            file=sys.stderr,
+        )
+        sys.exit(AUTO_APPROVE_EXIT_CODE)
+
+
 def main():
     parser = argparse.ArgumentParser(description='Solidify — GEP Harness 人工审批流')
     parser.add_argument('--staging', type=str, help='审批整个 staging 目录所有 candidates')
     parser.add_argument('--gene', type=str, help='审批单个 Gene 文件')
     parser.add_argument('--list', action='store_true', help='列出待审批 candidates')
-    parser.add_argument('--yes', action='store_true', help='跳过确认直接执行（用于自动化）')
+    parser.add_argument(
+        '--yes', '-y', '--assume-yes', '--auto-approve',
+        action='store_true',
+        dest='yes',
+        help='已禁用：传入即拒绝并退出。人工审批不可被命令行自动批准跳过',
+    )
     parser.add_argument('--non-interactive', action='store_true', help='非交互模式：无 stdin 时自动拒绝（默认 dry-run safe）')
     args = parser.parse_args()
+    # 先于读候选、校验、写资产、git。--yes 不能走到后面的审批循环。
+    refuse_auto_approve(args)
 
     # 加载现有 Gene 表
     existing = load_existing_genes()
@@ -164,61 +194,58 @@ def main():
         dup, eid, ef = check_duplicate(g, existing)
         if dup:
             print(f'   ⚠️  DUPLICATE: matches existing {eid} ({ef})')
-            if not args.yes:
-                if args.non_interactive:
-                    print('   ⏭️  auto-skip duplicate (non-interactive)')
-                    rejected.append((gid, 'non_interactive'))
-                    continue
-                try:
-                    resp = input('   仍要审批? [y/N]: ').strip().lower()
-                except EOFError:
-                    print('   ⏭️  EOFError → auto-skip')
-                    rejected.append((gid, 'eof'))
-                    continue
-                if resp != 'y':
-                    print('   ⏭️  skip')
-                    rejected.append((gid, 'duplicate'))
-                    continue
+            if args.non_interactive:
+                print('   ⏭️  auto-skip duplicate (non-interactive)')
+                rejected.append((gid, 'non_interactive'))
+                continue
+            try:
+                resp = input('   仍要审批? [y/N]: ').strip().lower()
+            except EOFError:
+                print('   ⏭️  EOFError → auto-skip')
+                rejected.append((gid, 'eof'))
+                continue
+            if resp != 'y':
+                print('   ⏭️  skip')
+                rejected.append((gid, 'duplicate'))
+                continue
 
         # GEP strict validate
         valid, vout, verr = validate_gene(g)
         if not valid:
             print(f'   ❌ VALIDATE FAILED:')
             print(f'   {vout}')
-            if not args.yes:
-                if args.non_interactive:
-                    print('   ⏭️  auto-skip validate_failed (non-interactive)')
-                    rejected.append((gid, 'non_interactive'))
-                    continue
-                try:
-                    resp = input('   仍要审批? [y/N]: ').strip().lower()
-                except EOFError:
-                    print('   ⏭️  EOFError → auto-skip')
-                    rejected.append((gid, 'eof'))
-                    continue
-                if resp != 'y':
-                    print('   ⏭️  skip')
-                    rejected.append((gid, 'validate_failed'))
-                    continue
-        else:
-            print(f'   ✅ GEP strict: {vout.splitlines()[-1]}')
-
-        # 人工审批门
-        if not args.yes:
             if args.non_interactive:
-                print('   ⏭️  auto-rejected (non-interactive mode)')
+                print('   ⏭️  auto-skip validate_failed (non-interactive)')
                 rejected.append((gid, 'non_interactive'))
                 continue
             try:
-                resp = input(f'   ✅ 审批 {gid}? [y/N]: ').strip().lower()
+                resp = input('   仍要审批? [y/N]: ').strip().lower()
             except EOFError:
-                print('   ⏭️  EOFError → auto-rejected (non-interactive)')
+                print('   ⏭️  EOFError → auto-skip')
                 rejected.append((gid, 'eof'))
                 continue
             if resp != 'y':
-                print('   ⏭️  rejected')
-                rejected.append((gid, 'user_rejected'))
+                print('   ⏭️  skip')
+                rejected.append((gid, 'validate_failed'))
                 continue
+        else:
+            print(f'   ✅ GEP strict: {vout.splitlines()[-1]}')
+
+        # 人工审批门。不能用命令行开关跳过；--yes 在入口已被拒绝。
+        if args.non_interactive:
+            print('   ⏭️  auto-rejected (non-interactive mode)')
+            rejected.append((gid, 'non_interactive'))
+            continue
+        try:
+            resp = input(f'   ✅ 审批 {gid}? [y/N]: ').strip().lower()
+        except EOFError:
+            print('   ⏭️  EOFError → auto-rejected (non-interactive)')
+            rejected.append((gid, 'eof'))
+            continue
+        if resp != 'y':
+            print('   ⏭️  rejected')
+            rejected.append((gid, 'user_rejected'))
+            continue
 
         approved.append((gid, cand))
 

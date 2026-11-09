@@ -36,6 +36,8 @@
 
 ## 3. Solidify 32 Approved
 
+> 现行行为（与本节当时的操作不同）：`scripts/solidify.py --yes` 现在会被拒绝并以非 0 退出，不写 Gene/Capsule/Event，也不调用 git。人工审批必须逐条交互确认（y/N）。下面的命令是 2026-08-17 的历史记录，不要再照着跑。见 `docs/SOLIDIFY.md`。
+
 ```
 python3 scripts/solidify.py --staging=/tmp/v_staging/ --yes
 🎉 Solidify done: 32 approved, 0 rejected
@@ -68,7 +70,7 @@ validate_gep.py strict → 34 ok, 0 fail
 | 1. Append-only 事件流 | ✅ | 已运行多周 |
 | 2. 工具调用流水线 | ✅ | v0.6 完成 |
 | 3. Evolver 半自动 | ✅ | **本里程碑**（Solidify 32 ✅）|
-| 4. Solidify 人工门 | ✅ | `--yes` 半人工（保留 audit log）|
+| 4. Solidify 人工门 | ✅ | 当时用 `--yes` 半人工；现行 `--yes` 已拒绝，必须交互 y/N |
 
 ## 7. 严禁未做（4 条铁律）
 

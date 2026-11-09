@@ -32,22 +32,21 @@ CognitivePsychology 9 大认知错觉 + Arrow 定理：
 # 1. 列出待审批 candidates（dry-run safe）
 python3 scripts/solidify.py --list --staging=/tmp/v_staging/
 
-# 2. 交互式审批（手动）
+# 2. 交互式审批（手动，每条 y/N）
 python3 scripts/solidify.py --staging=/tmp/v_staging/
 
-# 3. 自动审批（仅用于 --yes 模式）
-python3 scripts/solidify.py --staging=/tmp/v_staging/ --yes
-
-# 4. 非交互模式（cron 安全，无 stdin 时 auto-reject）
+# 3. 非交互模式（cron 安全，无 stdin 时 auto-reject）
 python3 scripts/solidify.py --staging=/tmp/v_staging/ --non-interactive
 ```
+
+`--yes` **会被拒绝**。`-y`、`--assume-yes`、`--auto-approve` 同样拒绝。`--yes` 曾经跳过人工确认（包括校验失败后的「仍要审批?」），然后写入 Gene/Event 并自动 `git commit`。人工审批门不能靠命令行自动批准开关绕过，所以现在只要带上这些开关，进程立刻以非 0 退出：不写 Gene / Capsule / Event，不调用 git。请去掉该开关，在交互提示里逐条确认。
 
 ### 模式对比
 
 | 模式 | stdin | 用户输入 | 行为 |
 |------|-------|----------|------|
 | 默认 | 必须 | y/N | 每次候选询问 |
-| `--yes` | 不要 | 不问 | 自动全部 approved |
+| `--yes`、`-y`、`--assume-yes`、`--auto-approve` | — | — | **拒绝并退出**（非 0）。不写资产，不调用 git |
 | `--non-interactive` | 无 / EOF | 跳过 | **auto-reject**（safe） |
 | `--list` | 不要 | 不要 | 只列出，不修改 |
 
@@ -66,8 +65,8 @@ make evolve-full
 ### Solidify 单 Gene 审批
 
 ```bash
-# 只审批一个
-python3 scripts/solidify.py --gene=/path/to/candidate.json --yes
+# 只审批一个（交互确认；不要加 --yes）
+python3 scripts/solidify.py --gene=/path/to/candidate.json
 ```
 
 ## Solidify 产出文件
@@ -86,6 +85,7 @@ python3 scripts/solidify.py --gene=/path/to/candidate.json --yes
 | asset_id 不匹配 | auto-reject（asset_id_mismatch） |
 | 无 stdin + `--non-interactive` | auto-reject（non_interactive） |
 | EOFError | auto-reject（eof） |
+| `--yes`（或任何跳过人工确认的自动批准开关） | **拒绝并退出**（非 0）。不写 Gene/Capsule/Event，不调用 git |
 
 ## Solidify 历史（今晚）
 
@@ -122,7 +122,7 @@ Solidify **只能**写 `plan/genes/` 和 `plan/events/`——**严禁触碰**：
 | `scripts/extract_candidate_genes.py` | 提取 candidate Gene（threshold 过滤） |
 | `scripts/cross_library_auto.py` | 5 库 evidence 自动填充 |
 | `scripts/validate_gep.py` | GEP strict 校验 |
-| `scripts/solidify.py` | 人工审批门（v10.1: --non-interactive + EOFError 安全） |
+| `scripts/solidify.py` | 人工审批门（`--yes` 拒绝；`--non-interactive` + EOFError 安全拒绝） |
 | `scripts/llm_fill_gene.py` | LLM 填充（⚠️ StepFun reasoning model 不适合，已 WARNING） |
 
 ---
