@@ -81,10 +81,16 @@ def parse_commit_log(raw: str) -> list[dict]:
     return commits
 
 
+def history_ref() -> str:
+    """Ref docs_lint counts. On the PR merge checkout this is the PR head, not HEAD."""
+    import docs_lint
+    return docs_lint.history_ref()
+
+
 def repo_version() -> str | None:
-    """Closest tag on HEAD, so docs_lint sees a stable version before commit subjects."""
+    """Closest tag on the changelog ref, so docs_lint sees a stable version."""
     try:
-        desc = run_git("describe", "--tags", "--abbrev=0")
+        desc = run_git("describe", "--tags", "--abbrev=0", history_ref())
     except RuntimeError:
         return None
     match = re.search(r"(\d+\.\d+(?:\.\d+)?)", desc)
@@ -130,13 +136,14 @@ def main():
             i += 1
 
     fmt = "%H|||%s|||%an"
-    git_args = ["log", f"--pretty=format:{fmt}"]
+    ref = history_ref()
+    git_args = ["log", f"--pretty=format:{fmt}", ref]
     if since:
-        git_args.append(f"{since}..HEAD")
+        git_args[-1] = f"{since}..{ref}"
 
     raw = run_git(*git_args)
     commits = parse_commit_log(raw)
-    total = int(run_git("rev-list", "--count", "HEAD"))
+    total = int(run_git("rev-list", "--count", ref))
     changelog = build_changelog(commits, total, version=repo_version())
 
     if dry_run:

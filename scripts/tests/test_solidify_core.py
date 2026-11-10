@@ -132,7 +132,7 @@ def test_main_no_args_exits_1():
 
 
 def test_main_non_interactive_staging(tmp_path):
-    """main --staging=dir --non-interactive --yes: dry-run safe, 不实际写。"""
+    """main --staging=dir --list: 进程能跑完。不使用 --yes（--yes 会直接拒绝）。"""
     # 创建 staging dir
     staging = tmp_path / "staging"
     staging.mkdir()
@@ -142,10 +142,8 @@ def test_main_non_interactive_staging(tmp_path):
         "asset_id": "sha256:" + "b" * 64,
     }
     (staging / "test_g.json").write_text(json.dumps(gene))
-    # 用 --yes 跳过确认,但 non-interactive 仍然 safe-skip (不写盘,只列)
-    # 实际:non-interactive + yes → 应该执行批准 + 写 plan/genes/
-    # 我们这里只是验证函数能跑通,不实际影响 plan/genes/
-    # 改用 --list 来验证 staging 文件被读
+    # --staging 优先于 --list，无 stdin 时走 EOF 拒绝，不写 plan/genes/。
+    # 不要用 --yes：该开关现在直接拒绝，不能拿来跳过确认。
     result = subprocess.run(
         [sys.executable, str(REPO / "scripts/solidify.py"),
          "--staging", str(staging), "--list"],

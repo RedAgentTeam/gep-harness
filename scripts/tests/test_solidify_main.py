@@ -1,7 +1,7 @@
 """Test solidify.py main() — interactive approval flow + git commit。
 
 测 4 件事:
-1. --yes 自动批准 + 写盘 + git commit
+1. --yes 拒绝：不写盘、不调用 git
 2. --non-interactive + 没有 stdin → auto-skip / auto-reject
 3. EOFError 处理 (stdin 关闭)
 4. duplicate handling
@@ -12,6 +12,8 @@ import subprocess
 import sys
 from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "scripts"))
@@ -35,14 +37,32 @@ def _make_valid_gene(gid: str) -> dict:
     return g
 
 
-def test_main_yes_approves_and_writes(tmp_path, monkeypatch):
-    """main --staging=X --yes: 写 plan/genes/ + plan/events/ + git commit。
+def _assert_yes_refused(sf, argv, fake_genes, fake_events, monkeypatch, capsys):
+    """--yes 必须在写资产 / 调 git 之前拒绝。"""
+    def _forbidden(*_a, **_k):
+        raise AssertionError("subprocess.run must not run on --yes (no validate, no git)")
 
-    用临时 PLAN_GENES / PLAN_EVENTS 避免污染真实目录。
-    """
+    def _no_load():
+        raise AssertionError("load_existing_genes must not run after --yes refusal")
+
+    monkeypatch.setattr(sf.subprocess, "run", _forbidden)
+    monkeypatch.setattr(sf, "load_existing_genes", _no_load)
+
+    with patch.object(sys, "argv", argv):
+        with pytest.raises(SystemExit) as exc:
+            sf.main()
+    assert exc.value.code not in (0, None)
+    err = capsys.readouterr().err
+    assert "--yes" in err
+    assert "拒绝" in err
+    assert list(fake_genes.glob("*.json")) == []
+    assert list(fake_events.glob("*.json")) == []
+
+
+def test_main_yes_refuses_before_write_or_git(tmp_path, monkeypatch, capsys):
+    """main --staging=X --yes: 拒绝，不写 plan/genes、plan/events，不调用 git。"""
     import solidify as sf
 
-    # 重定向 PLAN_GENES / PLAN_EVENTS 到 tmp
     fake_plan = tmp_path / "plan"
     fake_genes = fake_plan / "genes"
     fake_events = fake_plan / "events"
@@ -53,44 +73,19 @@ def test_main_yes_approves_and_writes(tmp_path, monkeypatch):
     monkeypatch.setattr(sf, "PLAN_EVENTS", fake_events)
     monkeypatch.setattr(sf, "GEP_HARNESS", tmp_path)
 
-    # 创建 staging
     staging = tmp_path / "staging"
     staging.mkdir()
     g = _make_valid_gene("test_g1")
     (staging / "test_g1.json").write_text(json.dumps(g))
 
-    # 用 subprocess 跑（main 是 argparse）
-    # 不能 monkeypatch module-level constants via subprocess;
-    # 改用 inspect 调 main + 模拟 yes 流程
-    # 简单测：直接 import + 调 main args
-    # 这里测函数级：手动构造 Namespace
-    from solidify import main
-    import argparse
-    args = argparse.Namespace(
-        staging=str(staging),
-        gene=None,
-        list=False,
-        yes=True,
-        non_interactive=False,
+    _assert_yes_refused(
+        sf,
+        ["solidify.py", "--staging", str(staging), "--yes"],
+        fake_genes,
+        fake_events,
+        monkeypatch,
+        capsys,
     )
-    # 直接调 main（patch sys.argv 因为 argparse 用 sys.argv）
-    with patch.object(sys, "argv", ["solidify.py", "--staging", str(staging), "--yes"]):
-        try:
-            main()
-        except SystemExit as e:
-            # git commit 失败可能 exit 非 0
-            pass
-
-    # 验证: plan/genes/test_g1.json 写入
-    written = fake_genes / "test_g1.json"
-    assert written.exists(), f"gene not written to {written}"
-    # 验证: plan/events/event_solidify_test_g1.json 写入
-    event = fake_events / "event_solidify_test_g1.json"
-    assert event.exists(), f"event not written to {event}"
-    evt = json.loads(event.read_text())
-    assert evt["type"] == "EvolutionEvent"
-    assert evt["outcome"]["status"] == "approved"
-    assert "test_g1" in evt["genes_used"]
 
 
 def test_main_non_interactive_safe_skip(tmp_path, monkeypatch):
@@ -184,8 +179,8 @@ def test_main_duplicate_detection(tmp_path, monkeypatch, capsys):
     assert "dup" in captured.out.lower() or "DUPLICATE" in captured.out or "✅" in captured.out
 
 
-def test_main_gene_single_file(tmp_path, monkeypatch):
-    """main --gene=path: 审批单个文件。"""
+def test_main_gene_single_file_yes_refused(tmp_path, monkeypatch, capsys):
+    """main --gene=path --yes: 拒绝，不写单个 Gene，不调用 git。"""
     import solidify as sf
     fake_plan = tmp_path / "plan"
     fake_genes = fake_plan / "genes"
@@ -200,10 +195,39 @@ def test_main_gene_single_file(tmp_path, monkeypatch):
     target = tmp_path / "single_g.json"
     target.write_text(json.dumps(g))
 
-    with patch.object(sys, "argv", ["solidify.py", "--gene", str(target), "--yes"]):
-        try:
-            sf.main()
-        except SystemExit:
-            pass
+    _assert_yes_refused(
+        sf,
+        ["solidify.py", "--gene", str(target), "--yes"],
+        fake_genes,
+        fake_events,
+        monkeypatch,
+        capsys,
+    )
+    assert not (fake_genes / "single_g.json").exists()
 
-    assert (fake_genes / "single_g.json").exists()
+
+def test_main_yes_with_non_interactive_still_refused(tmp_path, monkeypatch, capsys):
+    """--yes 不能借 --non-interactive 变成批准或静默跳过后再写盘。"""
+    import solidify as sf
+    fake_plan = tmp_path / "plan"
+    fake_genes = fake_plan / "genes"
+    fake_events = fake_plan / "events"
+    fake_genes.mkdir(parents=True)
+    fake_events.mkdir(parents=True)
+    monkeypatch.setattr(sf, "PLAN_GENES", fake_genes)
+    monkeypatch.setattr(sf, "PLAN_EVENTS", fake_events)
+    monkeypatch.setattr(sf, "GEP_HARNESS", tmp_path)
+
+    staging = tmp_path / "staging"
+    staging.mkdir()
+    g = _make_valid_gene("yes_ni")
+    (staging / "yes_ni.json").write_text(json.dumps(g))
+
+    _assert_yes_refused(
+        sf,
+        ["solidify.py", "--staging", str(staging), "--non-interactive", "--yes"],
+        fake_genes,
+        fake_events,
+        monkeypatch,
+        capsys,
+    )

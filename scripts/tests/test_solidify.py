@@ -174,16 +174,108 @@ def test_main_no_args_shows_usage():
 
 
 def test_main_with_yes_and_empty_staging(tmp_path):
-    """main() --yes 对空 staging 应 graceful 处理。"""
+    """main() --yes 即使 staging 为空也拒绝，不写资产、不改 git。"""
     empty_staging = tmp_path / "empty_staging"
     empty_staging.mkdir()
+    head_before = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
+    status_before = subprocess.run(
+        ["git", "status", "--porcelain"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
     result = subprocess.run(
         ["python3", str(REPO / "scripts/solidify.py"),
          "--staging", str(empty_staging), "--yes"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True, text=True, timeout=30, cwd=str(REPO),
     )
-    combined = (result.stdout + result.stderr).lower()
-    assert "candidates" in combined or "0 approved" in combined or result.returncode in (0, 1)
+    assert result.returncode != 0
+    assert "拒绝" in result.stderr
+    assert "--yes" in result.stderr
+    assert "Solidify done" not in result.stdout
+    head_after = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
+    status_after = subprocess.run(
+        ["git", "status", "--porcelain"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
+    assert head_after == head_before
+    assert status_after == status_before
+
+
+def test_main_yes_does_not_write_candidate(tmp_path):
+    """CLI --yes 遇到真实候选时退出，不把 Gene 写入 plan/genes。"""
+    staging = tmp_path / "staging"
+    staging.mkdir()
+    name = "gene_yes_refuse_probe.json"
+    (staging / name).write_text(json.dumps({
+        "id": "gene_yes_refuse_probe",
+        "type": "Gene",
+        "summary": "must not be solidified",
+    }))
+    dest = REPO / "plan" / "genes" / name
+    event = REPO / "plan" / "events" / "event_solidify_gene_yes_refuse_probe.json"
+    assert not dest.exists()
+    head_before = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
+    result = subprocess.run(
+        ["python3", str(REPO / "scripts/solidify.py"),
+         "--staging", str(staging), "--yes"],
+        capture_output=True, text=True, timeout=30, cwd=str(REPO),
+    )
+    assert result.returncode != 0
+    assert "拒绝" in result.stderr
+    assert not dest.exists()
+    assert not event.exists()
+    head_after = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
+    assert head_after == head_before
+
+
+def test_equivalent_auto_approve_flags_refuse(tmp_path):
+    """-y / --assume-yes / --auto-approve 与 --yes 一样：非 0，不写资产，不改 git。"""
+    head_before = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
+    status_before = subprocess.run(
+        ["git", "status", "--porcelain"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
+    for flag in ("-y", "--assume-yes", "--auto-approve"):
+        staging = tmp_path / flag.strip("-")
+        staging.mkdir()
+        name = f"gene_equiv_{flag.strip('-')}.json"
+        (staging / name).write_text(json.dumps({"id": name[:-5], "type": "Gene"}))
+        dest = REPO / "plan" / "genes" / name
+        event = REPO / "plan" / "events" / f"event_solidify_{name[:-5]}.json"
+        result = subprocess.run(
+            ["python3", str(REPO / "scripts/solidify.py"),
+             "--staging", str(staging), flag],
+            capture_output=True, text=True, timeout=30, cwd=str(REPO),
+        )
+        assert result.returncode != 0, flag
+        assert "拒绝" in result.stderr, flag
+        assert "自动批准" in result.stderr, flag
+        assert not dest.exists(), flag
+        assert not event.exists(), flag
+    head_after = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
+    status_after = subprocess.run(
+        ["git", "status", "--porcelain"],
+        capture_output=True, text=True, cwd=str(REPO),
+    ).stdout
+    assert head_after == head_before
+    assert status_after == status_before
 
 
 def test_main_gene_mode_missing_file():

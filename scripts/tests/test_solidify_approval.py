@@ -13,6 +13,8 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "scripts"))
 
@@ -250,8 +252,46 @@ def test_main_prints_summary(tmp_path, monkeypatch, capsys):
     assert not (fake_genes / "sum_r.json").exists()
 
 
+def test_main_yes_refuses_instead_of_git_commit(tmp_path, monkeypatch, capsys):
+    """--yes 不再进入写盘 / git commit。失败的 git 也走不到。"""
+    import solidify as sf
+    fake_plan = tmp_path / "plan"
+    fake_genes = fake_plan / "genes"
+    fake_events = fake_plan / "events"
+    fake_genes.mkdir(parents=True)
+    fake_events.mkdir(parents=True)
+    (tmp_path / ".git").mkdir()
+    monkeypatch.setattr(sf, "PLAN_GENES", fake_genes)
+    monkeypatch.setattr(sf, "PLAN_EVENTS", fake_events)
+    monkeypatch.setattr(sf, "GEP_HARNESS", tmp_path)
+
+    git_calls = []
+
+    def _track_run(cmd, *args, **kwargs):
+        git_calls.append(cmd)
+        raise AssertionError(f"subprocess.run unexpectedly called: {cmd}")
+
+    monkeypatch.setattr(sf.subprocess, "run", _track_run)
+
+    staging = tmp_path / "staging"
+    staging.mkdir()
+    g = _make_valid_gene("git_fail")
+    (staging / "git_fail.json").write_text(json.dumps(g))
+
+    with patch.object(sys, "argv", ["solidify.py", "--staging", str(staging), "--yes"]):
+        with pytest.raises(SystemExit) as exc:
+            sf.main()
+    assert exc.value.code not in (0, None)
+    err = capsys.readouterr().err
+    assert "拒绝" in err
+    assert "--yes" in err
+    assert git_calls == []
+    assert not (fake_genes / "git_fail.json").exists()
+    assert not (fake_events / "event_solidify_git_fail.json").exists()
+
+
 def test_main_git_commit_failure_graceful(tmp_path, monkeypatch):
-    """main: git commit 失败 → 仍继续 (graceful)。"""
+    """人工确认 y 之后，git commit 失败仍保留已写文件（与 --yes 无关）。"""
     import solidify as sf
     fake_plan = tmp_path / "plan"
     fake_genes = fake_plan / "genes"
@@ -269,12 +309,13 @@ def test_main_git_commit_failure_graceful(tmp_path, monkeypatch):
     g = _make_valid_gene("git_fail")
     (staging / "git_fail.json").write_text(json.dumps(g))
 
-    # patch git commit 返回失败
-    with patch.object(sys, "argv", ["solidify.py", "--staging", str(staging), "--yes"]):
-        try:
-            sf.main()
-        except SystemExit:
-            pass
+    # 校验会失败（临时仓库里没有 validate_gep.py），人工仍选择继续并批准。
+    with patch.object(sys, "argv", ["solidify.py", "--staging", str(staging)]):
+        with patch("builtins.input", side_effect=["y", "y"]):
+            try:
+                sf.main()
+            except SystemExit:
+                pass
     # 即便 git commit 失败,plan/genes/ 文件仍应写入
     assert (fake_genes / "git_fail.json").exists()
 
@@ -290,4 +331,6 @@ def test_main_module_runs():
     assert "--staging" in result.stdout
     assert "--gene" in result.stdout
     assert "--yes" in result.stdout
+    assert "已禁用" in result.stdout
+    assert "跳过确认" not in result.stdout
     assert "--non-interactive" in result.stdout
