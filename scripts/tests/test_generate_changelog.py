@@ -125,3 +125,27 @@ def test_run_git_works():
     n = gc.run_git("rev-list", "--count", "HEAD")
     assert n.isdigit()
     assert int(n) >= 30  # 至少 30 commits
+
+
+def test_main_uses_history_ref(monkeypatch, capsys):
+    """dry-run 的 log 和 rev-list 都走 history_ref，而不是写死 HEAD。"""
+    seen = []
+
+    def fake_run(*args):
+        seen.append(args)
+        if args[0] == "describe":
+            return "v54.0"
+        if args[0] == "log":
+            return "abc123456|||fix: x|||Red"
+        if args[0] == "rev-list":
+            return "3"
+        raise AssertionError(args)
+
+    monkeypatch.setattr(gc, "history_ref", lambda: "HEAD^2")
+    monkeypatch.setattr(gc, "run_git", fake_run)
+    monkeypatch.setattr(sys, "argv", ["gc.py", "--dry-run"])
+    gc.main()
+    assert ("rev-list", "--count", "HEAD^2") in seen
+    assert ("describe", "--tags", "--abbrev=0", "HEAD^2") in seen
+    assert any(args[0] == "log" and args[-1] == "HEAD^2" for args in seen)
+    assert "总 commit 数：3" in capsys.readouterr().out

@@ -11,6 +11,7 @@ Usage:
     python3 scripts/docs_lint.py --check-changelog  # 只检查 CHANGELOG 是否已生成
 """
 
+import os
 import re
 import subprocess
 import sys
@@ -20,6 +21,10 @@ REPO = Path(__file__).resolve().parents[1]
 README = REPO / "README.md"
 CHANGELOG = REPO / "CHANGELOG.md"
 
+# GitHub's pull_request checkout is refs/pull/<n>/merge. Its subject is
+# "Merge <head-sha> into <base-sha>" and that object is not a branch commit.
+_PR_MERGE_SUBJECT = re.compile(r"^Merge [0-9a-f]{40} into [0-9a-f]{40}$", re.IGNORECASE)
+
 
 def run_git(*args):
     result = subprocess.run(
@@ -27,6 +32,25 @@ def run_git(*args):
         capture_output=True, text=True,
     )
     return result.stdout.strip(), result.returncode
+
+
+def history_ref() -> str:
+    """Ref whose `rev-list --count` the changelog records.
+
+    actions/checkout on pull_request leaves HEAD on a synthetic merge of the
+    PR into the base. Counting that commit is one higher than the branch, so
+    a changelog regenerated from the branch (including the commit that
+    regenerates it) never matches CI. The merge's second parent is the PR head.
+    """
+    if os.environ.get("GITHUB_EVENT_NAME") != "pull_request":
+        return "HEAD"
+    subject, rc = run_git("log", "-1", "--format=%s")
+    if rc != 0 or not _PR_MERGE_SUBJECT.match(subject):
+        return "HEAD"
+    parent, rc = run_git("rev-parse", "--verify", "HEAD^2")
+    if rc != 0 or not parent:
+        return "HEAD"
+    return "HEAD^2"
 
 
 def parse_changelog_header() -> dict:
@@ -86,10 +110,15 @@ def lint():
         errors.append("❌ CHANGELOG.md 不存在，运行 python3 scripts/generate_changelog.py")
 
     # 2. CHANGELOG commit_count vs git rev-list
-    git_count_str, _ = run_git("rev-list", "--count", "HEAD")
-    git_count = int(git_count_str)
+    ref = history_ref()
+    git_count_str, git_rc = run_git("rev-list", "--count", ref)
+    if git_rc != 0 or not git_count_str.isdigit():
+        errors.append(f"❌ git rev-list --count {ref} 失败：{git_count_str or 'no output'}")
+        git_count = None
+    else:
+        git_count = int(git_count_str)
     cl_count = cl.get("commit_count", "?")
-    if cl_count != git_count:
+    if git_count is not None and cl_count != git_count:
         errors.append(
             f"❌ CHANGELOG commit_count={cl_count} ≠ git rev-list={git_count}\n"
             f"   修复：python3 scripts/generate_changelog.py"
@@ -165,7 +194,11 @@ def main():
             print("❌ CHANGELOG.md 不存在")
             sys.exit(1)
         cl = parse_changelog_header()
-        git_count_str, _ = run_git("rev-list", "--count", "HEAD")
+        ref = history_ref()
+        git_count_str, git_rc = run_git("rev-list", "--count", ref)
+        if git_rc != 0 or not git_count_str.isdigit():
+            print(f"❌ git rev-list --count {ref} 失败：{git_count_str or 'no output'}")
+            sys.exit(1)
         if cl.get("commit_count", -1) != int(git_count_str):
             print(f"❌ CHANGELOG commit_count={cl.get('commit_count')} ≠ git={git_count_str}")
             sys.exit(1)

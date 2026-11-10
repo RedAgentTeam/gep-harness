@@ -224,3 +224,79 @@ def test_main_fix_flag_runs_fix(tmp_path, monkeypatch, capsys):
     # 只验证：fix_readme 不 crash 且输出 "已同步"
     captured = capsys.readouterr()
     assert "已同步" in captured.out or "v2.0" in updated
+
+
+def _merge_subject() -> str:
+    return "Merge " + ("a" * 40) + " into " + ("b" * 40)
+
+
+def test_history_ref_ignores_synthetic_pr_merge(monkeypatch):
+    """pull_request 的 Merge <sha> into <sha> 应统计第二个父提交。"""
+    import docs_lint as dl
+
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+
+    def fake_run(*args):
+        if args[:3] == ("log", "-1", "--format=%s"):
+            return (_merge_subject(), 0)
+        if args[:2] == ("rev-parse", "--verify"):
+            return ("c" * 40, 0)
+        raise AssertionError(args)
+
+    monkeypatch.setattr(dl, "run_git", fake_run)
+    assert dl.history_ref() == "HEAD^2"
+
+
+def test_history_ref_keeps_head_for_real_merges(monkeypatch):
+    """真正的 Merge pull request 提交仍统计 HEAD。"""
+    import docs_lint as dl
+
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+
+    def fake_run(*args):
+        if args[:3] == ("log", "-1", "--format=%s"):
+            return ("Merge pull request #1 from example/branch", 0)
+        raise AssertionError(args)
+
+    monkeypatch.setattr(dl, "run_git", fake_run)
+    assert dl.history_ref() == "HEAD"
+
+
+def test_history_ref_outside_pull_request(monkeypatch):
+    """本地和 push 事件直接统计 HEAD，不查合并提交。"""
+    import docs_lint as dl
+
+    monkeypatch.delenv("GITHUB_EVENT_NAME", raising=False)
+    monkeypatch.setattr(dl, "run_git", lambda *a: (_ for _ in ()).throw(AssertionError(a)))
+    assert dl.history_ref() == "HEAD"
+
+
+def test_lint_counts_pr_head_not_merge_commit(tmp_path, monkeypatch, capsys):
+    """lint 在 PR 合并 ref 上比对 changelog 与 HEAD^2 的 commit 数。"""
+    import docs_lint as dl
+
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+    monkeypatch.setattr(dl, "CHANGELOG", tmp_path / "CHANGELOG.md")
+    monkeypatch.setattr(dl, "README", tmp_path / "README.md")
+    (tmp_path / "CHANGELOG.md").write_text(
+        "# CL\n> 总 commit 数：7\nv1.0\n", encoding="utf-8",
+    )
+    (tmp_path / "README.md").write_text("# README\n", encoding="utf-8")
+    monkeypatch.setattr(dl, "get_actual_pytest", lambda: "?")
+    calls = []
+
+    def fake_run(*args):
+        calls.append(args)
+        if args[:3] == ("log", "-1", "--format=%s"):
+            return (_merge_subject(), 0)
+        if args[0] == "rev-parse":
+            return ("c" * 40, 0)
+        if args[0] == "rev-list":
+            return ("7", 0)
+        raise AssertionError(args)
+
+    monkeypatch.setattr(dl, "run_git", fake_run)
+    assert dl.lint() == 0
+    assert ("rev-list", "--count", "HEAD^2") in calls
+    captured = capsys.readouterr()
+    assert "文档口径一致" in captured.out
