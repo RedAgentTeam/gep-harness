@@ -32,6 +32,14 @@ def _make_valid_gene(gid: str) -> dict:
         "asset_id": "",
     }
     g["asset_id"] = sf.compute_asset_id(g)
+    # Harness-only. solidify pops this before asset_id is checked.
+    g["solidify_declaration"] = {
+        "change_kind": "fault_fix",
+        "before": {"eval": "MATH-500", "value": 7.9},
+        "after": {"eval": "MATH-500", "value": 48.1},
+        "evidence_path": "logs/exp8/merged.json",
+        "rollback": "c7c7ec9",
+    }
     return g
 
 

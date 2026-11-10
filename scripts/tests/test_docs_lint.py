@@ -203,6 +203,56 @@ def test_main_check_changelog_flag(capsys, monkeypatch):
     assert len(captured.out) > 0 or len(captured.err) > 0
 
 
+def test_head_commit_count_ignores_synthetic_merge(monkeypatch):
+    """pull_request CI's Merge <sha> into <sha> is not part of the changelog."""
+    import docs_lint as dl
+
+    merge_sha = "a" * 40
+    base_sha = "b" * 40
+
+    def fake(*args):
+        if args[:3] == ("rev-list", "--parents", "-n"):
+            return (f"mergecommit {base_sha} {merge_sha}", 0)
+        if args[0] == "log":
+            return (f"Merge {merge_sha} into {base_sha}", 0)
+        if args[:2] == ("rev-list", "--count"):
+            assert args[2] == merge_sha
+            return ("711", 0)
+        return ("", 1)
+
+    monkeypatch.setattr(dl, "run_git", fake)
+    assert dl.head_commit_count() == 711
+
+
+def test_head_commit_count_keeps_real_merge_and_normal_commits(monkeypatch):
+    """Ordinary commits and 'Merge pull request' commits still count HEAD."""
+    import docs_lint as dl
+
+    def fake_normal(*args):
+        if "--parents" in args:
+            return ("onlysha", 0)
+        if "--count" in args:
+            assert args[-1] == "HEAD"
+            return ("710", 0)
+        return ("", 1)
+
+    monkeypatch.setattr(dl, "run_git", fake_normal)
+    assert dl.head_commit_count() == 710
+
+    def fake_pr_merge(*args):
+        if "--parents" in args:
+            return ("merge headsha parents", 0)
+        if args[0] == "log":
+            return ("Merge pull request #1 from x/y", 0)
+        if "--count" in args:
+            assert args[-1] == "HEAD"
+            return ("712", 0)
+        return ("", 1)
+
+    monkeypatch.setattr(dl, "run_git", fake_pr_merge)
+    assert dl.head_commit_count() == 712
+
+
 def test_main_fix_flag_runs_fix(tmp_path, monkeypatch, capsys):
     """main() --fix 跑 fix_readme。"""
     import docs_lint as dl

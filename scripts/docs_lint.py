@@ -20,6 +20,13 @@ REPO = Path(__file__).resolve().parents[1]
 README = REPO / "README.md"
 CHANGELOG = REPO / "CHANGELOG.md"
 
+# GitHub pull_request checkouts are a synthetic merge of the PR into the base.
+# The commit message is exactly "Merge <40-hex> into <40-hex>" and that commit
+# is not part of the branch CHANGELOG was generated from.
+_SYNTHETIC_MERGE = re.compile(
+    r"^Merge [0-9a-fA-F]{40} into [0-9a-fA-F]{40}$"
+)
+
 
 def run_git(*args):
     result = subprocess.run(
@@ -27,6 +34,28 @@ def run_git(*args):
         capture_output=True, text=True,
     )
     return result.stdout.strip(), result.returncode
+
+
+def head_commit_count() -> int:
+    """Count commits the committed CHANGELOG should match.
+
+    On a normal branch this is ``git rev-list --count HEAD``. On pull_request
+    CI, actions/checkout leaves HEAD on GitHub's synthetic merge commit, which
+    adds one commit the branch changelog does not contain. Count that merge's
+    second parent (the PR head) instead.
+    """
+    listed, rc = run_git("rev-list", "--parents", "-n", "1", "HEAD")
+    parts = listed.split() if rc == 0 else []
+    if len(parts) >= 3:
+        subject, src = run_git("log", "-1", "--format=%s", "HEAD")
+        if src == 0 and _SYNTHETIC_MERGE.fullmatch((subject or "").strip()):
+            counted, crc = run_git("rev-list", "--count", parts[2])
+            if crc == 0 and counted.strip().isdigit():
+                return int(counted.strip())
+    counted, crc = run_git("rev-list", "--count", "HEAD")
+    if crc != 0 or not str(counted).strip().isdigit():
+        raise RuntimeError(f"git rev-list --count HEAD failed: {counted!r}")
+    return int(str(counted).strip())
 
 
 def parse_changelog_header() -> dict:
@@ -86,8 +115,8 @@ def lint():
         errors.append("❌ CHANGELOG.md 不存在，运行 python3 scripts/generate_changelog.py")
 
     # 2. CHANGELOG commit_count vs git rev-list
-    git_count_str, _ = run_git("rev-list", "--count", "HEAD")
-    git_count = int(git_count_str)
+    # (pull_request CI: ignore the synthetic merge commit)
+    git_count = head_commit_count()
     cl_count = cl.get("commit_count", "?")
     if cl_count != git_count:
         errors.append(
@@ -165,9 +194,9 @@ def main():
             print("❌ CHANGELOG.md 不存在")
             sys.exit(1)
         cl = parse_changelog_header()
-        git_count_str, _ = run_git("rev-list", "--count", "HEAD")
-        if cl.get("commit_count", -1) != int(git_count_str):
-            print(f"❌ CHANGELOG commit_count={cl.get('commit_count')} ≠ git={git_count_str}")
+        git_count = head_commit_count()
+        if cl.get("commit_count", -1) != git_count:
+            print(f"❌ CHANGELOG commit_count={cl.get('commit_count')} ≠ git={git_count}")
             sys.exit(1)
         print("✅ CHANGELOG 与 git 一致")
         sys.exit(0)

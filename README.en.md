@@ -120,7 +120,7 @@ make evolve-full   # Full cycle + auto-fill + list pending Solidify
 
 1. ❌ No Skill abstraction — OpenClaw uses Gene/Capsule (~230 tokens policy unit)
 2. ❌ No runtime plugin loading — Cordis-style dynamic injection dilutes Gene signal precision
-3. ❌ No automatic Solidify — manual approval only (Arrow's impossibility theorem)
+3. ❌ No automatic Solidify — manual approval only (Arrow's impossibility theorem). Before anything is written, the request must also declare `change_kind` (`fault_fix` or `new_capability`), before/after numbers on the same eval plus an evidence path, and a rollback point. A missing or malformed declaration refuses the solidify.
 
 ## Heuristic Analogy Helper (Heuristic, not Gate)
 
