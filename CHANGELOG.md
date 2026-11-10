@@ -2,8 +2,12 @@
 
 > 自动生成（git log 提取）
 > 版本：v54.0
-> 总 commit 数：710
+> 总 commit 数：712
 
+- 📦 `6c2d6514e` — Require a change-kind declaration before Solidify writes a Gene.
+- 🧪 `c7c7ec955` — Run the peer sync tests from a temporary gene pool so CI does not need this machine's /root pool.
+- 🧪 `1c466bb28` — Print the pytest failure into the GitHub check so the next run shows the broken test.
+- 🧪 `4ba4be286` — Make pytest locate the repo from the checkout, so CI stops failing on this machine's path.
 - 📦 `82b218013` — auto: cron 6h workflow
 - 📦 `b131147c2` — auto: cron 6h workflow
 - 📦 `7aa254071` — auto: cron 6h workflow
@@ -712,4 +716,4 @@
 - 📦 `087a50d16` — gep-harness v0.5: A2A broadcast + node discovery (45/45 passed)
 - 📦 `68be0200e` — gep-harness: bootstrap independent repo (exclude parent /data/disk/)
 
-> 最后生成：2026-09-28 17:01 UTC
+> 最后生成：2026-11-10 05:11 UTC

@@ -12,8 +12,9 @@
 2. **5 库 cross_library_evidence 检查**（5 库各一条）
 3. **DUPLICATE 检查**（与现有 plan/genes/ 不重复）
 4. **人工审批门**（用户显式 y/N 确认）
-5. **asset_id canonicalize 验证**（sha256 + exclude_fields）
-6. **写入 plan/genes/ + plan/events/event_solidify_*.json + git commit**
+5. **固化前申报**（`change_kind`、同一评测的前后数字与证据路径、回滚点；见下文）
+6. **asset_id canonicalize 验证**（sha256 + exclude_fields）
+7. **写入 plan/genes/ + plan/events/event_solidify_*.json + git commit**
 
 ## 为什么 Solidify 不能全自动
 
@@ -41,6 +42,8 @@ python3 scripts/solidify.py --staging=/tmp/v_staging/ --yes
 # 4. 非交互模式（cron 安全，无 stdin 时 auto-reject）
 python3 scripts/solidify.py --staging=/tmp/v_staging/ --non-interactive
 ```
+
+命令 2 和 3 在真正写入之前还要带上固化前申报（`--change-kind`、`--eval-name`、`--before`、`--after`、`--evidence`、`--rollback`，或候选 JSON 里的 `solidify_declaration`）。缺了会拒绝固化并返回非 0。`--list` 不要求。
 
 ### 模式对比
 
@@ -86,6 +89,59 @@ python3 scripts/solidify.py --gene=/path/to/candidate.json --yes
 | asset_id 不匹配 | auto-reject（asset_id_mismatch） |
 | 无 stdin + `--non-interactive` | auto-reject（non_interactive） |
 | EOFError | auto-reject（eof） |
+| 固化前申报缺失或格式错误 | **拒绝固化**，exit 1，不写任何 Gene |
+
+## 固化前申报（pre-solidify check）
+
+分数变好不一定是新能力。一次跳高可能只是修掉了挡住原有能力的故障（循环、截断、评测协议不一致），而不是模型多学到了东西。所以在**任何 Gene 被写入 `plan/genes/` 之前**，这次 solidify 请求必须声明三件事：
+
+1. `change_kind`：恰好一个，`fault_fix`（修故障）或 `new_capability`（新能力）。
+2. 前后证据：两侧**同一个评测名**、before 数字、after 数字、以及证据路径（文件或日志）。
+3. 回滚点：能退回去的 commit、sha 或备份引用。
+
+缺一项、评测名不一致、数字不是数、`change_kind` 不在上述两个值里、或路径为空，solidify **拒绝整次写入**并返回非 0。消息里会写出缺的是哪一项（`missing change_kind`、`missing before.value`、`eval name mismatch`、`empty evidence_path`、`empty rollback` 等）。人工输入 `y` 和 `--yes` 都不能跳过这一关。
+
+这是 harness 守门，不是 GEP 协议字段。候选 JSON 里的 `solidify_declaration` 会在查重、strict validate 和入库之前被拿掉，不进入 `asset_id`。协议 schema 文件不因此增加字段。
+
+`--list` 只列出待审候选，不固化，不要求这份申报。
+
+### 字段
+
+| 字段 | 要求 |
+|------|------|
+| `change_kind` | `fault_fix` 或 `new_capability` |
+| `before.eval` / `after.eval` | 非空，且必须相同 |
+| `before.value` / `after.value` | 数字（整数或小数） |
+| `evidence_path` | 非空的文件或日志路径 |
+| `rollback` | 非空的 commit、sha 或备份引用 |
+
+### 写在候选 JSON 里
+
+```json
+"solidify_declaration": {
+  "change_kind": "fault_fix",
+  "before": {"eval": "MATH-500", "value": 7.9},
+  "after": {"eval": "MATH-500", "value": 48.1},
+  "evidence_path": "logs/exp8/eval/merged.json",
+  "rollback": "c7c7ec9"
+}
+```
+
+`asset_id` 按**去掉** `solidify_declaration` 之后的 Gene 计算。
+
+### 或写在命令行上（覆盖候选里的同名字段）
+
+```bash
+python3 scripts/solidify.py --gene=/path/to/candidate.json \
+  --change-kind fault_fix \
+  --eval-name MATH-500 \
+  --before 7.9 \
+  --after 48.1 \
+  --evidence logs/exp8/eval/merged.json \
+  --rollback c7c7ec9
+```
+
+两侧评测名不同时用 `--before-eval` 和 `--after-eval`。名字不一样会被拒绝。通过后，申报记在 `plan/events/event_solidify_*.json` 的 `meta.solidify_declaration` 里，方便事后核对这次分数变化被当成修故障还是新能力。
 
 ## Solidify 历史（今晚）
 

@@ -124,7 +124,7 @@ cat 方法论.md
 
 | 维度 | 数据 |
 |------|------|
-| commit 数 | 710 |
+| commit 数 | 712 |
 | ROADMAP 期数 | 75（迭代轮次 #1 ~ #75，历史文档） |
 | Gene 总数 | 64 |
 | Capsule 总数 | 2 |
@@ -138,7 +138,7 @@ GEP 标准 7 阶段 = `Detect → Select → Mutate → Hypothesize → Execute 
 
 - **裁剪掉 Hypothesize**：本项目的"假设形成"内嵌在 `Mutate` 阶段（每个候选 Gene 自带 signals_match + 触发条件，相当于把 H 揉进 M），未单独抽象为独立阶段。理由：避免 Hyp 阶段空转（没有可用 feedback 信号时 H 阶段无产物）。
 - **裁剪掉 Evaluate**：本项目无独立"执行评估"阶段，`Validate` 替代之——直接跑 GEP strict + pytest + 5 库 evidence 校验，不引入 Evaluate 的双盲测试等重型流程。理由：个人学习项目，重型 A/B 框架成本与收益不匹配。
-- **保留 Solidify 人工审批**：见上表 + `docs/SOLIDIFY.md`，人工门是 GEP 7 阶段里唯一不可裁剪的（Arrow 定理 + 认知错觉）。
+- **保留 Solidify 人工审批**：见上表 + `docs/SOLIDIFY.md`，人工门是 GEP 7 阶段里唯一不可裁剪的（Arrow 定理 + 认知错觉）。固化前还要申报 `change_kind`（`fault_fix` 修故障 / `new_capability` 新能力）、同一评测的前后数字和证据路径、以及回滚点；缺一项就拒绝写入。
 
 未来若产品化（多人协作/规模化），可重新引入 H/E 阶段作为 v2.x 路线。
 
